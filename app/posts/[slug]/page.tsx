@@ -18,7 +18,7 @@ export default async function PostPage({
 }: {
   params: { slug: string };
 }) {
-  const post = await getPostBySlug(params.slug);
+  const post = await getPostBySlug(decodeURIComponent(params.slug));
 
   if (!post) {
     notFound();
