@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabaseClient } from '@/lib/supabase';
+import { uploadImage } from '@/lib/storage';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 const TAG_OPTIONS: PostTag[] = ['tech', 'life', 'retrospective'];
@@ -84,6 +85,13 @@ function Editor() {
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [published, setPublished] = useState(false);
 
+  const [coverUploading, setCoverUploading] = useState(false);
+  const [contentUploading, setContentUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const contentRef = useRef<HTMLTextAreaElement>(null);
+  const coverFileInputRef = useRef<HTMLInputElement>(null);
+  const contentFileInputRef = useRef<HTMLInputElement>(null);
+
   async function loadPosts() {
     setLoading(true);
     const { data, error } = await supabaseClient
@@ -119,6 +127,56 @@ function Editor() {
     setCoverImageUrl(post.cover_image_url || '');
     setPublished(post.published);
     window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setCoverUploading(true);
+    try {
+      const url = await uploadImage(file);
+      setCoverImageUrl(url);
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
+      );
+    } finally {
+      setCoverUploading(false);
+      if (coverFileInputRef.current) coverFileInputRef.current.value = '';
+    }
+  }
+
+  async function handleContentImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploadError('');
+    setContentUploading(true);
+    try {
+      const url = await uploadImage(file);
+      const markdown = `![${file.name}](${url})`;
+      const textarea = contentRef.current;
+      if (textarea) {
+        const start = textarea.selectionStart ?? content.length;
+        const end = textarea.selectionEnd ?? content.length;
+        const next = content.slice(0, start) + markdown + content.slice(end);
+        setContent(next);
+        requestAnimationFrame(() => {
+          textarea.focus();
+          const cursor = start + markdown.length;
+          textarea.setSelectionRange(cursor, cursor);
+        });
+      } else {
+        setContent((prev) => `${prev}\n${markdown}\n`);
+      }
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
+      );
+    } finally {
+      setContentUploading(false);
+      if (contentFileInputRef.current) contentFileInputRef.current.value = '';
+    }
   }
 
   function toggleTag(tag: PostTag) {
@@ -199,22 +257,68 @@ function Editor() {
             rows={2}
             className="border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-ink-muted resize-none"
           />
-          <input
-            value={coverImageUrl}
-            onChange={(e) => setCoverImageUrl(e.target.value)}
-            placeholder="커버 이미지 URL (선택)"
-            className="border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-ink-muted"
-          />
+          <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+              <input
+                value={coverImageUrl}
+                onChange={(e) => setCoverImageUrl(e.target.value)}
+                placeholder="커버 이미지 URL (선택)"
+                className="flex-1 border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-ink-muted"
+              />
+              <button
+                type="button"
+                onClick={() => coverFileInputRef.current?.click()}
+                disabled={coverUploading}
+                className="shrink-0 border border-line rounded-md px-3 py-2 text-sm text-ink-soft hover:border-ink-muted disabled:opacity-50"
+              >
+                {coverUploading ? '업로드 중...' : '사진 업로드'}
+              </button>
+              <input
+                ref={coverFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleCoverUpload}
+                className="hidden"
+              />
+            </div>
+            {coverImageUrl && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={coverImageUrl}
+                alt="커버 미리보기"
+                className="h-32 w-full object-cover rounded-md border border-line"
+              />
+            )}
+          </div>
+
+          {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-ink-soft">본문 (마크다운)</span>
-            <button
-              type="button"
-              onClick={() => setShowPreview((v) => !v)}
-              className="text-xs text-ink-muted hover:text-ink-soft underline"
-            >
-              {showPreview ? '편집으로 돌아가기' : '미리보기'}
-            </button>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={() => contentFileInputRef.current?.click()}
+                disabled={contentUploading || showPreview}
+                className="text-xs text-ink-muted hover:text-ink-soft underline disabled:opacity-50 disabled:no-underline"
+              >
+                {contentUploading ? '업로드 중...' : '본문에 사진 삽입'}
+              </button>
+              <input
+                ref={contentFileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleContentImageUpload}
+                className="hidden"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPreview((v) => !v)}
+                className="text-xs text-ink-muted hover:text-ink-soft underline"
+              >
+                {showPreview ? '편집으로 돌아가기' : '미리보기'}
+              </button>
+            </div>
           </div>
 
           {showPreview ? (
@@ -225,6 +329,7 @@ function Editor() {
             </div>
           ) : (
             <textarea
+              ref={contentRef}
               value={content}
               onChange={(e) => setContent(e.target.value)}
               placeholder="여기에 마크다운으로 작성하세요..."
