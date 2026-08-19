@@ -111,6 +111,8 @@ function Editor() {
   const [tags, setTags] = useState<PostTag[]>([]);
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [published, setPublished] = useState(false);
+  // 이미 발행된 글의 발행일 — 수정할 때 오늘 날짜로 덮어쓰지 않으려고 들고 있어요.
+  const [publishedAt, setPublishedAt] = useState<string | null>(null);
 
   const [coverUploading, setCoverUploading] = useState(false);
   const [contentUploading, setContentUploading] = useState(false);
@@ -142,6 +144,7 @@ function Editor() {
     setTags([]);
     setCoverImageUrl('');
     setPublished(false);
+    setPublishedAt(null);
   }
 
   function loadIntoForm(post: Post) {
@@ -153,6 +156,7 @@ function Editor() {
     setTags(post.tags || []);
     setCoverImageUrl(post.cover_image_url || '');
     setPublished(post.published);
+    setPublishedAt(post.published_at);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -228,7 +232,8 @@ function Editor() {
       tags,
       cover_image_url: coverImageUrl || null,
       published,
-      published_at: published ? new Date().toISOString() : null,
+      // 발행일은 처음 발행할 때 한 번만 찍고, 이후 수정에는 그대로 둬요.
+      published_at: publishedAt || (published ? new Date().toISOString() : null),
     };
 
     let error;

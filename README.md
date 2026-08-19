@@ -16,6 +16,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `NEXT_PUBLIC_ADMIN_PASSCODE` — `/admin` 페이지 입장 비밀번호
+- `NEXT_PUBLIC_SITE_URL` — (선택) `https://내도메인.com`. 링크 공유용 미리보기 이미지 주소를 만들 때 쓰여요.
+  안 넣으면 Vercel이 준 배포 주소를 쓰기 때문에, 커스텀 도메인을 붙였다면 넣어주는 게 좋아요.
 
 ### 3. GitHub 업로드 → Vercel 배포
 1. 이 폴더 전체를 새 GitHub 저장소에 업로드 (브라우저에서 "Add file > Upload files" 사용 가능)
@@ -34,6 +36,9 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `app/page.tsx` — 홈 (글 목록 + 태그 필터)
 - `app/posts/[slug]/page.tsx` — 글 상세
 - `app/calendar/page.tsx` — 달력 (등록한 일정 + 글 쓴 날)
+- `components/Logo.tsx` — 사이트 로고
+- `app/icon.svg` · `app/apple-icon.png` — 파비콘
+- `app/opengraph-image.tsx` — 링크 공유할 때 뜨는 미리보기 이미지
 - `app/about/page.tsx` — 소개/포트폴리오 페이지 (직접 내용 채워넣기)
 - `app/admin/page.tsx` — 글쓰기 관리자 페이지
 - `supabase-schema.sql` — DB 스키마
@@ -45,3 +50,7 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - 헤더의 "D+N" 카운터 시작일은 `components/DaysCounter.tsx`의 `LAUNCH_DATE`에서 바꿀 수 있어요.
 - 달력은 등록한 일정(일정/마감/메모)과 글을 발행한 날을 한 화면에 보여줘요. 날짜를 누르면 아래에 그 날의 내용이 펼쳐지고, 글 제목을 누르면 글로 이동해요.
 - 일정은 로그인 없이 누구나 볼 수 있어요. 비공개로 남기고 싶은 일정은 적지 않는 게 좋아요.
+- 로고는 3안(`blocks` / `progress` / `sunset`)이 `components/Logo.tsx`에 들어 있어요.
+  맨 위 `DEFAULT_MARK` 한 줄만 바꾸면 헤더 로고가 통째로 바뀝니다.
+  단, 파비콘(`app/icon.svg`)과 미리보기 이미지(`app/opengraph-image.tsx`)에는 마크가 따로 그려져 있어서
+  로고를 바꾸면 그 두 파일의 도형도 같이 손봐야 해요.

@@ -2,13 +2,26 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
 
+const siteUrl =
+  process.env.NEXT_PUBLIC_SITE_URL ||
+  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+
 export const metadata: Metadata = {
-  title: 'STILL BUILDING',
+  metadataBase: new URL(siteUrl),
+  title: {
+    default: 'STILL BUILDING',
+    template: '%s | STILL BUILDING',
+  },
   description: '만들며 기록하는 개발과 일상',
   openGraph: {
     title: 'STILL BUILDING',
     description: '만들며 기록하는 개발과 일상',
+    siteName: 'STILL BUILDING',
+    locale: 'ko_KR',
     type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
   },
 };
 
