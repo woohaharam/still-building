@@ -43,6 +43,9 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `components/Logo.tsx` — 사이트 로고
 - `app/icon.svg` · `app/apple-icon.png` — 파비콘
 - `app/opengraph-image.tsx` — 링크 공유할 때 뜨는 미리보기 이미지
+- `app/feed.xml/route.ts` — RSS 피드
+- `app/sitemap.ts` · `app/robots.ts` — 검색엔진용
+- `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
 - `app/about/page.tsx` — 소개/포트폴리오 페이지 (직접 내용 채워넣기)
 - `app/admin/page.tsx` — 글쓰기 관리자 페이지
 - `supabase-schema.sql` — DB 스키마 (새로 시작할 때)

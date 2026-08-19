@@ -1,27 +1,29 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
-
-const siteUrl =
-  process.env.NEXT_PUBLIC_SITE_URL ||
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:3000');
+import { siteDescription, siteName, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'STILL BUILDING',
-    template: '%s | STILL BUILDING',
+    default: siteName,
+    template: `%s | ${siteName}`,
   },
-  description: '만들며 기록하는 개발과 일상',
+  description: siteDescription,
   openGraph: {
-    title: 'STILL BUILDING',
-    description: '만들며 기록하는 개발과 일상',
-    siteName: 'STILL BUILDING',
+    title: siteName,
+    description: siteDescription,
+    siteName,
     locale: 'ko_KR',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
+  },
+  alternates: {
+    types: {
+      'application/rss+xml': `${siteUrl}/feed.xml`,
+    },
   },
 };
 
@@ -39,8 +41,11 @@ export default function RootLayout({
         </main>
         <footer className="border-t border-line mt-20">
           <div className="max-w-content mx-auto px-6 py-8 text-xs text-ink-muted flex justify-between">
-            <span>&copy; {new Date().getFullYear()} STILL BUILDING</span>
-            <a href="/about" className="hover:text-ink-soft">소개</a>
+            <span>&copy; {new Date().getFullYear()} {siteName}</span>
+            <span className="flex items-center gap-4">
+              <a href="/feed.xml" className="hover:text-ink-soft">RSS</a>
+              <a href="/about" className="hover:text-ink-soft">소개</a>
+            </span>
           </div>
         </footer>
       </body>
