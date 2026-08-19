@@ -22,15 +22,16 @@ export const siteDescription = '만들며 기록하는 개발과 일상';
 export const siteAuthor = 'STILL BUILDING';
 
 /**
- * 사이트 소유 확인 코드.
- * 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니에요. 그래서 네이버 코드는
- * 여기 적어둡니다 — 배포할 때마다 환경변수를 챙길 필요가 없게요.
- * 환경변수를 넣으면 그쪽이 우선이고, 구글은 아직 등록 전이라 비워뒀어요.
+ * 사이트 소유 확인 코드. 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니에요.
+ *
+ * 네이버 값은 환경변수를 보지 않고 여기 적힌 걸 그대로 씁니다.
+ * 예전에는 환경변수를 우선했는데, Vercel에 잘못된 값이 남아 있으면 그게 이겨서
+ * 소유확인이 조용히 실패하더라고요. 바꿀 일이 생기면 이 줄만 고치면 돼요.
  */
+export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
+
+/** 구글은 아직 등록 전이라, 코드를 받으면 환경변수로 넣으면 돼요. */
 export const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION || '';
-export const naverSiteVerification =
-  process.env.NAVER_SITE_VERIFICATION ||
-  '8b398efb83742312228289d6a88ea169ff8eb93d';
 
 /** 한글 slug가 그대로 들어가면 안 되는 자리(RSS·sitemap·canonical)에서 써요. */
 export function postUrl(slug: string) {
