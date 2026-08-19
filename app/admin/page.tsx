@@ -6,6 +6,7 @@ import remarkGfm from 'remark-gfm';
 import { supabaseClient } from '@/lib/supabase';
 import { uploadImage } from '@/lib/storage';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
+import EventEditor from '@/components/EventEditor';
 
 const TAG_OPTIONS: PostTag[] = ['tech', 'life', 'retrospective'];
 const SESSION_KEY = 'sb_admin_unlocked';
@@ -19,10 +20,13 @@ function slugify(title: string) {
     .slice(0, 60);
 }
 
+type AdminTab = 'posts' | 'events';
+
 export default function AdminPage() {
   const [unlocked, setUnlocked] = useState(false);
   const [passcode, setPasscode] = useState('');
   const [error, setError] = useState('');
+  const [tab, setTab] = useState<AdminTab>('posts');
 
   useEffect(() => {
     if (sessionStorage.getItem(SESSION_KEY) === '1') {
@@ -66,7 +70,30 @@ export default function AdminPage() {
     );
   }
 
-  return <Editor />;
+  return (
+    <div className="flex flex-col gap-8">
+      <div className="flex items-center gap-2">
+        {([
+          ['posts', '글'],
+          ['events', '일정'],
+        ] as [AdminTab, string][]).map(([value, label]) => (
+          <button
+            key={value}
+            onClick={() => setTab(value)}
+            className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+              tab === value
+                ? 'border-ink bg-ink text-paper'
+                : 'border-line text-ink-soft hover:border-ink-muted'
+            }`}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {tab === 'posts' ? <Editor /> : <EventEditor />}
+    </div>
+  );
 }
 
 function Editor() {
