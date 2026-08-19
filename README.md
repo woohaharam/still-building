@@ -49,6 +49,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
 - `app/about/page.tsx` — 소개/포트폴리오 페이지 (직접 내용 채워넣기)
 - `app/admin/page.tsx` — 글쓰기 관리자 페이지
+- `app/admin/preview/[slug]/page.tsx` — 임시저장 글 미리보기 (로그인해야 보여요)
+- `components/PostArticle.tsx` — 글 본문 (공개 페이지와 미리보기가 같이 씀)
 - `supabase-schema.sql` — DB 스키마 (새로 시작할 때)
 - `supabase-migration-auth.sql` — 기존 DB를 로그인 기반 보안으로 옮기는 1회용 스크립트
 
@@ -59,6 +61,9 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
   주인을 바꾸고 싶으면 `is_owner()` 함수의 이메일만 고쳐서 다시 실행하면 됩니다.
 - `app/about/page.tsx`의 이메일/GitHub 링크, 프로젝트 설명은 직접 채워넣어야 해요.
 - 헤더의 "D+N" 카운터 시작일은 `components/DaysCounter.tsx`의 `LAUNCH_DATE`에서 바꿀 수 있어요.
+- 발행일은 직접 고를 수 있어요. 지난 날짜로 적어두면 달력에도 그 날에 찍혀요.
+  글을 수정해도 발행일은 그대로 유지되고, 날짜 칸을 바꿀 때만 옮겨갑니다.
+- 임시저장 글은 관리자 목록의 '미리보기'로 실제 글 화면 그대로 확인할 수 있어요.
 - 달력은 등록한 일정(일정/마감/메모)과 글을 발행한 날을 한 화면에 보여줘요. 날짜를 누르면 아래에 그 날의 내용이 펼쳐지고, 글 제목을 누르면 글로 이동해요.
 - 일정은 로그인 없이 누구나 볼 수 있어요. 비공개로 남기고 싶은 일정은 적지 않는 게 좋아요.
 - 로고는 3안(`blocks` / `progress` / `sunset`)이 `components/Logo.tsx`에 들어 있어요.

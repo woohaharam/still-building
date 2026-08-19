@@ -6,6 +6,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabaseClient } from '@/lib/supabase';
 import { uploadImage } from '@/lib/storage';
+import { toDateKey } from '@/lib/calendar';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 import EventEditor from '@/components/EventEditor';
 
@@ -167,6 +168,8 @@ function Editor() {
   const [published, setPublished] = useState(false);
   // 이미 발행된 글의 발행일 — 수정할 때 오늘 날짜로 덮어쓰지 않으려고 들고 있어요.
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  // 발행일을 직접 고를 때 쓰는 'YYYY-MM-DD'
+  const [publishedDate, setPublishedDate] = useState('');
 
   const [coverUploading, setCoverUploading] = useState(false);
   const [contentUploading, setContentUploading] = useState(false);
@@ -199,6 +202,7 @@ function Editor() {
     setCoverImageUrl('');
     setPublished(false);
     setPublishedAt(null);
+    setPublishedDate('');
   }
 
   function loadIntoForm(post: Post) {
@@ -211,6 +215,9 @@ function Editor() {
     setCoverImageUrl(post.cover_image_url || '');
     setPublished(post.published);
     setPublishedAt(post.published_at);
+    setPublishedDate(
+      post.published_at ? toDateKey(new Date(post.published_at)) : ''
+    );
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
@@ -270,6 +277,26 @@ function Editor() {
     );
   }
 
+  /**
+   * 발행일 결정 규칙
+   * - 날짜를 손대지 않았으면 원래 발행일 그대로 (수정할 때마다 오늘로 밀리지 않게)
+   * - 날짜를 바꿨으면 그 날 정오로 — 시간대가 달라져도 날짜가 하루 밀리지 않아요
+   * - 처음 발행하는데 날짜를 안 골랐으면 지금
+   */
+  function resolvePublishedAt(): string | null {
+    if (!published) return publishedAt;
+
+    if (publishedDate) {
+      const current = publishedAt ? new Date(publishedAt) : null;
+      if (current && toDateKey(current) === publishedDate) return publishedAt;
+
+      const [year, month, day] = publishedDate.split('-').map(Number);
+      return new Date(year, month - 1, day, 12, 0, 0).toISOString();
+    }
+
+    return publishedAt || new Date().toISOString();
+  }
+
   async function handleSave() {
     if (!title.trim() || !content.trim()) {
       setStatus('제목과 본문은 필수예요.');
@@ -286,8 +313,7 @@ function Editor() {
       tags,
       cover_image_url: coverImageUrl || null,
       published,
-      // 발행일은 처음 발행할 때 한 번만 찍고, 이후 수정에는 그대로 둬요.
-      published_at: publishedAt || (published ? new Date().toISOString() : null),
+      published_at: resolvePublishedAt(),
     };
 
     let error;
@@ -441,14 +467,34 @@ function Editor() {
             ))}
           </div>
 
-          <label className="flex items-center gap-2 text-sm text-ink-soft">
-            <input
-              type="checkbox"
-              checked={published}
-              onChange={(e) => setPublished(e.target.checked)}
-            />
-            발행하기 (체크 해제 시 임시저장)
-          </label>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+            <label className="flex items-center gap-2 text-sm text-ink-soft">
+              <input
+                type="checkbox"
+                checked={published}
+                onChange={(e) => {
+                  setPublished(e.target.checked);
+                  // 처음 체크할 때 날짜 칸을 오늘로 채워둬요.
+                  if (e.target.checked && !publishedDate) {
+                    setPublishedDate(toDateKey(new Date()));
+                  }
+                }}
+              />
+              발행하기 (체크 해제 시 임시저장)
+            </label>
+
+            {published && (
+              <label className="flex items-center gap-2 text-sm text-ink-soft">
+                발행일
+                <input
+                  type="date"
+                  value={publishedDate}
+                  onChange={(e) => setPublishedDate(e.target.value)}
+                  className="rounded-md border border-line px-2 py-1 text-sm text-ink focus:border-ink-muted focus:outline-none"
+                />
+              </label>
+            )}
+          </div>
 
           <div className="flex items-center gap-3">
             <button
@@ -495,16 +541,26 @@ function Editor() {
                     <span className="text-xs text-ink-muted shrink-0">임시</span>
                   )}
                 </div>
-                <div className="mt-1 flex items-center justify-between">
+                <div className="mt-1 flex items-center justify-between gap-2">
                   <span className="text-xs text-ink-muted">
                     {new Date(post.created_at).toLocaleDateString('ko-KR')}
                   </span>
-                  <button
-                    onClick={() => handleDelete(post.id)}
-                    className="text-xs text-red-500 hover:underline"
-                  >
-                    삭제
-                  </button>
+                  <span className="flex shrink-0 items-center gap-3">
+                    <a
+                      href={`/admin/preview/${encodeURIComponent(post.slug)}`}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="text-xs text-ink-muted hover:underline"
+                    >
+                      미리보기
+                    </a>
+                    <button
+                      onClick={() => handleDelete(post.id)}
+                      className="text-xs text-red-500 hover:underline"
+                    >
+                      삭제
+                    </button>
+                  </span>
                 </div>
               </li>
             ))}
