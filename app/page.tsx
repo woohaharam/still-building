@@ -1,7 +1,14 @@
+import type { Metadata } from 'next';
 import { getPublishedPosts } from '@/lib/posts';
 import PostList from '@/components/PostList';
+import { siteDescription, siteUrl } from '@/lib/site';
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  description: siteDescription,
+  alternates: { canonical: siteUrl },
+};
 
 export default async function HomePage() {
   const posts = await getPublishedPosts();
