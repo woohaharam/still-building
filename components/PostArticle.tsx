@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { readingMinutes } from '@/lib/reading';
 import { Post, TAG_LABELS } from '@/lib/types';
 
 function formatDate(dateStr: string | null) {
@@ -30,8 +31,9 @@ export default function PostArticle({
 
       <header className="mb-10 mt-6">
         <h1 className="text-2xl font-bold leading-snug">{post.title}</h1>
-        <div className="mt-4 flex items-center gap-3 text-xs text-ink-muted">
+        <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
           <span>{formatDate(post.published_at)}</span>
+          <span>읽는 데 {readingMinutes(post.content)}분</span>
           {post.tags?.map((t) => (
             <span key={t}>#{TAG_LABELS[t]}</span>
           ))}
