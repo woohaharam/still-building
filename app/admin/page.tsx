@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import type { Session } from '@supabase/supabase-js';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { supabaseClient } from '@/lib/supabase';
@@ -9,7 +10,6 @@ import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 import EventEditor from '@/components/EventEditor';
 
 const TAG_OPTIONS: PostTag[] = ['tech', 'life', 'retrospective'];
-const SESSION_KEY = 'sb_admin_unlocked';
 
 function slugify(title: string) {
   return title
@@ -23,75 +23,129 @@ function slugify(title: string) {
 type AdminTab = 'posts' | 'events';
 
 export default function AdminPage() {
-  const [unlocked, setUnlocked] = useState(false);
-  const [passcode, setPasscode] = useState('');
-  const [error, setError] = useState('');
+  const [session, setSession] = useState<Session | null>(null);
+  const [checkingSession, setCheckingSession] = useState(true);
   const [tab, setTab] = useState<AdminTab>('posts');
 
   useEffect(() => {
-    if (sessionStorage.getItem(SESSION_KEY) === '1') {
-      setUnlocked(true);
-    }
+    supabaseClient.auth.getSession().then(({ data }) => {
+      setSession(data.session);
+      setCheckingSession(false);
+    });
+
+    const { data } = supabaseClient.auth.onAuthStateChange((_event, next) => {
+      setSession(next);
+    });
+
+    return () => data.subscription.unsubscribe();
   }, []);
 
-  function handleUnlock(e: React.FormEvent) {
-    e.preventDefault();
-    if (passcode === process.env.NEXT_PUBLIC_ADMIN_PASSCODE) {
-      sessionStorage.setItem(SESSION_KEY, '1');
-      setUnlocked(true);
-      setError('');
-    } else {
-      setError('비밀번호가 맞지 않아요.');
-    }
+  if (checkingSession) {
+    return <p className="py-20 text-center text-sm text-ink-muted">확인 중...</p>;
   }
 
-  if (!unlocked) {
-    return (
-      <div className="max-w-sm mx-auto py-20">
-        <h1 className="text-xl font-bold mb-6">관리자 인증</h1>
-        <form onSubmit={handleUnlock} className="flex flex-col gap-3">
-          <input
-            type="password"
-            value={passcode}
-            onChange={(e) => setPasscode(e.target.value)}
-            placeholder="비밀번호"
-            className="border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-ink-muted"
-            autoFocus
-          />
-          {error && <p className="text-sm text-red-600">{error}</p>}
-          <button
-            type="submit"
-            className="bg-ink text-paper rounded-md py-2 text-sm font-medium"
-          >
-            입장하기
-          </button>
-        </form>
-      </div>
-    );
+  if (!session) {
+    return <SignIn />;
   }
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-center gap-2">
-        {([
-          ['posts', '글'],
-          ['events', '일정'],
-        ] as [AdminTab, string][]).map(([value, label]) => (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          {([
+            ['posts', '글'],
+            ['events', '일정'],
+          ] as [AdminTab, string][]).map(([value, label]) => (
+            <button
+              key={value}
+              onClick={() => setTab(value)}
+              className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
+                tab === value
+                  ? 'border-ink bg-ink text-paper'
+                  : 'border-line text-ink-soft hover:border-ink-muted'
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex items-center gap-3 text-xs text-ink-muted">
+          <span className="truncate">{session.user.email}</span>
           <button
-            key={value}
-            onClick={() => setTab(value)}
-            className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-              tab === value
-                ? 'border-ink bg-ink text-paper'
-                : 'border-line text-ink-soft hover:border-ink-muted'
-            }`}
+            onClick={() => supabaseClient.auth.signOut()}
+            className="underline hover:text-ink-soft"
           >
-            {label}
+            로그아웃
           </button>
-        ))}
+        </div>
       </div>
 
       {tab === 'posts' ? <Editor /> : <EventEditor />}
+    </div>
+  );
+}
+
+function SignIn() {
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
+
+  async function handleSignIn(e: React.FormEvent) {
+    e.preventDefault();
+    setSubmitting(true);
+    setError('');
+
+    const { error: signInError } = await supabaseClient.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    setSubmitting(false);
+    if (signInError) {
+      setError(
+        signInError.message === 'Invalid login credentials'
+          ? '이메일이나 비밀번호가 맞지 않아요.'
+          : signInError.message
+      );
+    }
+    // 성공하면 onAuthStateChange가 알아서 화면을 바꿔줘요.
+  }
+
+  return (
+    <div className="mx-auto max-w-sm py-20">
+      <h1 className="mb-2 text-xl font-bold">관리자 로그인</h1>
+      <p className="mb-6 text-sm text-ink-muted">
+        Supabase에 등록한 계정으로 로그인해주세요.
+      </p>
+      <form onSubmit={handleSignIn} className="flex flex-col gap-3">
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder="이메일"
+          autoComplete="username"
+          className="rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
+          autoFocus
+        />
+        <input
+          type="password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          placeholder="비밀번호"
+          autoComplete="current-password"
+          className="rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
+        />
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <button
+          type="submit"
+          disabled={submitting}
+          className="rounded-md bg-ink py-2 text-sm font-medium text-paper disabled:opacity-50"
+        >
+          {submitting ? '로그인 중...' : '로그인'}
+        </button>
+      </form>
     </div>
   );
 }
