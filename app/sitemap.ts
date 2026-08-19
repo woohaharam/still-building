@@ -14,7 +14,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     {
-      url: siteUrl,
+      // 끝에 슬래시를 붙여요. 검색엔진에 등록한 주소와 글자 하나까지 같아야
+      // '등록된 사이트와 다르다'고 반려당하지 않아요.
+      url: `${siteUrl}/`,
       lastModified,
       changeFrequency: 'daily',
       priority: 1,
