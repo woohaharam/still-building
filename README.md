@@ -47,6 +47,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `app/feed.xml/route.ts` — RSS 피드
 - `app/sitemap.ts` · `app/robots.ts` — 검색엔진용
 - `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
+- `lib/playlist.ts` — 배경음악 곡 목록
+- `components/MusicPlayer.tsx` — 오른쪽 아래 노래 플레이어
 - `app/about/page.tsx` — 소개/포트폴리오 페이지 (직접 내용 채워넣기)
 - `app/admin/page.tsx` — 글쓰기 관리자 페이지
 - `app/admin/preview/[slug]/page.tsx` — 임시저장 글 미리보기 (로그인해야 보여요)
@@ -69,6 +71,11 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - 임시저장 글은 관리자 목록의 '미리보기'로 실제 글 화면 그대로 확인할 수 있어요.
 - 달력은 등록한 일정(일정/마감/메모)과 글을 발행한 날을 한 화면에 보여줘요. 날짜를 누르면 아래에 그 날의 내용이 펼쳐지고, 글 제목을 누르면 글로 이동해요.
 - 일정은 로그인 없이 누구나 볼 수 있어요. 비공개로 남기고 싶은 일정은 적지 않는 게 좋아요.
+- 노래는 `lib/playlist.ts`의 `PLAYLIST`에서 바꿔요. 유튜브 주소를 그대로 붙여넣으면 되고,
+  `watch?v=` · `youtu.be` · `shorts` 어느 형태든 알아서 영상 ID를 뽑아냅니다.
+  브라우저가 소리 있는 자동재생을 막기 때문에 **처음 한 번은 눌러야 소리가 나요.**
+  한 번 켜두면 그 선택을 기억해서, 다음 방문 때는 바로 트는 걸 시도해요.
+  '퍼가기 금지'로 걸린 영상은 자동으로 다음 곡으로 넘어가고, 글 쓰는 `/admin`에서는 안 뜹니다.
 - 로고는 3안(`blocks` / `progress` / `sunset`)이 `components/Logo.tsx`에 들어 있어요.
   맨 위 `DEFAULT_MARK` 한 줄만 바꾸면 헤더 로고가 통째로 바뀝니다.
   단, 파비콘(`app/icon.svg`)과 미리보기 이미지(`app/opengraph-image.tsx`)에는 마크가 따로 그려져 있어서

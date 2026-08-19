@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import MusicPlayer from '@/components/MusicPlayer';
 import { siteDescription, siteName, siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -64,6 +65,7 @@ export default function RootLayout({
             </span>
           </div>
         </footer>
+        <MusicPlayer />
       </body>
     </html>
   );
