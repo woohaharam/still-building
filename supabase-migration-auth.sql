@@ -16,7 +16,7 @@ returns boolean
 language sql
 stable
 as $$
-  select coalesce(auth.jwt() ->> 'email', '') = 'CHANGE_ME@example.com';
+  select coalesce(auth.jwt() ->> 'email', '') = 'pmypmy1234567@naver.com';
 $$;
 
 grant execute on function public.is_owner() to anon, authenticated;
