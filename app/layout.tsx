@@ -2,7 +2,15 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
 import MusicPlayer from '@/components/MusicPlayer';
-import { siteDescription, siteName, siteUrl } from '@/lib/site';
+import JsonLd from '@/components/JsonLd';
+import {
+  googleSiteVerification,
+  naverSiteVerification,
+  siteAuthor,
+  siteDescription,
+  siteName,
+  siteUrl,
+} from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -25,6 +33,23 @@ export const metadata: Metadata = {
     types: {
       'application/rss+xml': `${siteUrl}/feed.xml`,
     },
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      // 검색 결과에 큰 썸네일과 긴 설명이 나오도록 허용해요.
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
+  },
+  verification: {
+    ...(googleSiteVerification ? { google: googleSiteVerification } : {}),
+    ...(naverSiteVerification
+      ? { other: { 'naver-site-verification': naverSiteVerification } }
+      : {}),
   },
 };
 
@@ -52,6 +77,17 @@ export default function RootLayout({
         />
       </head>
       <body>
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: siteName,
+            description: siteDescription,
+            url: siteUrl,
+            inLanguage: 'ko-KR',
+            author: { '@type': 'Person', name: siteAuthor },
+          }}
+        />
         <Header />
         <main className="max-w-content mx-auto px-6 py-12 min-h-[60vh]">
           {children}

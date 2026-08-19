@@ -18,8 +18,11 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_SITE_URL` — (선택) `https://내도메인.com`. 링크 공유용 미리보기 이미지 주소를 만들 때 쓰여요.
-  안 넣으면 Vercel이 준 배포 주소를 쓰기 때문에, 커스텀 도메인을 붙였다면 넣어주는 게 좋아요.
+- `NEXT_PUBLIC_SITE_URL` — `https://내도메인.com`. 링크 미리보기·sitemap·검색 노출 주소의 기준이에요.
+  안 넣으면 Vercel 배포 주소를 쓰는데, **검색 등록을 할 거라면 꼭 넣어주세요.** 이게 비어 있으면
+  구글에 알려주는 주소와 실제 주소가 달라져서 색인이 꼬여요.
+- `GOOGLE_SITE_VERIFICATION` — (선택) 구글 서치 콘솔에서 받은 소유 확인 코드
+- `NAVER_SITE_VERIFICATION` — (선택) 네이버 서치어드바이저에서 받은 소유 확인 코드
 
 ### 3. GitHub 업로드 → Vercel 배포
 1. 이 폴더 전체를 새 GitHub 저장소에 업로드 (브라우저에서 "Add file > Upload files" 사용 가능)
@@ -36,6 +39,34 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 > 예전의 '누구나 쓰기 가능' 정책이 걷히고 로그인 기반으로 바뀝니다.
 > 달력을 아직 안 붙였다면 `supabase-schema.sql`의 `events` 테이블 부분도 함께 실행해주세요.
 
+## 검색에 뜨게 하기
+
+사이트를 올려두기만 하면 구글·네이버가 알아서 찾아오지는 않아요. **한 번은 직접 등록해줘야** 합니다.
+코드 쪽 준비(sitemap, robots, 구조화 데이터, 소유 확인 태그)는 이미 다 돼 있어요.
+
+### 구글
+
+1. https://search.google.com/search-console 접속 → 속성 추가 → **URL 접두어**에 내 주소 입력
+2. 소유권 확인 방법 중 **HTML 태그**를 고르면 `content="..."` 안에 코드가 보여요. 그 값만 복사
+3. Vercel → Settings → Environment Variables 에 `GOOGLE_SITE_VERIFICATION` 으로 추가 → 재배포
+4. 서치 콘솔로 돌아가 **확인** 누르기
+5. 왼쪽 메뉴 Sitemaps → `sitemap.xml` 입력하고 제출
+
+### 네이버
+
+1. https://searchadvisor.naver.com 접속 → 웹마스터도구 → 사이트 등록
+2. 소유확인에서 **HTML 태그** 방식 선택 → 코드 복사
+3. Vercel에 `NAVER_SITE_VERIFICATION` 으로 추가 → 재배포 → 확인 누르기
+4. 요청 → 사이트맵 제출 에 `sitemap.xml`
+5. 요청 → **RSS 제출** 에 `feed.xml` — 네이버는 RSS를 꽤 많이 봐요
+
+### 그 다음
+
+- 색인까지 보통 **구글 며칠, 네이버 1~4주** 걸려요. 바로 안 뜬다고 잘못된 게 아니에요.
+- 글이 없으면 색인할 게 없습니다. 검색 노출은 결국 글 개수와 내용이 정해요.
+- 글마다 **요약을 적어두면** 그게 검색 결과의 설명 줄로 쓰여요. 안 적으면 본문 앞부분이 대신 들어갑니다.
+- 잘 되고 있는지는 구글에 `site:내도메인.com` 을 검색해보면 알 수 있어요.
+
 ## 폴더 구조
 - `app/page.tsx` — 홈 (글 목록 + 태그 필터)
 - `app/posts/[slug]/page.tsx` — 글 상세
@@ -46,6 +77,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `app/posts/[slug]/opengraph-image.tsx` — 글별 미리보기 이미지 (제목이 박힌 카드)
 - `app/feed.xml/route.ts` — RSS 피드
 - `app/sitemap.ts` · `app/robots.ts` — 검색엔진용
+- `components/JsonLd.tsx` — 검색엔진이 읽는 구조화 데이터
+- `lib/text.ts` — 마크다운에서 글자만 뽑아내기 (검색 설명·읽는 시간이 같이 씀)
 - `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
 - `lib/playlist.ts` — 배경음악 곡 목록
 - `components/MusicPlayer.tsx` — 오른쪽 아래 노래 플레이어

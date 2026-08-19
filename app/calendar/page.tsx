@@ -2,12 +2,14 @@ import type { Metadata } from 'next';
 import Calendar from '@/components/Calendar';
 import { getEvents } from '@/lib/events';
 import { getPublishedPosts } from '@/lib/posts';
+import { siteUrl } from '@/lib/site';
 
 export const revalidate = 0;
 
 export const metadata: Metadata = {
   title: '달력',
-  description: '일정과 글을 한 달 단위로 모아 봅니다.',
+  description: '일정과 글을 쓴 날들을 한 달 단위로 모아 봅니다.',
+  alternates: { canonical: `${siteUrl}/calendar` },
 };
 
 export default async function CalendarPage() {

@@ -1,3 +1,12 @@
+import type { Metadata } from 'next';
+import { siteAuthor, siteUrl } from '@/lib/site';
+
+export const metadata: Metadata = {
+  title: '소개',
+  description: `${siteAuthor}가 만든 것들과, 이 블로그를 쓰는 이유.`,
+  alternates: { canonical: `${siteUrl}/about` },
+};
+
 export default function AboutPage() {
   return (
     <div className="flex flex-col gap-16">

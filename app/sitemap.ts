@@ -7,16 +7,34 @@ export const revalidate = 0;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const posts = await getPublishedPosts();
 
-  const staticPages = ['', '/calendar', '/about'].map((path) => ({
-    url: `${siteUrl}${path}`,
-    lastModified: new Date(),
-  }));
+  // 글이 새로 올라온 날을 사이트가 바뀐 날로 봐요.
+  // (매번 '지금'을 넣으면 검색엔진이 계속 바뀌는 줄 알고 신뢰를 잃어요)
+  const latest = posts[0]?.published_at || posts[0]?.created_at;
+  const lastModified = latest ? new Date(latest) : undefined;
 
   return [
-    ...staticPages,
+    {
+      url: siteUrl,
+      lastModified,
+      changeFrequency: 'daily',
+      priority: 1,
+    },
+    {
+      url: `${siteUrl}/calendar`,
+      lastModified,
+      changeFrequency: 'weekly',
+      priority: 0.5,
+    },
+    {
+      url: `${siteUrl}/about`,
+      changeFrequency: 'monthly',
+      priority: 0.5,
+    },
     ...posts.map((post) => ({
       url: postUrl(post.slug),
       lastModified: new Date(post.published_at || post.created_at),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
     })),
   ];
 }

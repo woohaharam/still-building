@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import JsonLd from '@/components/JsonLd';
 import PostArticle from '@/components/PostArticle';
 import { getPostBySlug } from '@/lib/posts';
-import { postUrl } from '@/lib/site';
+import { postUrl, siteAuthor, siteName, siteUrl } from '@/lib/site';
+import { metaDescription } from '@/lib/text';
 
 export const revalidate = 0;
 
@@ -17,12 +19,15 @@ export async function generateMetadata({
     return { title: '글을 찾을 수 없어요' };
   }
 
+  const description = metaDescription(post);
+
   return {
     title: post.title,
-    description: post.excerpt || undefined,
+    description,
+    alternates: { canonical: postUrl(post.slug) },
     openGraph: {
       title: post.title,
-      description: post.excerpt || undefined,
+      description,
       url: postUrl(post.slug),
       type: 'article',
       publishedTime: post.published_at || undefined,
@@ -41,5 +46,29 @@ export default async function PostPage({
     notFound();
   }
 
-  return <PostArticle post={post!} />;
+  const url = postUrl(post!.slug);
+  const published = post!.published_at || post!.created_at;
+
+  return (
+    <>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: post!.title,
+          description: metaDescription(post!),
+          url,
+          mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+          datePublished: published,
+          dateModified: published,
+          inLanguage: 'ko-KR',
+          image: post!.cover_image_url || `${url}/opengraph-image`,
+          author: { '@type': 'Person', name: siteAuthor },
+          publisher: { '@type': 'Organization', name: siteName, url: siteUrl },
+          keywords: post!.tags?.join(', ') || undefined,
+        }}
+      />
+      <PostArticle post={post!} />
+    </>
+  );
 }
