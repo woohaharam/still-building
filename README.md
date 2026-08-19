@@ -42,7 +42,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `app/calendar/page.tsx` — 달력 (등록한 일정 + 글 쓴 날)
 - `components/Logo.tsx` — 사이트 로고
 - `app/icon.svg` · `app/apple-icon.png` — 파비콘
-- `app/opengraph-image.tsx` — 링크 공유할 때 뜨는 미리보기 이미지
+- `app/opengraph-image.tsx` — 링크 공유할 때 뜨는 미리보기 이미지 (사이트 전체)
+- `app/posts/[slug]/opengraph-image.tsx` — 글별 미리보기 이미지 (제목이 박힌 카드)
 - `app/feed.xml/route.ts` — RSS 피드
 - `app/sitemap.ts` · `app/robots.ts` — 검색엔진용
 - `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
