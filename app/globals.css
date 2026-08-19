@@ -105,18 +105,96 @@ a {
   font-size: 0.875em;
 }
 
-.prose-post pre {
-  background: rgb(var(--code-bg));
-  color: rgb(var(--code-fg));
-  padding: 1.2em;
-  border-radius: 8px;
-  overflow-x: auto;
+/* 코드 블록 — 위에 언어 이름과 복사 버튼이 붙은 얇은 바가 있어요 */
+.prose-post .code-block {
   margin: 1.5em 0;
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgb(var(--code-bg));
+}
+
+.prose-post .code-block__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1em;
+  padding: 0.45em 0.75em 0.45em 1.05em;
+  border-bottom: 1px solid rgb(var(--code-fg) / 0.12);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.prose-post .code-block__lang {
+  color: rgb(var(--code-fg) / 0.45);
+  letter-spacing: 0.03em;
+}
+
+.prose-post .code-block__copy {
+  color: rgb(var(--code-fg) / 0.6);
+  padding: 0.2em 0.55em;
+  border-radius: 5px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.prose-post .code-block__copy:hover {
+  background: rgb(var(--code-fg) / 0.1);
+  color: rgb(var(--code-fg));
+}
+
+.prose-post pre {
+  background: transparent;
+  color: rgb(var(--code-fg));
+  padding: 1.05em;
+  overflow-x: auto;
+  margin: 0;
+  /* 본문 줄간격(1.85)을 그대로 쓰면 코드가 너무 성겨 보여요 */
+  line-height: 1.65;
 }
 
 .prose-post pre code {
   background: transparent;
   padding: 0;
+}
+
+/* 문법 강조 — 사이트 톤에 맞춰 색을 두 가지만 써요 */
+.prose-post .hljs-comment,
+.prose-post .hljs-quote {
+  color: rgb(var(--code-fg) / 0.42);
+  font-style: italic;
+}
+
+.prose-post .hljs-keyword,
+.prose-post .hljs-selector-tag,
+.prose-post .hljs-literal,
+.prose-post .hljs-type,
+.prose-post .hljs-built_in,
+.prose-post .hljs-meta {
+  color: #9bb0cc;
+}
+
+.prose-post .hljs-string,
+.prose-post .hljs-number,
+.prose-post .hljs-regexp,
+.prose-post .hljs-symbol,
+.prose-post .hljs-attr,
+.prose-post .hljs-attribute {
+  color: #d7a26b;
+}
+
+.prose-post .hljs-title,
+.prose-post .hljs-name,
+.prose-post .hljs-section,
+.prose-post .hljs-strong {
+  color: rgb(var(--code-fg));
+  font-weight: 600;
+}
+
+.prose-post .hljs-deletion {
+  color: #d98c8c;
+}
+
+.prose-post .hljs-addition {
+  color: #9dbf9d;
 }
 
 .prose-post blockquote {
