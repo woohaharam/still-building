@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { supabaseClient } from './supabase';
 import { Post } from './types';
 
@@ -16,7 +17,10 @@ export async function getPublishedPosts(): Promise<Post[]> {
   return data as Post[];
 }
 
-export async function getPostBySlug(slug: string): Promise<Post | null> {
+/** 한 요청 안에서 여러 번 불러도 DB에는 한 번만 물어봐요 (본문 + 메타데이터 + 미리보기 이미지). */
+export const getPostBySlug = cache(async function getPostBySlug(
+  slug: string
+): Promise<Post | null> {
   const { data, error } = await supabaseClient
     .from('posts')
     .select('*')
@@ -30,7 +34,7 @@ export async function getPostBySlug(slug: string): Promise<Post | null> {
   }
 
   return data as Post;
-}
+});
 
 export async function getFirstPostDate(): Promise<string | null> {
   const { data, error } = await supabaseClient

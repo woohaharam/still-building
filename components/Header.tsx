@@ -1,13 +1,15 @@
 import Link from 'next/link';
 import DaysCounter from './DaysCounter';
+import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   return (
     <header className="border-b border-line">
       <div className="max-w-content mx-auto px-6 py-10 flex flex-col gap-3">
         <div className="flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold tracking-tight">
-            STILL BUILDING
+          <Link href="/" aria-label="STILL BUILDING 홈">
+            <Logo />
           </Link>
           <nav className="flex items-center gap-5 text-sm text-ink-soft">
             <Link href="/calendar" className="hover:text-ink transition-colors">
@@ -24,6 +26,7 @@ export default function Header() {
             >
               GitHub
             </a>
+            <ThemeToggle />
           </nav>
         </div>
         <div className="flex items-center justify-between text-sm text-ink-muted">

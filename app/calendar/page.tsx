@@ -6,7 +6,7 @@ import { getPublishedPosts } from '@/lib/posts';
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: '달력 | STILL BUILDING',
+  title: '달력',
   description: '일정과 글을 한 달 단위로 모아 봅니다.',
 };
 

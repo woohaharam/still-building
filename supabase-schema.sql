@@ -24,14 +24,24 @@ create policy "public can read published posts"
   on posts for select
   using (published = true);
 
--- ⚠️ 아래 정책들은 관리자 페이지의 '비밀번호 입력' UI만 막아둔 것이지,
--- 실제로는 anon key를 가진 누구나 호출할 수 있는 상태예요.
--- (가족 블로그와 동일한 방식의 MVP용 보안 수준입니다.)
--- 나중에 더 안전하게 만들고 싶다면 Supabase Auth로 로그인 기반 정책으로 바꾸는 걸 추천해요.
-create policy "anyone with anon key can manage posts (MVP)"
+-- ⚠️ 아래 이메일을 본인 Supabase 계정 이메일로 바꿔주세요.
+-- 이 이메일로 로그인한 사람만 글과 일정을 쓰고 지울 수 있어요.
+create or replace function public.is_owner()
+returns boolean
+language sql
+stable
+as $$
+  select coalesce(auth.jwt() ->> 'email', '') = 'pmypmy1234567@naver.com';
+$$;
+
+grant execute on function public.is_owner() to anon, authenticated;
+
+-- 주인은 임시저장 글까지 전부 읽고 쓸 수 있음
+create policy "owner can manage posts"
   on posts for all
-  using (true)
-  with check (true);
+  to authenticated
+  using (public.is_owner())
+  with check (public.is_owner());
 
 -- ────────────────────────────────────────────────
 -- 달력용 일정 테이블
@@ -57,9 +67,31 @@ create policy "public can read events"
   on events for select
   using (true);
 
--- ⚠️ posts 테이블과 동일한 MVP 수준의 정책이에요.
--- anon key를 가진 누구나 일정을 추가/수정/삭제할 수 있는 상태입니다.
-create policy "anyone with anon key can manage events (MVP)"
+create policy "owner can manage events"
   on events for all
-  using (true)
-  with check (true);
+  to authenticated
+  using (public.is_owner())
+  with check (public.is_owner());
+
+-- ────────────────────────────────────────────────
+-- 이미지 업로드 (Storage) — 'post-images' 버킷을 먼저 만들어주세요
+-- ────────────────────────────────────────────────
+
+create policy "public can read post images"
+  on storage.objects for select
+  using (bucket_id = 'post-images');
+
+create policy "owner can upload post images"
+  on storage.objects for insert
+  to authenticated
+  with check (bucket_id = 'post-images' and public.is_owner());
+
+create policy "owner can update post images"
+  on storage.objects for update
+  to authenticated
+  using (bucket_id = 'post-images' and public.is_owner());
+
+create policy "owner can delete post images"
+  on storage.objects for delete
+  to authenticated
+  using (bucket_id = 'post-images' and public.is_owner());
