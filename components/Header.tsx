@@ -10,6 +10,9 @@ export default function Header() {
             STILL BUILDING
           </Link>
           <nav className="flex items-center gap-5 text-sm text-ink-soft">
+            <Link href="/calendar" className="hover:text-ink transition-colors">
+              달력
+            </Link>
             <Link href="/about" className="hover:text-ink transition-colors">
               소개
             </Link>

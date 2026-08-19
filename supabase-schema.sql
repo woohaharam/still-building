@@ -32,3 +32,34 @@ create policy "anyone with anon key can manage posts (MVP)"
   on posts for all
   using (true)
   with check (true);
+
+-- ────────────────────────────────────────────────
+-- 달력용 일정 테이블
+-- ────────────────────────────────────────────────
+
+create table if not exists events (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  description text,
+  start_date date not null,
+  end_date date,              -- 여러 날에 걸친 일정일 때만 사용
+  start_time text,            -- 'HH:MM', 시간 없는 종일 일정이면 null
+  kind text not null default 'plan' check (kind in ('plan', 'deadline', 'note')),
+  created_at timestamptz default now()
+);
+
+create index if not exists events_start_date_idx on events (start_date);
+
+alter table events enable row level security;
+
+-- 공개 조회: 일정은 누구나 읽을 수 있음
+create policy "public can read events"
+  on events for select
+  using (true);
+
+-- ⚠️ posts 테이블과 동일한 MVP 수준의 정책이에요.
+-- anon key를 가진 누구나 일정을 추가/수정/삭제할 수 있는 상태입니다.
+create policy "anyone with anon key can manage events (MVP)"
+  on events for all
+  using (true)
+  with check (true);
