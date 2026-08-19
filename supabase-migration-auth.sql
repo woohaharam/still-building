@@ -16,7 +16,9 @@ returns boolean
 language sql
 stable
 as $$
-  select coalesce(auth.jwt() ->> 'email', '') = 'pmypmy1234567@naver.com';
+  -- ⚠️ 이 저장소는 공개되어 있으니 실제 이메일을 여기 적어두지 마세요.
+  -- SQL Editor에 붙여넣을 때만 본인 이메일로 바꿔서 실행하면 됩니다.
+  select coalesce(auth.jwt() ->> 'email', '') = 'YOUR_EMAIL@example.com';
 $$;
 
 grant execute on function public.is_owner() to anon, authenticated;
