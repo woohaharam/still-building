@@ -3,6 +3,35 @@
 @tailwind components;
 @tailwind utilities;
 
+/* 색은 전부 여기서 정해요. .dark가 붙으면 값만 갈아끼워집니다. */
+:root {
+  --paper: 250 250 248;
+  --surface: 240 240 236;
+  --ink: 26 26 26;
+  --ink-soft: 74 74 71;
+  --ink-muted: 138 138 133;
+  --line: 229 229 225;
+  --accent: 47 59 76;
+
+  --prose: 42 42 40;
+  --code-bg: 26 26 26;
+  --code-fg: 240 240 236;
+}
+
+.dark {
+  --paper: 19 19 18;
+  --surface: 32 32 30;
+  --ink: 237 237 233;
+  --ink-soft: 184 184 178;
+  --ink-muted: 126 126 120;
+  --line: 46 46 43;
+  --accent: 155 176 204;
+
+  --prose: 212 212 206;
+  --code-bg: 10 10 9;
+  --code-fg: 226 226 220;
+}
+
 * {
   box-sizing: border-box;
 }
@@ -12,10 +41,11 @@ html {
 }
 
 body {
-  background-color: #FAFAF8;
-  color: #1A1A1A;
+  background-color: rgb(var(--paper));
+  color: rgb(var(--ink));
   font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, sans-serif;
   -webkit-font-smoothing: antialiased;
+  transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 a {
@@ -23,12 +53,12 @@ a {
 }
 
 ::selection {
-  background-color: #2F3B4C;
-  color: #FAFAF8;
+  background-color: rgb(var(--accent));
+  color: rgb(var(--paper));
 }
 
 :focus-visible {
-  outline: 2px solid #2F3B4C;
+  outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
 }
 
@@ -36,14 +66,14 @@ a {
 .prose-post {
   font-size: 1.0625rem;
   line-height: 1.85;
-  color: #2A2A28;
+  color: rgb(var(--prose));
 }
 
 .prose-post h1,
 .prose-post h2,
 .prose-post h3 {
   font-weight: 700;
-  color: #1A1A1A;
+  color: rgb(var(--ink));
   margin-top: 2.2em;
   margin-bottom: 0.7em;
   line-height: 1.4;
@@ -61,23 +91,23 @@ a {
 .prose-post a {
   text-decoration: underline;
   text-underline-offset: 3px;
-  text-decoration-color: #C9C9C3;
+  text-decoration-color: rgb(var(--ink-muted));
 }
 
 .prose-post a:hover {
-  text-decoration-color: #2F3B4C;
+  text-decoration-color: rgb(var(--accent));
 }
 
 .prose-post code {
-  background: #F0F0EC;
+  background: rgb(var(--surface));
   padding: 0.15em 0.4em;
   border-radius: 4px;
   font-size: 0.875em;
 }
 
 .prose-post pre {
-  background: #1A1A1A;
-  color: #F0F0EC;
+  background: rgb(var(--code-bg));
+  color: rgb(var(--code-fg));
   padding: 1.2em;
   border-radius: 8px;
   overflow-x: auto;
@@ -90,10 +120,10 @@ a {
 }
 
 .prose-post blockquote {
-  border-left: 3px solid #2F3B4C;
+  border-left: 3px solid rgb(var(--accent));
   padding-left: 1.1em;
   margin: 1.5em 0;
-  color: #6B6B65;
+  color: rgb(var(--ink-muted));
   font-style: italic;
 }
 
@@ -115,6 +145,6 @@ a {
 
 .prose-post hr {
   border: none;
-  border-top: 1px solid #E5E5E1;
+  border-top: 1px solid rgb(var(--line));
   margin: 2.5em 0;
 }

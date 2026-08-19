@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import DaysCounter from './DaysCounter';
 import Logo from './Logo';
+import ThemeToggle from './ThemeToggle';
 
 export default function Header() {
   return (
@@ -25,6 +26,7 @@ export default function Header() {
             >
               GitHub
             </a>
+            <ThemeToggle />
           </nav>
         </div>
         <div className="flex items-center justify-between text-sm text-ink-muted">

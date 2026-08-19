@@ -73,7 +73,7 @@ export default function PreviewPage({ params }: { params: { slug: string } }) {
   return (
     <div>
       {!post.published && (
-        <p className="mb-8 rounded-md border border-line bg-[#F0F0EC] px-4 py-3 text-sm text-ink-soft">
+        <p className="mb-8 rounded-md border border-line bg-surface px-4 py-3 text-sm text-ink-soft">
           임시저장 상태예요. 이 화면은 로그인한 나만 볼 수 있어요.
         </p>
       )}

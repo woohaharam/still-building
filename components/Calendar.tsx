@@ -188,7 +188,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
                 onClick={() => selectDay(day)}
                 aria-pressed={isSelected}
                 className={`flex min-h-[76px] flex-col gap-1 border-b border-r border-line p-1.5 text-left transition-colors sm:min-h-[92px] [&:nth-child(7n)]:border-r-0 ${
-                  isSelected ? 'bg-[#F0F0EC]' : 'hover:bg-[#F4F4F0]'
+                  isSelected ? 'bg-surface' : 'hover:bg-surface/60'
                 }`}
               >
                 <span

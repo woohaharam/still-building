@@ -33,7 +33,23 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="ko">
+    <html lang="ko" suppressHydrationWarning>
+      <head>
+        {/*
+          화면이 한 번 하얗게 번쩍였다가 어두워지는 걸 막으려고,
+          리액트가 붙기 전에 테마를 먼저 정해둬요.
+        */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try {
+  var saved = localStorage.getItem('theme');
+  var dark = saved ? saved === 'dark'
+    : window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (dark) document.documentElement.classList.add('dark');
+} catch (e) {}`,
+          }}
+        />
+      </head>
       <body>
         <Header />
         <main className="max-w-content mx-auto px-6 py-12 min-h-[60vh]">
