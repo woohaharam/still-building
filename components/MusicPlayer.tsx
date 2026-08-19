@@ -10,6 +10,7 @@ interface YouTubePlayer {
   playVideo(): void;
   pauseVideo(): void;
   loadVideoById(videoId: string): void;
+  getVideoData?(): { title?: string } | undefined;
   destroy(): void;
 }
 
@@ -88,6 +89,8 @@ export default function MusicPlayer() {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [note, setNote] = useState('');
+  // 곡 제목은 유튜브에 올라간 걸 그대로 가져와요. 목록에 제목을 안 적어도 되게.
+  const [autoTitle, setAutoTitle] = useState('');
 
   const playerRef = useRef<YouTubePlayer | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -102,7 +105,17 @@ export default function MusicPlayer() {
     indexRef.current = next;
     setIndex(next);
     setNote('');
+    setAutoTitle('');
     playerRef.current?.loadVideoById(TRACKS[next].videoId);
+  }, []);
+
+  const readTitle = useCallback((player: YouTubePlayer) => {
+    try {
+      const title = player.getVideoData?.()?.title;
+      if (title) setAutoTitle(title);
+    } catch {
+      // 제목을 못 읽어도 재생에는 문제 없어요.
+    }
   }, []);
 
   const ensurePlayer = useCallback(async () => {
@@ -128,11 +141,15 @@ export default function MusicPlayer() {
       host: 'https://www.youtube-nocookie.com',
       playerVars: { autoplay: 1, controls: 0, playsinline: 1, rel: 0 },
       events: {
-        onReady: (event: any) => event.target.playVideo(),
+        onReady: (event: any) => {
+          readTitle(event.target);
+          event.target.playVideo();
+        },
         onStateChange: (event: any) => {
           // 1 재생중, 2 멈춤, 0 끝남
           if (event.data === 1) {
             errorStreakRef.current = 0;
+            readTitle(event.target);
             setPlaying(true);
           } else if (event.data === 2) {
             setPlaying(false);
@@ -155,7 +172,7 @@ export default function MusicPlayer() {
 
     playerRef.current = player;
     return player;
-  }, [step]);
+  }, [step, readTitle]);
 
   // 저장해둔 상태 되살리기
   useEffect(() => {
@@ -267,7 +284,7 @@ export default function MusicPlayer() {
           </button>
 
           <span className="mx-1 max-w-[8.5rem] truncate text-xs text-ink-soft sm:max-w-[13rem]">
-            {note || track.title}
+            {note || track.title || autoTitle || `노래 ${index + 1}`}
           </span>
 
           <button
