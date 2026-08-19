@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import ReactMarkdown from 'react-markdown';
+import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
+import CodeBlock from '@/components/CodeBlock';
 import { supabaseClient } from '@/lib/supabase';
 import { uploadImage } from '@/lib/storage';
 import { toDateKey } from '@/lib/calendar';
@@ -435,7 +437,11 @@ function Editor() {
 
           {showPreview ? (
             <div className="prose-post border border-line rounded-md px-4 py-3 min-h-[300px]">
-              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
+                components={{ pre: CodeBlock }}
+              >
                 {content || '_내용이 없어요._'}
               </ReactMarkdown>
             </div>

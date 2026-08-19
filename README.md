@@ -90,6 +90,7 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `app/admin/page.tsx` — 글쓰기 관리자 페이지
 - `app/admin/preview/[slug]/page.tsx` — 임시저장 글 미리보기 (로그인해야 보여요)
 - `components/PostArticle.tsx` — 글 본문 (공개 페이지와 미리보기가 같이 씀)
+- `components/CodeBlock.tsx` — 코드 블록 (언어 표시 + 복사 버튼)
 - `supabase-schema.sql` — DB 스키마 (새로 시작할 때)
 - `supabase-migration-auth.sql` — 기존 DB를 로그인 기반 보안으로 옮기는 1회용 스크립트
 
@@ -103,6 +104,9 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
   주인을 바꾸고 싶으면 `is_owner()` 함수의 이메일만 고쳐서 다시 실행하면 됩니다.
 - `app/about/page.tsx`의 이메일/GitHub 링크, 프로젝트 설명은 직접 채워넣어야 해요.
 - 헤더의 "D+N" 카운터 시작일은 `components/DaysCounter.tsx`의 `LAUNCH_DATE`에서 바꿀 수 있어요.
+- 본문에 ```` ```ts ```` 처럼 언어를 적으면 코드 블록 위에 언어 이름과 **복사 버튼**이 붙고
+  문법 강조도 들어가요. 언어를 안 적으면 강조 없이 그대로 나옵니다.
+  강조 색은 `app/globals.css` 아래쪽 `.hljs-*` 규칙에서 바꿀 수 있어요.
 - 발행일은 직접 고를 수 있어요. 지난 날짜로 적어두면 달력에도 그 날에 찍혀요.
   글을 수정해도 발행일은 그대로 유지되고, 날짜 칸을 바꿀 때만 옮겨갑니다.
 - 임시저장 글은 관리자 목록의 '미리보기'로 실제 글 화면 그대로 확인할 수 있어요.
