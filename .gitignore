@@ -13,3 +13,7 @@ next-env.d.ts.timestamp
 .DS_Store
 *.log
 .vercel
+
+# 테스트·린트 산출물
+coverage/
+.eslintcache

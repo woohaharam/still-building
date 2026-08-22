@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import JsonLd from '@/components/JsonLd';
 import PostArticle from '@/components/PostArticle';
-import { getPostBySlug } from '@/lib/posts';
+import PostNav from '@/components/PostNav';
+import { getAdjacentPosts, getPostBySlug } from '@/lib/posts';
 import { postUrl, siteAuthor, siteName, siteUrl } from '@/lib/site';
 import { metaDescription } from '@/lib/text';
 
@@ -48,6 +49,7 @@ export default async function PostPage({
 
   const url = postUrl(post!.slug);
   const published = post!.published_at || post!.created_at;
+  const { older, newer } = await getAdjacentPosts(post!.slug);
 
   return (
     <>
@@ -69,6 +71,7 @@ export default async function PostPage({
         }}
       />
       <PostArticle post={post!} />
+      <PostNav older={older} newer={newer} />
     </>
   );
 }

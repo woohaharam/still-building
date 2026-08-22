@@ -14,12 +14,41 @@ export const PLAYLIST: Track[] = [
   { url: 'https://youtu.be/xpHFBuDeP_4' },
 ];
 
-/** 유튜브 주소에서 영상 ID(11글자)만 뽑아내요. */
+function isVideoId(value: string | null): value is string {
+  return !!value && /^[A-Za-z0-9_-]{11}$/.test(value);
+}
+
+/**
+ * 유튜브 주소에서 영상 ID(11글자)만 뽑아내요.
+ * 주소를 통째로 뜯어보기 때문에 유튜브가 아닌 주소는 걸러집니다.
+ * (예전에는 `?v=`만 보고 있어서 아무 사이트 주소나 통과했어요.)
+ */
 export function youtubeId(url: string): string | null {
-  const match = url.match(
-    /(?:youtu\.be\/|[?&]v=|\/embed\/|\/shorts\/)([A-Za-z0-9_-]{11})/
+  let parsed: URL;
+  try {
+    parsed = new URL(url);
+  } catch {
+    return null;
+  }
+
+  const host = parsed.hostname.replace(/^(?:www|m|music)\./, '');
+
+  if (host === 'youtu.be') {
+    const id = parsed.pathname.slice(1);
+    return isVideoId(id) ? id : null;
+  }
+
+  if (host !== 'youtube.com' && host !== 'youtube-nocookie.com') return null;
+
+  // /watch?v=ID — 다른 파라미터가 앞에 붙어 있어도 상관없어요.
+  const fromQuery = parsed.searchParams.get('v');
+  if (isVideoId(fromQuery)) return fromQuery;
+
+  // /embed/ID, /shorts/ID, /live/ID, /v/ID
+  const fromPath = parsed.pathname.match(
+    /^\/(?:embed|shorts|live|v)\/([A-Za-z0-9_-]{11})(?:$|[/?#])/
   );
-  return match ? match[1] : null;
+  return fromPath ? fromPath[1] : null;
 }
 
 /** 주소가 잘못 적힌 곡은 아예 목록에서 빼요. */
