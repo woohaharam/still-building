@@ -13,8 +13,22 @@ const SUNSET = '#E8863A';
 function BlocksMark({ className = '' }: { className?: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="2" fill="currentColor" />
-      <rect x="2.5" y="13" width="8.5" height="8.5" rx="2" fill="currentColor" />
+      <rect
+        x="2.5"
+        y="2.5"
+        width="8.5"
+        height="8.5"
+        rx="2"
+        fill="currentColor"
+      />
+      <rect
+        x="2.5"
+        y="13"
+        width="8.5"
+        height="8.5"
+        rx="2"
+        fill="currentColor"
+      />
       <rect x="13" y="13" width="8.5" height="8.5" rx="2" fill="currentColor" />
       <rect
         x="13.9"

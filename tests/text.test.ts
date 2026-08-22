@@ -36,9 +36,9 @@ describe('metaDescription', () => {
   });
 
   it('요약이 비어 있으면 본문 앞부분을 쓴다', () => {
-    expect(metaDescription({ excerpt: '', content: '## 제목\n\n본문이다' })).toBe(
-      '제목 본문이다'
-    );
+    expect(
+      metaDescription({ excerpt: '', content: '## 제목\n\n본문이다' })
+    ).toBe('제목 본문이다');
   });
 
   it('요약이 null이어도 본문으로 넘어간다', () => {

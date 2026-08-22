@@ -18,6 +18,9 @@ jobs:
 
       - run: npm ci
 
+      - name: 포맷 검사
+        run: npm run format:check
+
       - name: 린트
         run: npm run lint
 

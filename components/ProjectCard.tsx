@@ -17,7 +17,9 @@ export default function ProjectCard({
       className="block rounded-lg border border-line p-6 transition-colors hover:border-ink-muted"
     >
       <h3 className="font-semibold">{title}</h3>
-      <p className="mt-2 text-sm leading-relaxed text-ink-soft">{description}</p>
+      <p className="mt-2 text-sm leading-relaxed text-ink-soft">
+        {description}
+      </p>
       <p className="mt-3 text-xs text-ink-muted">{stack}</p>
     </a>
   );

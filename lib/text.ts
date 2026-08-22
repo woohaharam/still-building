@@ -1,18 +1,20 @@
 /** 마크다운 문법을 걷어내고 사람이 읽는 글자만 남겨요. */
 export function stripMarkdown(markdown: string): string {
-  return markdown
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`[^`]*`/g, ' ')
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/^\s{0,3}#{1,6}\s+/gm, '')
-    .replace(/^\s{0,3}>\s?/gm, '')
-    // 표 구분선(|---|---|)이나 구분선(---)처럼 글자가 아닌 줄은 통째로 버려요.
-    .replace(/^[-:|\s]{3,}$/gm, ' ')
-    .replace(/^\s{0,3}[-*+]\s+/gm, '')
-    .replace(/[*_~|]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
+  return (
+    markdown
+      .replace(/```[\s\S]*?```/g, ' ')
+      .replace(/`[^`]*`/g, ' ')
+      .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/^\s{0,3}#{1,6}\s+/gm, '')
+      .replace(/^\s{0,3}>\s?/gm, '')
+      // 표 구분선(|---|---|)이나 구분선(---)처럼 글자가 아닌 줄은 통째로 버려요.
+      .replace(/^[-:|\s]{3,}$/gm, ' ')
+      .replace(/^\s{0,3}[-*+]\s+/gm, '')
+      .replace(/[*_~|]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+  );
 }
 
 /**

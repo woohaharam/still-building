@@ -246,7 +246,11 @@ export default function MusicPlayer() {
 
   return (
     <>
-      <div ref={containerRef} aria-hidden className="fixed left-[-9999px] top-0 h-px w-px overflow-hidden" />
+      <div
+        ref={containerRef}
+        aria-hidden
+        className="fixed left-[-9999px] top-0 h-px w-px overflow-hidden"
+      />
 
       {!mounted ? null : !open ? (
         <button

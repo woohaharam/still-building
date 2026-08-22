@@ -22,7 +22,9 @@ export default function Reveal({
     const node = ref.current;
     if (!node) return;
 
-    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const reduced = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
     if (reduced || typeof IntersectionObserver === 'undefined') {
       setShown(true);
       return;

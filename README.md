@@ -5,6 +5,7 @@
 ## 시작하기
 
 ### 1. Supabase 프로젝트 준비
+
 1. https://supabase.com 에서 새 프로젝트 생성 (또는 기존 프로젝트 재사용)
 2. Authentication > Users 에서 본인 계정을 하나 만들기 (이메일 + 비밀번호)
 3. `supabase-schema.sql`을 열어 `is_owner()` 안의 이메일을 방금 만든 계정 이메일로 바꾸고,
@@ -13,11 +14,16 @@
 5. Settings > API 에서 `Project URL`과 `anon public key` 복사
 
 ### 2. 환경변수 설정
+
 `.env.local.example`을 `.env.local`로 복사하고 값을 채워넣으세요.
 Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables 에 동일하게 등록하면 됩니다.
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `NEXT_PUBLIC_GISCUS_REPO` · `..._REPO_ID` · `..._CATEGORY` · `..._CATEGORY_ID` — (선택) 댓글.
+  네 개를 모두 넣어야 글 아래에 댓글창이 생기고, 하나라도 비면 아예 안 그려져요.
+  값은 https://giscus.app 에서 저장소 주소를 넣으면 알려줍니다.
+  먼저 GitHub 저장소 Settings에서 **Discussions를 켜고**, giscus 앱을 설치해야 해요.
 - `NEXT_PUBLIC_SITE_URL` — `https://내도메인.com`. 링크 미리보기·sitemap·검색 노출 주소의 기준이에요.
   안 넣으면 Vercel 배포 주소를 쓰는데, **검색 등록을 할 거라면 꼭 넣어주세요.** 이게 비어 있으면
   구글에 알려주는 주소와 실제 주소가 달라져서 색인이 꼬여요.
@@ -25,12 +31,14 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `NAVER_SITE_VERIFICATION` — (선택) 네이버 서치어드바이저에서 받은 소유 확인 코드
 
 ### 3. GitHub 업로드 → Vercel 배포
+
 1. 이 폴더 전체를 새 GitHub 저장소에 업로드 (브라우저에서 "Add file > Upload files" 사용 가능)
 2. Vercel에서 해당 저장소 Import
 3. 위 환경변수를 Vercel에 등록 후 Deploy
 4. 이메일+비밀번호 로그인만 쓰기 때문에 Supabase의 리디렉션 URL 설정은 건드릴 필요 없어요
 
 ### 4. 글 쓰기 · 일정 등록
+
 배포된 사이트의 `/admin` 경로로 접속 → Supabase에 만든 계정으로 로그인.
 상단 탭에서 **글**과 **일정**을 오가며 작성/수정/삭제할 수 있어요.
 
@@ -75,17 +83,20 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 
 ```bash
 npm install
-npm run dev        # 개발 서버
-npm run lint       # 린트
-npm run typecheck  # 타입 검사
-npm test           # 테스트
-npm run build      # 빌드
+npm run dev           # 개발 서버
+npm run format        # 코드 정렬 (Prettier)
+npm run format:check  # 정렬됐는지 검사
+npm run lint          # 린트
+npm run typecheck     # 타입 검사
+npm test              # 테스트
+npm run build         # 빌드
 ```
 
 `lib/` 안의 순수 함수(날짜 계산, 마크다운 정리, 유튜브 주소 파싱, RSS 생성)에는
 테스트가 붙어 있어요. PR을 올리면 GitHub Actions가 위 명령을 전부 돌립니다.
 
 ## 폴더 구조
+
 - `app/page.tsx` — 홈 (글 목록 + 태그 필터)
 - `app/posts/[slug]/page.tsx` — 글 상세
 - `app/calendar/page.tsx` — 달력 (등록한 일정 + 글 쓴 날)
@@ -111,6 +122,7 @@ npm run build      # 빌드
 - `supabase-migration-auth.sql` — 기존 DB를 로그인 기반 보안으로 옮기는 1회용 스크립트
 
 ## 알아두면 좋은 점
+
 - 광고 없이 포트폴리오 목적에 집중한 구성이에요.
 - 다크 모드는 헤더 오른쪽 아이콘으로 바꿔요. 처음 들어오면 기기 설정을 따라가고,
   한 번 고르면 그 선택을 기억해요. 색은 전부 `app/globals.css` 맨 위 CSS 변수에 모여 있어서
@@ -120,7 +132,7 @@ npm run build      # 빌드
   주인을 바꾸고 싶으면 `is_owner()` 함수의 이메일만 고쳐서 다시 실행하면 됩니다.
 - `app/about/page.tsx`의 이메일/GitHub 링크, 프로젝트 설명은 직접 채워넣어야 해요.
 - 헤더의 "D+N" 카운터 시작일은 `components/DaysCounter.tsx`의 `LAUNCH_DATE`에서 바꿀 수 있어요.
-- 본문에 ```` ```ts ```` 처럼 언어를 적으면 코드 블록 위에 언어 이름과 **복사 버튼**이 붙고
+- 본문에 ` ```ts ` 처럼 언어를 적으면 코드 블록 위에 언어 이름과 **복사 버튼**이 붙고
   문법 강조도 들어가요. 언어를 안 적으면 강조 없이 그대로 나옵니다.
   강조 색은 `app/globals.css` 아래쪽 `.hljs-*` 규칙에서 바꿀 수 있어요.
 - 발행일은 직접 고를 수 있어요. 지난 날짜로 적어두면 달력에도 그 날에 찍혀요.

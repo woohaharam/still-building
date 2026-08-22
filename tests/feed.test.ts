@@ -36,7 +36,10 @@ describe('buildRssFeed', () => {
   });
 
   it('글 수만큼 item을 만든다', () => {
-    const xml = buildRssFeed([makePost({ id: '1', slug: 'a' }), makePost({ id: '2', slug: 'b' })]);
+    const xml = buildRssFeed([
+      makePost({ id: '1', slug: 'a' }),
+      makePost({ id: '2', slug: 'b' }),
+    ]);
     expect(xml.match(/<item>/g)?.length).toBe(2);
   });
 
@@ -59,7 +62,9 @@ describe('buildRssFeed', () => {
   });
 
   it('요약이 없는 글도 설명이 비지 않는다', () => {
-    const xml = buildRssFeed([makePost({ excerpt: '', content: '본문 첫 문장' })]);
+    const xml = buildRssFeed([
+      makePost({ excerpt: '', content: '본문 첫 문장' }),
+    ]);
     expect(xml).toContain('<description>본문 첫 문장</description>');
   });
 

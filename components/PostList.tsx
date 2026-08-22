@@ -42,7 +42,8 @@ export default function PostList({ posts }: { posts: Post[] }) {
   }, [searched, activeTag]);
 
   function emptyMessage() {
-    if (posts.length === 0) return '아직 작성된 글이 없어요. 첫 글을 기다리고 있어요.';
+    if (posts.length === 0)
+      return '아직 작성된 글이 없어요. 첫 글을 기다리고 있어요.';
     if (query.trim()) return `'${query.trim()}'와 맞는 글을 찾지 못했어요.`;
     return '이 태그에 해당하는 글이 아직 없어요.';
   }
@@ -71,18 +72,20 @@ export default function PostList({ posts }: { posts: Post[] }) {
       <TagFilter active={activeTag} onChange={setActiveTag} counts={counts} />
 
       {filtered.length === 0 && (
-        <p className="text-ink-muted text-sm py-12 text-center">{emptyMessage()}</p>
+        <p className="py-12 text-center text-sm text-ink-muted">
+          {emptyMessage()}
+        </p>
       )}
 
       <ul className="flex flex-col">
         {filtered.map((post) => (
           <li key={post.id} className="border-b border-line py-6 first:pt-0">
             <Link href={`/posts/${post.slug}`} className="group block">
-              <h2 className="text-lg font-semibold group-hover:text-accent transition-colors">
+              <h2 className="text-lg font-semibold transition-colors group-hover:text-accent">
                 {post.title}
               </h2>
               {post.excerpt && (
-                <p className="mt-2 text-ink-soft text-sm leading-relaxed">
+                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
                   {post.excerpt}
                 </p>
               )}

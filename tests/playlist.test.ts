@@ -6,7 +6,10 @@ describe('youtubeId', () => {
     ['https://www.youtube.com/watch?v=QKK_xchL8j8', 'QKK_xchL8j8'],
     ['https://youtu.be/xpHFBuDeP_4', 'xpHFBuDeP_4'],
     ['https://youtu.be/xpHFBuDeP_4?si=_4NG6IDEBdXHvkzf', 'xpHFBuDeP_4'],
-    ['https://www.youtube.com/watch?v=QKK_xchL8j8&list=PL1&index=2', 'QKK_xchL8j8'],
+    [
+      'https://www.youtube.com/watch?v=QKK_xchL8j8&list=PL1&index=2',
+      'QKK_xchL8j8',
+    ],
     ['https://www.youtube.com/embed/QKK_xchL8j8', 'QKK_xchL8j8'],
     ['https://www.youtube.com/shorts/QKK_xchL8j8', 'QKK_xchL8j8'],
   ])('%s 에서 ID를 뽑는다', (url, expected) => {

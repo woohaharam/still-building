@@ -23,8 +23,7 @@ export default function CodeBlock({
 
   // ```ts 처럼 적으면 안쪽 <code>에 language-ts 클래스가 붙어요.
   const codeChild = Children.toArray(children).find(isValidElement) as
-    | ReactElement<{ className?: string }>
-    | undefined;
+    ReactElement<{ className?: string }> | undefined;
   const language =
     codeChild?.props?.className?.match(/language-([\w+#.-]+)/)?.[1] ?? '';
 

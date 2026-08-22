@@ -114,7 +114,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
           <button
             onClick={() => moveMonth(-1)}
             aria-label="이전 달"
-            className="h-8 w-8 rounded-md border border-line text-ink-soft hover:border-ink-muted transition-colors"
+            className="h-8 w-8 rounded-md border border-line text-ink-soft transition-colors hover:border-ink-muted"
           >
             ‹
           </button>
@@ -124,14 +124,14 @@ export default function Calendar({ posts, events }: CalendarProps) {
           <button
             onClick={() => moveMonth(1)}
             aria-label="다음 달"
-            className="h-8 w-8 rounded-md border border-line text-ink-soft hover:border-ink-muted transition-colors"
+            className="h-8 w-8 rounded-md border border-line text-ink-soft transition-colors hover:border-ink-muted"
           >
             ›
           </button>
         </div>
         <button
           onClick={goToday}
-          className="rounded-full border border-line px-3 py-1.5 text-xs text-ink-soft hover:border-ink-muted transition-colors"
+          className="rounded-full border border-line px-3 py-1.5 text-xs text-ink-soft transition-colors hover:border-ink-muted"
         >
           오늘
         </button>
@@ -193,7 +193,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
               >
                 <span
                   className={`flex h-6 w-6 items-center justify-center rounded-full text-xs tabular-nums ${
-                    isToday ? 'bg-ink text-paper font-semibold' : ''
+                    isToday ? 'bg-ink font-semibold text-paper' : ''
                   } ${inMonth ? 'text-ink' : 'text-ink-muted/60'}`}
                 >
                   {day.getDate()}
@@ -203,13 +203,15 @@ export default function Calendar({ posts, events }: CalendarProps) {
                   <>
                     {/* 좁은 화면에서는 점만, 넓은 화면에서는 제목까지 */}
                     <span className="flex flex-wrap gap-1 sm:hidden">
-                      {items.slice(0, 4).map((item) =>
-                        item.dot ? (
-                          <Dot key={item.id} className={item.dot} />
-                        ) : (
-                          <PostMark key={item.id} />
-                        )
-                      )}
+                      {items
+                        .slice(0, 4)
+                        .map((item) =>
+                          item.dot ? (
+                            <Dot key={item.id} className={item.dot} />
+                          ) : (
+                            <PostMark key={item.id} />
+                          )
+                        )}
                     </span>
 
                     <span className="hidden flex-col gap-0.5 sm:flex">
@@ -220,7 +222,11 @@ export default function Calendar({ posts, events }: CalendarProps) {
                             inMonth ? 'text-ink-soft' : 'text-ink-muted/60'
                           }`}
                         >
-                          {item.dot ? <Dot className={item.dot} /> : <PostMark />}
+                          {item.dot ? (
+                            <Dot className={item.dot} />
+                          ) : (
+                            <PostMark />
+                          )}
                           <span className="truncate">{item.label}</span>
                         </span>
                       ))}
@@ -254,7 +260,9 @@ export default function Calendar({ posts, events }: CalendarProps) {
                     <Dot className={`mt-1.5 ${KIND_DOT[event.kind]}`} />
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
-                        <span className="text-sm font-medium">{event.title}</span>
+                        <span className="text-sm font-medium">
+                          {event.title}
+                        </span>
                         <span className="text-xs text-ink-muted">
                           {EVENT_KIND_LABELS[event.kind]}
                           {event.start_time ? ` · ${event.start_time}` : ''}
@@ -282,13 +290,15 @@ export default function Calendar({ posts, events }: CalendarProps) {
                     <div className="min-w-0">
                       <Link
                         href={`/posts/${post.slug}`}
-                        className="text-sm font-medium hover:text-accent transition-colors"
+                        className="text-sm font-medium transition-colors hover:text-accent"
                       >
                         {post.title}
                       </Link>
                       <div className="mt-1 flex items-center gap-3 text-xs text-ink-muted">
                         <span>이 날 쓴 글</span>
-                        {post.tags?.map((t) => <span key={t}>#{TAG_LABELS[t]}</span>)}
+                        {post.tags?.map((t) => (
+                          <span key={t}>#{TAG_LABELS[t]}</span>
+                        ))}
                       </div>
                     </div>
                   </li>
