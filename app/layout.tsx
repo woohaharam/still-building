@@ -89,11 +89,9 @@ export default function RootLayout({
           }}
         />
         <Header />
-        <main className="max-w-content mx-auto px-6 py-12 min-h-[60vh]">
-          {children}
-        </main>
+        <main className="py-12 min-h-[60vh]">{children}</main>
         <footer className="border-t border-line mt-20">
-          <div className="max-w-content mx-auto px-6 py-8 text-xs text-ink-muted flex justify-between">
+          <div className="max-w-4xl mx-auto px-6 py-8 text-xs text-ink-muted flex justify-between">
             <span>&copy; {new Date().getFullYear()} {siteName}</span>
             <span className="flex items-center gap-4">
               <a href="/feed.xml" className="hover:text-ink-soft">RSS</a>

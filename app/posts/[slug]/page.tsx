@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Container from '@/components/Container';
 import JsonLd from '@/components/JsonLd';
 import PostArticle from '@/components/PostArticle';
 import PostNav from '@/components/PostNav';
@@ -52,7 +53,7 @@ export default async function PostPage({
   const { older, newer } = await getAdjacentPosts(post!.slug);
 
   return (
-    <>
+    <Container>
       <JsonLd
         data={{
           '@context': 'https://schema.org',
@@ -72,6 +73,6 @@ export default async function PostPage({
       />
       <PostArticle post={post!} />
       <PostNav older={older} newer={newer} />
-    </>
+    </Container>
   );
 }

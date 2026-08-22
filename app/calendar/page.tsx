@@ -1,3 +1,4 @@
+import Container from '@/components/Container';
 import type { Metadata } from 'next';
 import Calendar from '@/components/Calendar';
 import { getEvents } from '@/lib/events';
@@ -16,7 +17,8 @@ export default async function CalendarPage() {
   const [posts, events] = await Promise.all([getPublishedPosts(), getEvents()]);
 
   return (
-    <div>
+    <Container>
+      <div>
       <section className="mb-10">
         <h1 className="text-2xl font-bold leading-snug">달력</h1>
         <p className="mt-3 text-sm leading-relaxed text-ink-soft">
@@ -25,6 +27,7 @@ export default async function CalendarPage() {
       </section>
 
       <Calendar posts={posts} events={events} />
-    </div>
+      </div>
+    </Container>
   );
 }

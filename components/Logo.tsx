@@ -95,9 +95,11 @@ export default function Logo({
   className?: string;
 }) {
   return (
-    <span className={`flex items-center gap-2.5 ${className}`}>
+    <span className={`flex items-center gap-2 sm:gap-2.5 ${className}`}>
       <LogoMark variant={variant} className="h-6 w-6 shrink-0" />
-      <span className="text-xl font-bold tracking-tight">STILL BUILDING</span>
+      <span className="whitespace-nowrap text-lg font-bold tracking-tight sm:text-xl">
+        STILL BUILDING
+      </span>
     </span>
   );
 }

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import Container from '@/components/Container';
 
 // robots.txt로도 막아뒀지만, 혹시 주소가 새어나가도 검색에 안 잡히게 한 번 더.
 export const metadata: Metadata = {
@@ -10,5 +11,5 @@ export default function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  return <Container>{children}</Container>;
 }
