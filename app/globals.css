@@ -5,31 +5,31 @@
 
 /* 색은 전부 여기서 정해요. .dark가 붙으면 값만 갈아끼워집니다. */
 :root {
-  --paper: 250 250 248;
-  --surface: 240 240 236;
-  --ink: 26 26 26;
-  --ink-soft: 74 74 71;
-  --ink-muted: 138 138 133;
-  --line: 229 229 225;
-  --accent: 47 59 76;
+  --paper: 251 249 245;
+  --surface: 243 239 231;
+  --ink: 33 30 27;
+  --ink-soft: 90 82 73;
+  --ink-muted: 150 140 128;
+  --line: 232 226 215;
+  --accent: 168 103 74;
 
-  --prose: 42 42 40;
-  --code-bg: 26 26 26;
-  --code-fg: 240 240 236;
+  --prose: 52 47 42;
+  --code-bg: 30 27 24;
+  --code-fg: 240 235 226;
 }
 
 .dark {
-  --paper: 19 19 18;
-  --surface: 32 32 30;
-  --ink: 237 237 233;
-  --ink-soft: 184 184 178;
-  --ink-muted: 126 126 120;
-  --line: 46 46 43;
-  --accent: 155 176 204;
+  --paper: 24 21 18;
+  --surface: 38 34 29;
+  --ink: 240 234 225;
+  --ink-soft: 188 179 167;
+  --ink-muted: 132 123 111;
+  --line: 52 46 40;
+  --accent: 210 148 116;
 
-  --prose: 212 212 206;
-  --code-bg: 10 10 9;
-  --code-fg: 226 226 220;
+  --prose: 216 209 198;
+  --code-bg: 15 13 11;
+  --code-fg: 232 226 216;
 }
 
 * {
@@ -191,7 +191,7 @@ a {
 .prose-post .hljs-type,
 .prose-post .hljs-built_in,
 .prose-post .hljs-meta {
-  color: #9bb0cc;
+  color: #c8a98f;
 }
 
 .prose-post .hljs-string,
@@ -200,7 +200,7 @@ a {
 .prose-post .hljs-symbol,
 .prose-post .hljs-attr,
 .prose-post .hljs-attribute {
-  color: #d7a26b;
+  color: #d9a06a;
 }
 
 .prose-post .hljs-title,
