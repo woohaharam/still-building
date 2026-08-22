@@ -12,11 +12,11 @@ export default function Header() {
             <Logo />
           </Link>
           <nav className="flex items-center gap-5 text-sm text-ink-soft">
+            <Link href="/blog" className="hover:text-ink transition-colors">
+              블로그
+            </Link>
             <Link href="/calendar" className="hover:text-ink transition-colors">
               달력
-            </Link>
-            <Link href="/about" className="hover:text-ink transition-colors">
-              소개
             </Link>
             <a
               href="https://github.com/woohaharam"

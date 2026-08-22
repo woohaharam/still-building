@@ -97,7 +97,14 @@ export default function RootLayout({
             <span>&copy; {new Date().getFullYear()} {siteName}</span>
             <span className="flex items-center gap-4">
               <a href="/feed.xml" className="hover:text-ink-soft">RSS</a>
-              <a href="/about" className="hover:text-ink-soft">소개</a>
+              <a
+                href="https://github.com/woohaharam"
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-ink-soft"
+              >
+                GitHub
+              </a>
             </span>
           </div>
         </footer>
