@@ -4,6 +4,8 @@ import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
 
 const NAV = [
+  { href: '/about', label: '소개' },
+  { href: '/projects', label: '프로젝트' },
   { href: '/blog', label: '블로그' },
   { href: '/calendar', label: '달력' },
 ];
@@ -21,7 +23,7 @@ export default function Header() {
             <Logo />
           </Link>
 
-          <nav className="flex items-center gap-5 text-sm text-ink-soft">
+          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft">
             {NAV.map((item) => (
               <Link
                 key={item.href}

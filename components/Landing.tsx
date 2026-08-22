@@ -1,39 +1,63 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import Reveal from '@/components/Reveal';
-import { readingMinutes } from '@/lib/reading';
-import { siteAuthor, siteAuthorAlias, siteEmail, siteGithub } from '@/lib/site';
-import { Post } from '@/lib/types';
+import { PROJECTS } from '@/lib/projects';
+import { siteAuthor, siteAuthorAlias, siteGithub } from '@/lib/site';
 
-function formatDate(value: string | null) {
-  if (!value) return '';
-  const d = new Date(value);
-  return `${d.getFullYear()}. ${`${d.getMonth() + 1}`.padStart(2, '0')}. ${`${d.getDate()}`.padStart(2, '0')}.`;
-}
-
-function SectionLabel({ index, children }: { index: string; children: string }) {
-  return (
-    <div className="mb-7 flex items-center gap-3">
-      <span className="text-xs tabular-nums text-ink-muted">{index}</span>
-      <span className="h-px flex-1 bg-line" />
-      <span className="text-xs tracking-[0.18em] text-ink-muted">{children}</span>
-    </div>
-  );
+interface Section {
+  index: string;
+  href: string;
+  label: string;
+  english: string;
+  description: string;
+  meta: string;
 }
 
 export default function Landing({
-  posts,
-  total,
+  postCount,
   failed,
 }: {
-  posts: Post[];
-  total: number;
+  postCount: number;
   failed: boolean;
 }) {
+  const sections: Section[] = [
+    {
+      index: '01',
+      href: '/about',
+      label: '소개',
+      english: 'ABOUT',
+      description: '어떤 사람이고, 지금 무엇을 배우고 있는지',
+      meta: `${siteAuthor} · ${siteAuthorAlias}`,
+    },
+    {
+      index: '02',
+      href: '/projects',
+      label: '프로젝트',
+      english: 'PROJECTS',
+      description: '직접 만든 것들과, 만들면서 부딪힌 것들',
+      meta: `${PROJECTS.length}개`,
+    },
+    {
+      index: '03',
+      href: '/blog',
+      label: '블로그',
+      english: 'BLOG',
+      description: '개발하면서 배운 것과 그 사이의 일상',
+      meta: failed ? '' : `글 ${postCount}편`,
+    },
+    {
+      index: '04',
+      href: '/calendar',
+      label: '달력',
+      english: 'CALENDAR',
+      description: '앞으로의 일정과 지금까지 글을 쓴 날들',
+      meta: '',
+    },
+  ];
+
   return (
-    <div className="flex flex-col gap-28 pb-10 sm:gap-36">
-      {/* 첫 화면 */}
-      <section className="flex min-h-[78vh] flex-col justify-center gap-10 sm:flex-row sm:items-center sm:gap-14">
+    <div className="flex flex-col gap-24 pb-10 sm:gap-32">
+      <section className="flex min-h-[72vh] flex-col justify-center gap-10 sm:flex-row sm:items-center sm:gap-14">
         <div className="order-2 flex-1 sm:order-1">
           <p
             className="rise text-xs tracking-[0.22em] text-ink-muted"
@@ -64,11 +88,13 @@ export default function Landing({
             style={{ animationDelay: '340ms' }}
           >
             <Link
-              href="/blog"
+              href="/about"
               className="group inline-flex items-center gap-2 rounded-full bg-ink px-5 py-3 text-sm font-medium text-paper transition-opacity hover:opacity-90"
             >
-              블로그 보기
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
+              소개 보기
+              <span className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
             </Link>
             <a
               href={siteGithub}
@@ -79,16 +105,6 @@ export default function Landing({
               GitHub
             </a>
           </div>
-
-          <div
-            className="rise mt-16 flex flex-wrap items-center gap-x-6 gap-y-2 text-xs text-ink-muted"
-            style={{ animationDelay: '460ms' }}
-          >
-            <span className="tabular-nums">시작 2026. 08. 15.</span>
-            {!failed && <span className="tabular-nums">글 {total}편</span>}
-            <span>Next.js · TypeScript · Supabase</span>
-          </div>
-
         </div>
 
         <div className="order-1 shrink-0 sm:order-2">
@@ -104,127 +120,47 @@ export default function Landing({
         </div>
       </section>
 
-      {/* 만든 것들 */}
       <Reveal>
-        <section>
-          <SectionLabel index="01">MADE</SectionLabel>
+        <nav aria-label="사이트 안내">
+          <ul className="flex flex-col">
+            {sections.map((section) => (
+              <li key={section.href}>
+                <Link
+                  href={section.href}
+                  className="group flex items-center gap-5 border-t border-line py-7 last:border-b sm:gap-8 sm:py-9"
+                >
+                  <span className="text-xs tabular-nums text-ink-muted">
+                    {section.index}
+                  </span>
 
-          <a
-            href={`${siteGithub}/still-building`}
-            target="_blank"
-            rel="noreferrer"
-            className="group block rounded-xl border border-line p-7 transition-colors hover:border-ink-muted sm:p-9"
-          >
-            <div className="flex items-start justify-between gap-4">
-              <h2 className="text-xl font-bold tracking-tight">STILL BUILDING</h2>
-              <span className="mt-1 shrink-0 text-ink-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-                ↗
-              </span>
-            </div>
-            <p className="mt-4 leading-relaxed text-ink-soft">
-              지금 보고 계신 블로그. 글쓰기와 일정을 한 곳에서 관리하려고 직접
-              만들었어요. 달력, 검색, 다크 모드, 링크 미리보기 카드까지 붙어 있고,
-              글은 관리자 페이지에서 마크다운으로 씁니다.
-            </p>
-            <ul className="mt-6 flex flex-wrap gap-2">
-              {['Next.js 14', 'TypeScript', 'Tailwind', 'Supabase', 'Vercel'].map(
-                (tech) => (
-                  <li
-                    key={tech}
-                    className="rounded-full border border-line px-3 py-1 text-xs text-ink-muted"
-                  >
-                    {tech}
-                  </li>
-                )
-              )}
-            </ul>
-          </a>
-        </section>
-      </Reveal>
-
-      {/* 최근 글 */}
-      <Reveal>
-        <section>
-          <SectionLabel index="02">WRITING</SectionLabel>
-
-          {failed ? (
-            <p className="text-sm text-ink-muted">
-              글 목록을 불러오지 못했어요.{' '}
-              <Link href="/blog" className="underline underline-offset-4">
-                블로그에서 다시 시도
-              </Link>
-            </p>
-          ) : posts.length === 0 ? (
-            <p className="text-sm text-ink-muted">아직 쓴 글이 없어요.</p>
-          ) : (
-            <>
-              <ul className="flex flex-col">
-                {posts.map((post) => (
-                  <li key={post.id} className="border-b border-line">
-                    <Link
-                      href={`/posts/${encodeURIComponent(post.slug)}`}
-                      className="group flex items-baseline gap-4 py-5 transition-colors"
-                    >
-                      <span className="shrink-0 text-xs tabular-nums text-ink-muted">
-                        {formatDate(post.published_at)}
+                  <span className="min-w-0 flex-1">
+                    <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span className="text-xl font-bold tracking-tight transition-colors group-hover:text-accent sm:text-2xl">
+                        {section.label}
                       </span>
-                      <span className="flex-1 font-medium leading-snug transition-colors group-hover:text-accent">
-                        {post.title}
+                      <span className="text-[11px] tracking-[0.18em] text-ink-muted">
+                        {section.english}
                       </span>
-                      <span className="hidden shrink-0 text-xs text-ink-muted sm:block">
-                        {readingMinutes(post.content)}분
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+                    </span>
+                    <span className="mt-2 block text-sm leading-relaxed text-ink-soft">
+                      {section.description}
+                    </span>
+                  </span>
 
-              <Link
-                href="/blog"
-                className="group mt-7 inline-flex items-center gap-2 text-sm text-ink-soft transition-colors hover:text-ink"
-              >
-                글 전체 보기
-                <span className="transition-transform group-hover:translate-x-0.5">
-                  →
-                </span>
-              </Link>
-            </>
-          )}
-        </section>
-      </Reveal>
+                  {section.meta && (
+                    <span className="hidden shrink-0 text-xs tabular-nums text-ink-muted sm:block">
+                      {section.meta}
+                    </span>
+                  )}
 
-      {/* 연락 */}
-      <Reveal>
-        <section>
-          <SectionLabel index="03">CONTACT</SectionLabel>
-
-          <div className="flex flex-col">
-            <a
-              href={`mailto:${siteEmail}`}
-              className="group flex items-center justify-between border-b border-line py-5 transition-colors"
-            >
-              <span className="text-lg font-medium transition-colors group-hover:text-accent">
-                {siteEmail}
-              </span>
-              <span className="text-ink-muted transition-transform group-hover:translate-x-0.5">
-                →
-              </span>
-            </a>
-            <a
-              href={siteGithub}
-              target="_blank"
-              rel="noreferrer"
-              className="group flex items-center justify-between border-b border-line py-5 transition-colors"
-            >
-              <span className="text-lg font-medium transition-colors group-hover:text-accent">
-                github.com/woohaharam
-              </span>
-              <span className="text-ink-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
-                ↗
-              </span>
-            </a>
-          </div>
-        </section>
+                  <span className="shrink-0 text-ink-muted transition-transform group-hover:translate-x-1">
+                    →
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
       </Reveal>
     </div>
   );

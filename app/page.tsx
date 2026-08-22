@@ -3,7 +3,6 @@ import Container from '@/components/Container';
 import Landing from '@/components/Landing';
 import { getPublishedPosts } from '@/lib/posts';
 import { siteAuthor, siteAuthorAlias, siteUrl } from '@/lib/site';
-import { Post } from '@/lib/types';
 
 export const revalidate = 0;
 
@@ -12,29 +11,21 @@ export const metadata: Metadata = {
   alternates: { canonical: siteUrl },
 };
 
-/**
- * 소개와 만든 것들은 데이터베이스와 상관이 없어요.
- * 글을 못 불러와도 그 부분까지 에러 화면으로 덮이면 곤란하니, 여기서만 따로 받아둡니다.
- */
-async function loadPosts(): Promise<{
-  posts: Post[];
-  total: number;
-  failed: boolean;
-}> {
+/** 글 수는 안내용이라, 못 불러와도 메인 전체가 에러 화면이 되지 않게 여기서 잡아요. */
+async function countPosts(): Promise<{ postCount: number; failed: boolean }> {
   try {
-    const posts = await getPublishedPosts();
-    return { posts: posts.slice(0, 3), total: posts.length, failed: false };
+    return { postCount: (await getPublishedPosts()).length, failed: false };
   } catch {
-    return { posts: [], total: 0, failed: true };
+    return { postCount: 0, failed: true };
   }
 }
 
 export default async function HomePage() {
-  const { posts, total, failed } = await loadPosts();
+  const { postCount, failed } = await countPosts();
 
   return (
     <Container wide>
-      <Landing posts={posts} total={total} failed={failed} />
+      <Landing postCount={postCount} failed={failed} />
     </Container>
   );
 }
