@@ -50,14 +50,19 @@ export default function PreviewPage({ params }: { params: { slug: string } }) {
   }, [params.slug]);
 
   if (state === 'loading') {
-    return <p className="py-20 text-center text-sm text-ink-muted">불러오는 중...</p>;
+    return (
+      <p className="py-20 text-center text-sm text-ink-muted">불러오는 중...</p>
+    );
   }
 
   if (state === 'signed-out') {
     return (
       <p className="py-20 text-center text-sm text-ink-muted">
-        로그인이 필요해요. <a href="/admin" className="underline">관리자 페이지</a>에서
-        로그인한 뒤 다시 열어주세요.
+        로그인이 필요해요.{' '}
+        <a href="/admin" className="underline">
+          관리자 페이지
+        </a>
+        에서 로그인한 뒤 다시 열어주세요.
       </p>
     );
   }

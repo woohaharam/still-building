@@ -44,7 +44,9 @@ export default function AdminPage() {
   }, []);
 
   if (checkingSession) {
-    return <p className="py-20 text-center text-sm text-ink-muted">확인 중...</p>;
+    return (
+      <p className="py-20 text-center text-sm text-ink-muted">확인 중...</p>
+    );
   }
 
   if (!session) {
@@ -55,10 +57,12 @@ export default function AdminPage() {
     <div className="flex flex-col gap-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
-          {([
-            ['posts', '글'],
-            ['events', '일정'],
-          ] as [AdminTab, string][]).map(([value, label]) => (
+          {(
+            [
+              ['posts', '글'],
+              ['events', '일정'],
+            ] as [AdminTab, string][]
+          ).map(([value, label]) => (
             <button
               key={value}
               onClick={() => setTab(value)}
@@ -100,10 +104,12 @@ function SignIn() {
     setSubmitting(true);
     setError('');
 
-    const { error: signInError } = await supabaseClient.auth.signInWithPassword({
-      email: email.trim(),
-      password,
-    });
+    const { error: signInError } = await supabaseClient.auth.signInWithPassword(
+      {
+        email: email.trim(),
+        password,
+      }
+    );
 
     setSubmitting(false);
     if (signInError) {
@@ -241,7 +247,9 @@ function Editor() {
     }
   }
 
-  async function handleContentImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handleContentImageUpload(
+    e: React.ChangeEvent<HTMLInputElement>
+  ) {
     const file = e.target.files?.[0];
     if (!file) return;
     setUploadError('');
@@ -345,9 +353,9 @@ function Editor() {
   }
 
   return (
-    <div className="grid md:grid-cols-[1fr_320px] gap-10">
+    <div className="grid gap-10 md:grid-cols-[1fr_320px]">
       <div>
-        <h1 className="text-xl font-bold mb-6">
+        <h1 className="mb-6 text-xl font-bold">
           {editingId ? '글 수정' : '새 글 작성'}
         </h1>
 
@@ -356,20 +364,20 @@ function Editor() {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="제목"
-            className="border border-line rounded-md px-3 py-2 text-lg font-semibold focus:outline-none focus:border-ink-muted"
+            className="rounded-md border border-line px-3 py-2 text-lg font-semibold focus:border-ink-muted focus:outline-none"
           />
           <input
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             placeholder={`slug (비워두면 자동 생성: ${slugify(title) || '제목-기반'})`}
-            className="border border-line rounded-md px-3 py-2 text-sm text-ink-muted focus:outline-none focus:border-ink-muted"
+            className="rounded-md border border-line px-3 py-2 text-sm text-ink-muted focus:border-ink-muted focus:outline-none"
           />
           <textarea
             value={excerpt}
             onChange={(e) => setExcerpt(e.target.value)}
             placeholder="요약 (목록에 보여질 짧은 설명)"
             rows={2}
-            className="border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-ink-muted resize-none"
+            className="resize-none rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
           />
           <div className="flex flex-col gap-2">
             <div className="flex items-center gap-2">
@@ -377,13 +385,13 @@ function Editor() {
                 value={coverImageUrl}
                 onChange={(e) => setCoverImageUrl(e.target.value)}
                 placeholder="커버 이미지 URL (선택)"
-                className="flex-1 border border-line rounded-md px-3 py-2 text-sm focus:outline-none focus:border-ink-muted"
+                className="flex-1 rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
               />
               <button
                 type="button"
                 onClick={() => coverFileInputRef.current?.click()}
                 disabled={coverUploading}
-                className="shrink-0 border border-line rounded-md px-3 py-2 text-sm text-ink-soft hover:border-ink-muted disabled:opacity-50"
+                className="shrink-0 rounded-md border border-line px-3 py-2 text-sm text-ink-soft hover:border-ink-muted disabled:opacity-50"
               >
                 {coverUploading ? '업로드 중...' : '사진 업로드'}
               </button>
@@ -400,7 +408,7 @@ function Editor() {
               <img
                 src={coverImageUrl}
                 alt="커버 미리보기"
-                className="h-32 w-full object-cover rounded-md border border-line"
+                className="h-32 w-full rounded-md border border-line object-cover"
               />
             )}
           </div>
@@ -414,7 +422,7 @@ function Editor() {
                 type="button"
                 onClick={() => contentFileInputRef.current?.click()}
                 disabled={contentUploading || showPreview}
-                className="text-xs text-ink-muted hover:text-ink-soft underline disabled:opacity-50 disabled:no-underline"
+                className="text-xs text-ink-muted underline hover:text-ink-soft disabled:no-underline disabled:opacity-50"
               >
                 {contentUploading ? '업로드 중...' : '본문에 사진 삽입'}
               </button>
@@ -428,7 +436,7 @@ function Editor() {
               <button
                 type="button"
                 onClick={() => setShowPreview((v) => !v)}
-                className="text-xs text-ink-muted hover:text-ink-soft underline"
+                className="text-xs text-ink-muted underline hover:text-ink-soft"
               >
                 {showPreview ? '편집으로 돌아가기' : '미리보기'}
               </button>
@@ -436,7 +444,7 @@ function Editor() {
           </div>
 
           {showPreview ? (
-            <div className="prose-post border border-line rounded-md px-4 py-3 min-h-[300px]">
+            <div className="prose-post min-h-[300px] rounded-md border border-line px-4 py-3">
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
@@ -452,19 +460,19 @@ function Editor() {
               onChange={(e) => setContent(e.target.value)}
               placeholder="여기에 마크다운으로 작성하세요..."
               rows={16}
-              className="border border-line rounded-md px-3 py-2 text-sm font-mono focus:outline-none focus:border-ink-muted resize-y"
+              className="resize-y rounded-md border border-line px-3 py-2 font-mono text-sm focus:border-ink-muted focus:outline-none"
             />
           )}
 
-          <div className="flex items-center gap-2 flex-wrap">
+          <div className="flex flex-wrap items-center gap-2">
             {TAG_OPTIONS.map((tag) => (
               <button
                 key={tag}
                 type="button"
                 onClick={() => toggleTag(tag)}
-                className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+                className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
                   tags.includes(tag)
-                    ? 'bg-ink text-paper border-ink'
+                    ? 'border-ink bg-ink text-paper'
                     : 'border-line text-ink-soft'
                 }`}
               >
@@ -506,7 +514,7 @@ function Editor() {
             <button
               onClick={handleSave}
               disabled={saving}
-              className="bg-ink text-paper rounded-md px-4 py-2 text-sm font-medium disabled:opacity-50"
+              className="rounded-md bg-ink px-4 py-2 text-sm font-medium text-paper disabled:opacity-50"
             >
               {saving ? '저장 중...' : '저장'}
             </button>
@@ -524,7 +532,7 @@ function Editor() {
       </div>
 
       <div>
-        <h2 className="text-sm font-semibold text-ink-soft mb-4">
+        <h2 className="mb-4 text-sm font-semibold text-ink-soft">
           전체 글 ({posts.length})
         </h2>
         {loading ? (
@@ -534,17 +542,19 @@ function Editor() {
             {posts.map((post) => (
               <li
                 key={post.id}
-                className="border border-line rounded-md p-3 text-sm"
+                className="rounded-md border border-line p-3 text-sm"
               >
                 <div className="flex items-center justify-between gap-2">
                   <button
                     onClick={() => loadIntoForm(post)}
-                    className="text-left font-medium hover:text-accent truncate"
+                    className="truncate text-left font-medium hover:text-accent"
                   >
                     {post.title || '(제목 없음)'}
                   </button>
                   {!post.published && (
-                    <span className="text-xs text-ink-muted shrink-0">임시</span>
+                    <span className="shrink-0 text-xs text-ink-muted">
+                      임시
+                    </span>
                   )}
                 </div>
                 <div className="mt-1 flex items-center justify-between gap-2">

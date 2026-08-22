@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Container from '@/components/Container';
 import Reveal from '@/components/Reveal';
 import {
+  education,
   siteAuthor,
   siteAuthorAlias,
   siteEmail,
@@ -23,8 +24,14 @@ const NOW = [
 ];
 
 const STACK = [
-  { group: '쓰는 것', items: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS'] },
-  { group: '붙여본 것', items: ['Supabase (Postgres · Auth · Storage)', 'Vercel', 'GitHub Actions'] },
+  {
+    group: '쓰는 것',
+    items: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS'],
+  },
+  {
+    group: '붙여본 것',
+    items: ['Supabase (Postgres · Auth · Storage)', 'Vercel', 'GitHub Actions'],
+  },
   { group: '배우는 중', items: ['테스트 작성', '접근성', '검색엔진 최적화'] },
 ];
 
@@ -51,14 +58,17 @@ export default function AboutPage() {
             </h1>
             <p className="mt-5 leading-relaxed text-ink-soft">
               필요한 걸 직접 만들고, 그 과정에서 막힌 지점과 알게 된 것을
-              남깁니다. 잘 만드는 것보다 왜 그렇게 되는지 아는 쪽에 관심이 있어요.
+              남깁니다. 잘 만드는 것보다 왜 그렇게 되는지 아는 쪽에 관심이
+              있어요.
             </p>
           </div>
         </section>
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">NOW</h2>
+            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
+              NOW
+            </h2>
             <div className="flex flex-col gap-4">
               {NOW.map((line) => (
                 <p key={line} className="leading-relaxed text-ink-soft">
@@ -71,7 +81,33 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">STACK</h2>
+            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
+              EDUCATION
+            </h2>
+            <div className="border-t border-line pt-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h3 className="text-lg font-semibold">
+                  {education.school}{' '}
+                  <span className="font-medium text-ink-soft">
+                    {education.major}
+                  </span>
+                </h3>
+                <span className="text-sm tabular-nums text-ink-muted">
+                  학점 {education.gpa}
+                </span>
+              </div>
+              <p className="mt-2 text-sm text-ink-muted">
+                {education.majorEnglish}
+              </p>
+            </div>
+          </section>
+        </Reveal>
+
+        <Reveal>
+          <section>
+            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
+              STACK
+            </h2>
             <dl className="flex flex-col gap-6">
               {STACK.map((row) => (
                 <div key={row.group} className="sm:flex sm:gap-8">
@@ -96,7 +132,9 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">CONTACT</h2>
+            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
+              CONTACT
+            </h2>
             <div className="flex flex-col">
               <a
                 href={`mailto:${siteEmail}`}
@@ -129,7 +167,9 @@ export default function AboutPage() {
               className="group mt-8 inline-flex items-center gap-2 text-sm text-ink-soft transition-colors hover:text-ink"
             >
               만든 것들 보기
-              <span className="transition-transform group-hover:translate-x-0.5">→</span>
+              <span className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
             </Link>
           </section>
         </Reveal>

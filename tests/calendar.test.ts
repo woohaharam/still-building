@@ -61,7 +61,9 @@ describe('buildMonthMatrix', () => {
   });
 
   it('그 달의 모든 날을 담는다', () => {
-    const days = buildMonthMatrix(2026, 7).filter((d) => isSameMonth(d, 2026, 7));
+    const days = buildMonthMatrix(2026, 7).filter((d) =>
+      isSameMonth(d, 2026, 7)
+    );
     expect(days.length).toBe(31);
   });
 

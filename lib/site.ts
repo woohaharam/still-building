@@ -23,6 +23,28 @@ export const siteAuthor = '우주영';
 
 /** 소개 페이지와 연락처에서 쓰는 값 */
 export const siteAuthorAlias = 'Jack';
+
+export const education = {
+  school: '동국대학교',
+  major: '컴퓨터공학과',
+  majorEnglish: 'Department of Computer Science and Engineering',
+  gpa: '4.19 / 4.5',
+};
+
+/**
+ * Giscus 댓글. GitHub Discussions에 댓글을 저장해요.
+ * https://giscus.app 에서 저장소를 넣으면 아래 네 값을 알려줍니다.
+ * 비워두면 댓글창이 아예 안 그려져요.
+ */
+export const giscus = {
+  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || '',
+  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || '',
+  category: process.env.NEXT_PUBLIC_GISCUS_CATEGORY || '',
+  categoryId: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || '',
+};
+
+export const giscusEnabled =
+  !!giscus.repo && !!giscus.repoId && !!giscus.category && !!giscus.categoryId;
 export const siteEmail = 'pmypmy1234567@naver.com';
 export const siteGithub = 'https://github.com/woohaharam';
 
@@ -36,7 +58,8 @@ export const siteGithub = 'https://github.com/woohaharam';
 export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 
 /** 구글은 아직 등록 전이라, 코드를 받으면 환경변수로 넣으면 돼요. */
-export const googleSiteVerification = process.env.GOOGLE_SITE_VERIFICATION || '';
+export const googleSiteVerification =
+  process.env.GOOGLE_SITE_VERIFICATION || '';
 
 /** 한글 slug가 그대로 들어가면 안 되는 자리(RSS·sitemap·canonical)에서 써요. */
 export function postUrl(slug: string) {

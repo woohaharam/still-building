@@ -3,7 +3,9 @@
  * 구글 폰트에 "이 글자들만" 달라고 하면 수십 KB짜리 조각만 내려와서,
  * 한글 폰트 전체(수 MB)를 저장소에 넣지 않아도 됩니다.
  */
-export async function loadKoreanFont(text: string): Promise<ArrayBuffer | null> {
+export async function loadKoreanFont(
+  text: string
+): Promise<ArrayBuffer | null> {
   try {
     const cssUrl =
       'https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@700&text=' +

@@ -13,7 +13,8 @@ describe('readingMinutes', () => {
   });
 
   it('코드 블록은 글자 수에서 뺀다', () => {
-    const withCode = '가'.repeat(500) + '\n\n```ts\n' + 'x'.repeat(5000) + '\n```';
+    const withCode =
+      '가'.repeat(500) + '\n\n```ts\n' + 'x'.repeat(5000) + '\n```';
     expect(readingMinutes(withCode)).toBe(1);
   });
 });

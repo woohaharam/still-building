@@ -79,8 +79,8 @@ export default function Landing({
             className="rise mt-7 max-w-md leading-relaxed text-ink-soft"
             style={{ animationDelay: '240ms' }}
           >
-            필요한 걸 직접 만들고, 그 과정에서 막힌 지점과 알게 된 것을 남깁니다.
-            지금은 이 블로그를 처음부터 만들면서 웹을 배우는 중이에요.
+            필요한 걸 직접 만들고, 그 과정에서 막힌 지점과 알게 된 것을
+            남깁니다. 지금은 이 블로그를 처음부터 만들면서 웹을 배우는 중이에요.
           </p>
 
           <div

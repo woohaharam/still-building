@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import Comments from '@/components/Comments';
 import Container from '@/components/Container';
 import JsonLd from '@/components/JsonLd';
 import PostArticle from '@/components/PostArticle';
@@ -73,6 +74,7 @@ export default async function PostPage({
       />
       <PostArticle post={post!} />
       <PostNav older={older} newer={newer} />
+      <Comments />
     </Container>
   );
 }

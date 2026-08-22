@@ -9,21 +9,21 @@ import { Post } from './types';
  *
  * cache()로 감싸서 한 요청 안에서는 DB에 한 번만 물어봅니다.
  */
-export const getPublishedPosts = cache(async function getPublishedPosts(): Promise<
-  Post[]
-> {
-  const { data, error } = await supabaseClient
-    .from('posts')
-    .select('*')
-    .eq('published', true)
-    .order('published_at', { ascending: false });
+export const getPublishedPosts = cache(
+  async function getPublishedPosts(): Promise<Post[]> {
+    const { data, error } = await supabaseClient
+      .from('posts')
+      .select('*')
+      .eq('published', true)
+      .order('published_at', { ascending: false });
 
-  if (error) {
-    throw new Error(`글 목록을 불러오지 못했어요: ${error.message}`);
+    if (error) {
+      throw new Error(`글 목록을 불러오지 못했어요: ${error.message}`);
+    }
+
+    return data as Post[];
   }
-
-  return data as Post[];
-});
+);
 
 export const getPostBySlug = cache(async function getPostBySlug(
   slug: string

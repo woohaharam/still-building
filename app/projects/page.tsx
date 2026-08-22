@@ -46,7 +46,10 @@ export default function ProjectsPage() {
                       key={detail}
                       className="flex gap-3 text-sm leading-relaxed text-ink-soft"
                     >
-                      <span aria-hidden className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink-muted" />
+                      <span
+                        aria-hidden
+                        className="mt-2 h-1 w-1 shrink-0 rounded-full bg-ink-muted"
+                      />
                       <span>{detail}</span>
                     </li>
                   ))}
@@ -83,7 +86,11 @@ export default function ProjectsPage() {
                         </span>
                       </a>
                     ) : (
-                      <Link key={link.href} href={link.href} className={className}>
+                      <Link
+                        key={link.href}
+                        href={link.href}
+                        className={className}
+                      >
                         {link.label}
                         <span className="transition-transform group-hover:translate-x-0.5">
                           →

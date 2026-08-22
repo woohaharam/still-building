@@ -36,55 +36,55 @@ export default async function PostOgImage({
   const font = await loadKoreanFont(`${title}${date}${siteName}…`);
 
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          background: '#FBF9F5',
-          padding: '80px',
-          fontFamily: font ? 'Noto Sans KR' : undefined,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            width="72"
-            height="72"
-            alt=""
-            src={`data:image/svg+xml;utf8,${encodeURIComponent(MARK)}`}
-          />
-          <div style={{ fontSize: 30, color: '#6B6B65', letterSpacing: '0.02em' }}>
-            {siteName}
-          </div>
-        </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div
-            style={{
-              fontSize: titleSize,
-              fontWeight: 700,
-              lineHeight: 1.28,
-              letterSpacing: '-0.02em',
-              color: '#211E1B',
-              // 제목이 길면 잘라내서 카드 밖으로 넘치지 않게
-              display: 'block',
-              lineClamp: 3,
-            }}
-          >
-            {title}
-          </div>
-          {date && (
-            <div style={{ fontSize: 30, color: '#8A8A85', marginTop: 28 }}>
-              {date}
-            </div>
-          )}
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        background: '#FBF9F5',
+        padding: '80px',
+        fontFamily: font ? 'Noto Sans KR' : undefined,
+      }}
+    >
+      <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          width="72"
+          height="72"
+          alt=""
+          src={`data:image/svg+xml;utf8,${encodeURIComponent(MARK)}`}
+        />
+        <div
+          style={{ fontSize: 30, color: '#6B6B65', letterSpacing: '0.02em' }}
+        >
+          {siteName}
         </div>
       </div>
-    ),
+
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            fontSize: titleSize,
+            fontWeight: 700,
+            lineHeight: 1.28,
+            letterSpacing: '-0.02em',
+            color: '#211E1B',
+            // 제목이 길면 잘라내서 카드 밖으로 넘치지 않게
+            display: 'block',
+            lineClamp: 3,
+          }}
+        >
+          {title}
+        </div>
+        {date && (
+          <div style={{ fontSize: 30, color: '#8A8A85', marginTop: 28 }}>
+            {date}
+          </div>
+        )}
+      </div>
+    </div>,
     {
       ...size,
       fonts: font

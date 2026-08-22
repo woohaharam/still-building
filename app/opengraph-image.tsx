@@ -15,43 +15,41 @@ const MARK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width=
 
 export default function OpengraphImage() {
   return new ImageResponse(
-    (
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          justifyContent: 'space-between',
-          background: '#FBF9F5',
-          padding: '80px',
-        }}
-      >
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          width="120"
-          height="120"
-          alt=""
-          src={`data:image/svg+xml;utf8,${encodeURIComponent(MARK)}`}
-        />
+    <div
+      style={{
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        background: '#FBF9F5',
+        padding: '80px',
+      }}
+    >
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        width="120"
+        height="120"
+        alt=""
+        src={`data:image/svg+xml;utf8,${encodeURIComponent(MARK)}`}
+      />
 
-        <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div
-            style={{
-              fontSize: 92,
-              fontWeight: 700,
-              letterSpacing: '-0.02em',
-              color: '#211E1B',
-            }}
-          >
-            STILL BUILDING
-          </div>
-          <div style={{ fontSize: 34, color: '#6B6B65', marginTop: 18 }}>
-            Notes on building, and the days in between.
-          </div>
+      <div style={{ display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            fontSize: 92,
+            fontWeight: 700,
+            letterSpacing: '-0.02em',
+            color: '#211E1B',
+          }}
+        >
+          STILL BUILDING
+        </div>
+        <div style={{ fontSize: 34, color: '#6B6B65', marginTop: 18 }}>
+          Notes on building, and the days in between.
         </div>
       </div>
-    ),
+    </div>,
     size
   );
 }

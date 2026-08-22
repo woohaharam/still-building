@@ -10,7 +10,11 @@ interface TagFilterProps {
 
 const TAGS: (PostTag | 'all')[] = ['all', 'tech', 'life', 'retrospective'];
 
-export default function TagFilter({ active, onChange, counts }: TagFilterProps) {
+export default function TagFilter({
+  active,
+  onChange,
+  counts,
+}: TagFilterProps) {
   return (
     <div className="flex flex-wrap gap-2">
       {TAGS.map((tag) => {
@@ -20,9 +24,9 @@ export default function TagFilter({ active, onChange, counts }: TagFilterProps) 
           <button
             key={tag}
             onClick={() => onChange(tag)}
-            className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${
+            className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
               isActive
-                ? 'bg-ink text-paper border-ink'
+                ? 'border-ink bg-ink text-paper'
                 : 'border-line text-ink-soft hover:border-ink-muted'
             }`}
           >

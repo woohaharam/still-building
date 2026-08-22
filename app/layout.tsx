@@ -89,12 +89,16 @@ export default function RootLayout({
           }}
         />
         <Header />
-        <main className="py-12 min-h-[60vh]">{children}</main>
-        <footer className="border-t border-line mt-20">
-          <div className="max-w-4xl mx-auto px-6 py-8 text-xs text-ink-muted flex justify-between">
-            <span>&copy; {new Date().getFullYear()} {siteName}</span>
+        <main className="min-h-[60vh] py-12">{children}</main>
+        <footer className="mt-20 border-t border-line">
+          <div className="mx-auto flex max-w-4xl justify-between px-6 py-8 text-xs text-ink-muted">
+            <span>
+              &copy; {new Date().getFullYear()} {siteName}
+            </span>
             <span className="flex items-center gap-4">
-              <a href="/feed.xml" className="hover:text-ink-soft">RSS</a>
+              <a href="/feed.xml" className="hover:text-ink-soft">
+                RSS
+              </a>
               <a
                 href="https://github.com/woohaharam"
                 target="_blank"

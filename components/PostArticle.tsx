@@ -1,8 +1,11 @@
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
+import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import CodeBlock from './CodeBlock';
+import TableOfContents from './TableOfContents';
+import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
 import { Post, TAG_LABELS } from '@/lib/types';
 
@@ -51,11 +54,17 @@ export default function PostArticle({
         />
       )}
 
+      <TableOfContents headings={extractHeadings(post.content)} />
+
       <div className="prose-post">
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
-          // 모르는 언어를 적어도 그냥 강조 없이 넘어가게 해요.
-          rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
+          rehypePlugins={[
+            // 제목에 id를 붙여야 목차 링크가 걸려요.
+            rehypeSlug,
+            // 모르는 언어를 적어도 그냥 강조 없이 넘어가게 해요.
+            [rehypeHighlight, { ignoreMissing: true }],
+          ]}
           components={{ pre: CodeBlock }}
         >
           {post.content}

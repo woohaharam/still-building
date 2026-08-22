@@ -19,14 +19,14 @@ export default async function CalendarPage() {
   return (
     <Container>
       <div>
-      <section className="mb-10">
-        <h1 className="text-2xl font-bold leading-snug">달력</h1>
-        <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-          앞으로의 일정과, 지금까지 글을 쓴 날들을 한 달 단위로 모아 봤어요.
-        </p>
-      </section>
+        <section className="mb-10">
+          <h1 className="text-2xl font-bold leading-snug">달력</h1>
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">
+            앞으로의 일정과, 지금까지 글을 쓴 날들을 한 달 단위로 모아 봤어요.
+          </p>
+        </section>
 
-      <Calendar posts={posts} events={events} />
+        <Calendar posts={posts} events={events} />
       </div>
     </Container>
   );

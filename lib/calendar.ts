@@ -26,8 +26,9 @@ export function buildMonthMatrix(year: number, month: number): Date[] {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const weeks = Math.ceil((firstWeekday + daysInMonth) / 7);
 
-  return Array.from({ length: weeks * 7 }, (_, i) =>
-    new Date(year, month, 1 - firstWeekday + i)
+  return Array.from(
+    { length: weeks * 7 },
+    (_, i) => new Date(year, month, 1 - firstWeekday + i)
   );
 }
 
