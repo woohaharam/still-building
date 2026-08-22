@@ -1,3 +1,4 @@
+import Container from '@/components/Container';
 import type { Metadata } from 'next';
 import PostList from '@/components/PostList';
 import { getPublishedPosts } from '@/lib/posts';
@@ -15,7 +16,8 @@ export default async function BlogPage() {
   const posts = await getPublishedPosts();
 
   return (
-    <div>
+    <Container>
+      <div>
       <section className="mb-14">
         <h1 className="text-2xl font-bold leading-snug">
           코드를 짜고, 그 사이사이의 하루를 기록합니다.
@@ -26,6 +28,7 @@ export default async function BlogPage() {
       </section>
 
       <PostList posts={posts} />
-    </div>
+      </div>
+    </Container>
   );
 }

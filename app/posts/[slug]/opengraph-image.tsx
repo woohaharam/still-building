@@ -8,11 +8,11 @@ export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
 const MARK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="72" height="72">
-  <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="2" fill="#1A1A1A"/>
-  <rect x="2.5" y="13" width="8.5" height="8.5" rx="2" fill="#1A1A1A"/>
-  <rect x="13" y="13" width="8.5" height="8.5" rx="2" fill="#1A1A1A"/>
+  <rect x="2.5" y="2.5" width="8.5" height="8.5" rx="2" fill="#211E1B"/>
+  <rect x="2.5" y="13" width="8.5" height="8.5" rx="2" fill="#211E1B"/>
+  <rect x="13" y="13" width="8.5" height="8.5" rx="2" fill="#211E1B"/>
   <rect x="13.9" y="3.4" width="6.7" height="6.7" rx="1.6" fill="none"
-    stroke="#1A1A1A" stroke-width="1.9" stroke-dasharray="2.6 2.4" stroke-linecap="round"/>
+    stroke="#211E1B" stroke-width="1.9" stroke-dasharray="2.6 2.4" stroke-linecap="round"/>
 </svg>`;
 
 function formatDate(value: string | null) {
@@ -44,7 +44,7 @@ export default async function PostOgImage({
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          background: '#FAFAF8',
+          background: '#FBF9F5',
           padding: '80px',
           fontFamily: font ? 'Noto Sans KR' : undefined,
         }}
@@ -69,7 +69,7 @@ export default async function PostOgImage({
               fontWeight: 700,
               lineHeight: 1.28,
               letterSpacing: '-0.02em',
-              color: '#1A1A1A',
+              color: '#211E1B',
               // 제목이 길면 잘라내서 카드 밖으로 넘치지 않게
               display: 'block',
               lineClamp: 3,
