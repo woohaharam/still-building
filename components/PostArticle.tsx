@@ -15,7 +15,7 @@ function formatDate(dateStr: string | null) {
 /** 글 한 편의 생김새. 공개 페이지와 관리자 미리보기가 이걸 같이 써요. */
 export default function PostArticle({
   post,
-  backHref = '/',
+  backHref = '/blog',
   backLabel = '← 목록으로',
 }: {
   post: Post;
