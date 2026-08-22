@@ -18,8 +18,13 @@ export const siteUrl = resolveSiteUrl();
 export const siteName = 'STILL BUILDING';
 export const siteDescription = '만들며 기록하는 개발과 일상';
 
-/** 검색 결과에 글쓴이로 뜨는 이름. 본인 이름이나 닉네임으로 바꿔도 돼요. */
-export const siteAuthor = 'STILL BUILDING';
+/** 검색 결과에 글쓴이로 뜨는 이름 */
+export const siteAuthor = '우주영';
+
+/** 소개 페이지와 연락처에서 쓰는 값 */
+export const siteAuthorAlias = 'Jack';
+export const siteEmail = 'pmypmy1234567@naver.com';
+export const siteGithub = 'https://github.com/woohaharam';
 
 /**
  * 사이트 소유 확인 코드. 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니에요.

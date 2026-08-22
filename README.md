@@ -71,6 +71,20 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - 글마다 **요약을 적어두면** 그게 검색 결과의 설명 줄로 쓰여요. 안 적으면 본문 앞부분이 대신 들어갑니다.
 - 잘 되고 있는지는 구글에 `site:내도메인.com` 을 검색해보면 알 수 있어요.
 
+## 개발
+
+```bash
+npm install
+npm run dev        # 개발 서버
+npm run lint       # 린트
+npm run typecheck  # 타입 검사
+npm test           # 테스트
+npm run build      # 빌드
+```
+
+`lib/` 안의 순수 함수(날짜 계산, 마크다운 정리, 유튜브 주소 파싱, RSS 생성)에는
+테스트가 붙어 있어요. PR을 올리면 GitHub Actions가 위 명령을 전부 돌립니다.
+
 ## 폴더 구조
 - `app/page.tsx` — 홈 (글 목록 + 태그 필터)
 - `app/posts/[slug]/page.tsx` — 글 상세
@@ -83,6 +97,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - `app/sitemap.ts` · `app/robots.ts` — 검색엔진용
 - `components/JsonLd.tsx` — 검색엔진이 읽는 구조화 데이터
 - `lib/text.ts` — 마크다운에서 글자만 뽑아내기 (검색 설명·읽는 시간이 같이 씀)
+- `tests/` — `lib/` 순수 함수 테스트
+- `.github/workflows/ci.yml` — PR마다 린트·타입·테스트·빌드
 - `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
 - `lib/playlist.ts` — 배경음악 곡 목록
 - `components/MusicPlayer.tsx` — 오른쪽 아래 노래 플레이어

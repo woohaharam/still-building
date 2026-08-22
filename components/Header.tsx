@@ -19,7 +19,7 @@ export default function Header() {
               소개
             </Link>
             <a
-              href="https://github.com"
+              href="https://github.com/woohaharam"
               target="_blank"
               rel="noreferrer"
               className="hover:text-ink transition-colors"

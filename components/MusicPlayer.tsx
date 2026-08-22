@@ -14,7 +14,7 @@ interface YouTubePlayer {
   destroy(): void;
 }
 
-/* eslint-disable @typescript-eslint/no-explicit-any */
+// YT 전역 객체에는 타입 정의가 없어서 any로 받고, 쓰는 쪽에서 좁혀요.
 let apiPromise: Promise<any> | null = null;
 
 /** 유튜브 스크립트는 재생을 누른 순간에만 받아와요. 안 듣는 사람은 한 바이트도 안 씁니다. */
