@@ -1,4 +1,4 @@
-import { postUrl, siteDescription, siteName, siteUrl } from './site';
+import { postUrl, siteDescription, siteTitle, siteUrl } from './site';
 import { metaDescription } from './text';
 import { Post } from './types';
 
@@ -34,7 +34,7 @@ export function buildRssFeed(posts: Post[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>${escapeXml(siteName)}</title>
+    <title>${escapeXml(siteTitle)}</title>
     <link>${escapeXml(`${siteUrl}/`)}</link>
     <description>${escapeXml(siteDescription)}</description>
     <language>ko</language>

@@ -1,6 +1,8 @@
 import { ImageResponse } from 'next/og';
+import { loadKoreanFont } from '@/lib/og-font';
+import { siteDescription, siteName, siteTitle } from '@/lib/site';
 
-export const alt = 'STILL BUILDING';
+export const alt = siteTitle;
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -13,7 +15,12 @@ const MARK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width=
     stroke="#211E1B" stroke-width="1.9" stroke-dasharray="2.6 2.4" stroke-linecap="round"/>
 </svg>`;
 
-export default function OpengraphImage() {
+const SUBTITLE = `${siteName} — ${siteDescription}`;
+
+export default async function OpengraphImage() {
+  // 한글이 들어가면 폰트를 같이 넘겨야 해요. 안 그러면 네모로 나옵니다.
+  const font = await loadKoreanFont(`${siteTitle}${SUBTITLE}`);
+
   return new ImageResponse(
     <div
       style={{
@@ -43,13 +50,18 @@ export default function OpengraphImage() {
             color: '#211E1B',
           }}
         >
-          STILL BUILDING
+          {siteTitle}
         </div>
         <div style={{ fontSize: 34, color: '#6B6B65', marginTop: 18 }}>
-          Notes on building, and the days in between.
+          {SUBTITLE}
         </div>
       </div>
     </div>,
-    size
+    {
+      ...size,
+      fonts: font
+        ? [{ name: 'Noto Sans KR', data: font, weight: 700 as const }]
+        : undefined,
+    }
   );
 }

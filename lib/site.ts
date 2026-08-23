@@ -15,7 +15,15 @@ function resolveSiteUrl() {
 
 export const siteUrl = resolveSiteUrl();
 
+/** 헤더 로고와 저작권 줄에 쓰는 이름(워드마크). */
 export const siteName = 'STILL BUILDING';
+
+/**
+ * 브라우저 탭·검색 결과·링크 미리보기에 뜨는 제목.
+ * 처음 보는 사람에게는 브랜드명보다 "누구의 무엇"인지가 먼저 필요해서
+ * 워드마크와 따로 둔다.
+ */
+export const siteTitle = '우주영의 포트폴리오';
 export const siteDescription = '만들며 기록하는 개발과 일상';
 
 /** 검색 결과에 글쓴이로 뜨는 이름 */

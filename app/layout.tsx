@@ -9,20 +9,21 @@ import {
   siteAuthor,
   siteDescription,
   siteName,
+  siteTitle,
   siteUrl,
 } from '@/lib/site';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: siteName,
-    template: `%s | ${siteName}`,
+    default: siteTitle,
+    template: `%s | ${siteTitle}`,
   },
   description: siteDescription,
   openGraph: {
-    title: siteName,
+    title: siteTitle,
     description: siteDescription,
-    siteName,
+    siteName: siteTitle,
     locale: 'ko_KR',
     type: 'website',
   },
@@ -92,7 +93,8 @@ export default function RootLayout({
           data={{
             '@context': 'https://schema.org',
             '@type': 'WebSite',
-            name: siteName,
+            name: siteTitle,
+            alternateName: siteName,
             description: siteDescription,
             url: siteUrl,
             inLanguage: 'ko-KR',

@@ -6,7 +6,7 @@ import JsonLd from '@/components/JsonLd';
 import PostArticle from '@/components/PostArticle';
 import PostNav from '@/components/PostNav';
 import { getAdjacentPosts, getPostBySlug } from '@/lib/posts';
-import { postUrl, siteAuthor, siteName, siteUrl } from '@/lib/site';
+import { postUrl, siteAuthor, siteUrl } from '@/lib/site';
 import { metaDescription } from '@/lib/text';
 
 export const revalidate = 0;
@@ -68,7 +68,7 @@ export default async function PostPage({
           inLanguage: 'ko-KR',
           image: post!.cover_image_url || `${url}/opengraph-image`,
           author: { '@type': 'Person', name: siteAuthor },
-          publisher: { '@type': 'Organization', name: siteName, url: siteUrl },
+          publisher: { '@type': 'Person', name: siteAuthor, url: siteUrl },
           keywords: post!.tags?.join(', ') || undefined,
         }}
       />
