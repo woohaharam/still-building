@@ -20,10 +20,8 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- `NEXT_PUBLIC_GISCUS_REPO` · `..._REPO_ID` · `..._CATEGORY` · `..._CATEGORY_ID` — (선택) 댓글.
-  네 개를 모두 넣어야 글 아래에 댓글창이 생기고, 하나라도 비면 아예 안 그려져요.
-  값은 https://giscus.app 에서 저장소 주소를 넣으면 알려줍니다.
-  먼저 GitHub 저장소 Settings에서 **Discussions를 켜고**, giscus 앱을 설치해야 해요.
+- `NEXT_PUBLIC_GISCUS_*` — (선택) 댓글 설정. 값이 이미 `lib/site.ts`에 들어 있어서
+  평소에는 안 넣어도 돼요. 저장소를 옮길 때만 그 파일의 네 줄을 고치면 됩니다.
 - `NEXT_PUBLIC_SITE_URL` — `https://내도메인.com`. 링크 미리보기·sitemap·검색 노출 주소의 기준이에요.
   안 넣으면 Vercel 배포 주소를 쓰는데, **검색 등록을 할 거라면 꼭 넣어주세요.** 이게 비어 있으면
   구글에 알려주는 주소와 실제 주소가 달라져서 색인이 꼬여요.
@@ -140,6 +138,8 @@ npm run build         # 빌드
 - 임시저장 글은 관리자 목록의 '미리보기'로 실제 글 화면 그대로 확인할 수 있어요.
 - 달력은 등록한 일정(일정/마감/메모)과 글을 발행한 날을 한 화면에 보여줘요. 날짜를 누르면 아래에 그 날의 내용이 펼쳐지고, 글 제목을 누르면 글로 이동해요.
 - 일정은 로그인 없이 누구나 볼 수 있어요. 비공개로 남기고 싶은 일정은 적지 않는 게 좋아요.
+- 댓글은 giscus로 GitHub Discussions에 저장돼요. 글 주소마다 Discussion이 하나씩 생기고,
+  사이트의 다크 모드 토글을 누르면 댓글창 색도 같이 바뀝니다.
 - 노래는 `lib/playlist.ts`의 `PLAYLIST`에서 바꿔요. 유튜브 '공유' 주소를 그대로 붙여넣으면 되고,
   `watch?v=` · `youtu.be` · `shorts` 어느 형태든, 뒤에 `?si=...`가 붙어 있어도 알아서 영상 ID를 뽑아냅니다.
   제목은 안 적어도 돼요 — 유튜브에 올라간 영상 제목을 재생할 때 그대로 가져와서 보여줍니다.
