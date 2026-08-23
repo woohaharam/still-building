@@ -27,7 +27,7 @@ export default function Landing({
       href: '/about',
       label: '소개',
       english: 'ABOUT',
-      description: '어떤 사람이고, 지금 무엇을 배우고 있는지',
+      description: '어떤 사람이고 지금 뭘 배우고 있는지',
       meta: `${siteAuthor} · ${siteAuthorAlias}`,
     },
     {
@@ -35,7 +35,7 @@ export default function Landing({
       href: '/projects',
       label: '프로젝트',
       english: 'PROJECTS',
-      description: '직접 만든 것들과, 만들면서 부딪힌 것들',
+      description: '만든 것들과, 만들다 막혔던 것들',
       meta: `${PROJECTS.length}개 · 논문 ${PUBLICATIONS.length}편`,
     },
     {
@@ -43,7 +43,7 @@ export default function Landing({
       href: '/blog',
       label: '블로그',
       english: 'BLOG',
-      description: '개발하면서 배운 것과 그 사이의 일상',
+      description: '개발하며 배운 것과 그 사이의 일상',
       meta: failed ? '' : `글 ${postCount}편`,
     },
     {
@@ -51,7 +51,7 @@ export default function Landing({
       href: '/calendar',
       label: '달력',
       english: 'CALENDAR',
-      description: '앞으로의 일정과 지금까지 글을 쓴 날들',
+      description: '앞으로의 일정과 지금까지 글 쓴 날들',
       meta: '',
     },
   ];
@@ -80,8 +80,8 @@ export default function Landing({
             className="rise mt-7 max-w-md leading-relaxed text-ink-soft"
             style={{ animationDelay: '240ms' }}
           >
-            필요한 걸 직접 만들고, 그 과정에서 막힌 지점과 알게 된 것을
-            남깁니다. 지금은 이 블로그를 처음부터 만들면서 웹을 배우는 중이에요.
+            필요한 걸 직접 만들고, 만들다 막힌 지점을 남깁니다. 지금은 이
+            사이트를 처음부터 만들면서 웹을 배우는 중이에요.
           </p>
 
           <div
