@@ -1,3 +1,5 @@
+import { siteTitle } from '@/lib/site';
+
 /**
  * 사이트 로고. 마크 3안을 모두 담아두고 DEFAULT_MARK 한 줄로 바꿔 끼울 수 있어요.
  * - blocks: 2x2 블록 중 마지막 한 칸이 아직 점선 — "아직 짓는 중"
@@ -112,7 +114,7 @@ export default function Logo({
     <span className={`flex items-center gap-2 sm:gap-2.5 ${className}`}>
       <LogoMark variant={variant} className="h-6 w-6 shrink-0" />
       <span className="whitespace-nowrap text-lg font-bold tracking-tight sm:text-xl">
-        STILL BUILDING
+        {siteTitle}
       </span>
     </span>
   );
