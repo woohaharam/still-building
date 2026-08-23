@@ -1,4 +1,3 @@
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -9,9 +8,9 @@
   --surface: 243 239 231;
   --ink: 33 30 27;
   --ink-soft: 90 82 73;
-  --ink-muted: 150 140 128;
+  --ink-muted: 122 112 100;
   --line: 232 226 215;
-  --accent: 168 103 74;
+  --accent: 158 94 66;
 
   --prose: 52 47 42;
   --code-bg: 30 27 24;
@@ -23,7 +22,7 @@
   --surface: 38 34 29;
   --ink: 240 234 225;
   --ink-soft: 188 179 167;
-  --ink-muted: 132 123 111;
+  --ink-muted: 140 131 118;
   --line: 52 46 40;
   --accent: 210 148 116;
 

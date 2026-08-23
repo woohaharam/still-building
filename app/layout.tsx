@@ -62,6 +62,17 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <head>
         {/*
+          폰트는 globals.css의 @import가 아니라 여기서 불러와요.
+          @import는 CSS를 받아 파싱한 뒤에야 폰트 요청이 시작돼서
+          왕복이 한 번 더 늘어납니다.
+        */}
+        <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css"
+        />
+
+        {/*
           화면이 한 번 하얗게 번쩍였다가 어두워지는 걸 막으려고,
           리액트가 붙기 전에 테마를 먼저 정해둬요.
         */}

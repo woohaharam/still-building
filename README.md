@@ -1,8 +1,167 @@
 # STILL BUILDING
 
-미니멀·모노톤 개발/일상 블로그. Next.js 14 + Supabase.
+> 글쓰기·일정·포트폴리오를 한 곳에서 관리하려고 처음부터 직접 만든 개인 사이트.
 
-## 시작하기
+**🔗 https://mynameiswoo.vercel.app**
+
+|               |                                                                                                                               |
+| ------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| **기간**      | 2026.08 — (진행 중)                                                                                                           |
+| **개발 인원** | 1명 (우주영)                                                                                                                  |
+| **기여도**    | 100% — 기획 · 설계 · 구현 · 배포 · 운영                                                                                       |
+| **스택**      | Next.js 14 (App Router) · TypeScript · Tailwind CSS · Supabase (Postgres · Auth · Storage) · Vercel · Vitest · GitHub Actions |
+
+📄 **[프로젝트 상세 · 구조도 · 트러블슈팅 →](https://mynameiswoo.vercel.app/projects/still-building)**
+
+---
+
+## 숫자로 남은 것
+
+| 항목                  | 결과                                                                                        |
+| --------------------- | ------------------------------------------------------------------------------------------- |
+| Lighthouse 접근성     | **96 → 100점** (대비 미달 요소 3종 → 0)                                                     |
+| Lighthouse 성능 · SEO | 92 ~ 100점 / 100점 _(로컬 프로덕션 빌드 기준)_                                              |
+| 첫 로드 공통 JS       | **87.3 kB**                                                                                 |
+| 테스트                | 순수 함수 **56개** — 날짜 13 · 목차 11 · 마크다운 11 · 유튜브 파싱 10 · RSS 8 · 읽는 시간 3 |
+| CI                    | PR마다 포맷 · 린트 · 타입 · 테스트 · 빌드 **5단계** 자동 실행                               |
+| 리팩터링              | 588줄 관리자 페이지 → **78 / 70 / 450줄** 세 파일로 분리                                    |
+
+## 시스템 구조
+
+```
+ 브라우저                Vercel (Next.js)          Supabase                외부
+ ─────────────          ──────────────────        ─────────────────       ──────────────────
+ 방문자 화면      →      서버 컴포넌트 렌더   →     Postgres (posts,        GitHub Discussions
+ 관리자 /admin           sitemap·robots·RSS        events)                 — 댓글 (giscus)
+ localStorage            OG 이미지 (next/og)       RLS — is_owner()        YouTube IFrame API
+ (테마·음악)             보안 헤더 · CSP           Auth — 이메일 로그인    — 배경음악
+                                                   Storage — 본문 이미지   GitHub Actions — CI
+```
+
+- **읽기** — 방문자 → Vercel 서버 렌더 → Supabase에서 `published = true` 인 글만 조회 → HTML 응답
+- **쓰기** — `/admin` 로그인 → Supabase Auth 세션 → INSERT/UPDATE → **RLS가 `is_owner()` 검사** → 통과한 것만 반영
+- **검색** — `sitemap.xml` · `feed.xml` · JSON-LD 생성 → 구글 · 네이버 크롤러
+
+권한 검사를 브라우저가 아니라 데이터베이스가 합니다. 프론트엔드 코드를 고쳐도 우회되지 않아요.
+
+## 핵심 기능과 코드
+
+| 기능                                            | 핵심 코드                                                                                                                                              |
+| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 마크다운 관리자 · 임시저장 미리보기             | [`components/admin/PostEditor.tsx`](components/admin/PostEditor.tsx) · [`app/admin/preview/[slug]/page.tsx`](app/admin/preview/%5Bslug%5D/page.tsx)    |
+| 일정 + 글 쓴 날을 겹쳐 보는 달력                | [`lib/calendar.ts`](lib/calendar.ts) · [`components/Calendar.tsx`](components/Calendar.tsx)                                                            |
+| 권한을 DB가 검사하는 인증                       | [`supabase-schema.sql`](supabase-schema.sql) (`is_owner()`) · [`lib/posts.ts`](lib/posts.ts)                                                           |
+| 본문 목차 (라이브러리와 같은 규칙으로 id 생성)  | [`lib/toc.ts`](lib/toc.ts) · [`components/TableOfContents.tsx`](components/TableOfContents.tsx)                                                        |
+| 검색 노출 (sitemap · RSS · JSON-LD · OG 이미지) | [`app/sitemap.ts`](app/sitemap.ts) · [`lib/feed.ts`](lib/feed.ts) · [`app/posts/[slug]/opengraph-image.tsx`](app/posts/%5Bslug%5D/opengraph-image.tsx) |
+| 유튜브 배경음악 (주소 파싱)                     | [`lib/playlist.ts`](lib/playlist.ts) · [`components/MusicPlayer.tsx`](components/MusicPlayer.tsx)                                                      |
+| 다크 모드 (CSS 변수 한 곳에서)                  | [`app/globals.css`](app/globals.css) · [`components/ThemeToggle.tsx`](components/ThemeToggle.tsx)                                                      |
+| 보안 헤더 · CSP                                 | [`next.config.js`](next.config.js)                                                                                                                     |
+| 업로드 검증 (타입 · 크기)                       | [`lib/storage.ts`](lib/storage.ts)                                                                                                                     |
+
+## 트러블슈팅
+
+전체 내용은 **[프로젝트 상세 페이지](https://mynameiswoo.vercel.app/projects/still-building)** 에 문제 → 원인 → 시도 → 해결 → 성과 형태로 정리해뒀습니다. 요약하면:
+
+<details>
+<summary><b>1. 관리자 인증이 브라우저 안에만 있었다</b> — 개발자 도구로 통과 가능 → RLS로 이전</summary>
+
+- **문제** 관리자 비밀번호를 자바스크립트로 검사. 개발자 도구로 우회 가능했고, DB 정책은 "누구나 쓰기 가능"
+- **원인** 인증을 화면 단에서만 함. 브라우저 검사는 잠금이 아니라 가림막
+- **시도** 비밀번호를 환경변수로 이동 → `NEXT_PUBLIC_` 값은 번들에 그대로 박혀서 무의미
+- **해결** Supabase Auth 로그인 + Postgres RLS `is_owner()` 정책
+- **성과** 로그인한 소유자만 INSERT·UPDATE·DELETE 통과. 프론트 코드를 고쳐도 우회 불가
+
+</details>
+
+<details>
+<summary><b>2. 달력에서 날짜가 하루씩 밀렸다</b> — UTC 해석 문제 → 테스트 13개로 고정</summary>
+
+- **문제** 8월 19일에 쓴 글이 8월 18일 칸에 표시
+- **원인** `new Date('2026-08-19')` 는 UTC 자정으로 해석됨. 한국(UTC+9)에서는 전날 15시
+- **시도** `toISOString().slice(0, 10)` → 다시 UTC로 되돌리는 것이라 그대로 밀림
+- **해결** 문자열을 직접 잘라 `new Date(y, m - 1, d)` 로 로컬 날짜 생성 (`parseDateKey`). UTC를 거치지 않음
+- **성과** 순수 함수로 분리 + 테스트 13개. 회귀 시 CI에서 즉시 검출
+
+</details>
+
+<details>
+<summary><b>3. DB 장애가 "쓴 글이 없음"으로 보였다</b> — 실패와 0건이 같은 값 → 3가지 화면으로 분리</summary>
+
+- **문제** 글이 4편 있는데 "아직 작성된 글이 없어요" 표시
+- **원인** 조회 실패를 `try/catch` 로 삼키고 빈 배열 반환. 실패와 "0건"이 구분되지 않음
+- **시도** 콘솔 로그 추가 → 서버 로그는 방문자에게 보이지 않아 화면은 그대로
+- **해결** 실패는 throw → `app/error.tsx` 가 재시도 UI 제공. 상세는 `.maybeSingle()` 로 "없는 글"과 "조회 실패" 분리
+- **성과** 장애(500+재시도) / 0편(안내) / 없는 주소(404) 세 경우가 각각 다른 화면
+
+</details>
+
+<details>
+<summary><b>4. 테스트를 쓰다가 찾은 유튜브 주소 파싱 버그</b> — 호스트 미검사 → 화이트리스트</summary>
+
+- **문제** 유튜브가 아닌 주소도 플레이어가 생성되고 무한 로딩
+- **원인** `youtubeId` 가 정규식으로 `?v=` 뒤만 자르고 호스트를 확인하지 않음
+- **시도** 정규식에 `youtube` 추가 → 쿼리스트링에 `youtube` 가 든 다른 주소가 여전히 통과
+- **해결** `new URL()` 파싱 + 호스트 화이트리스트. `watch?v=` · `youtu.be` · `shorts` 각각 처리
+- **성과** 테스트 작성 중 발견. 파싱 테스트 10개로 고정
+
+</details>
+
+<details>
+<summary><b>5. 다크 모드에서 댓글창만 밝게 남았다</b> — React Strict Mode 이중 실행</summary>
+
+- **문제** 테마를 바꿔도 giscus 댓글창은 밝은 채. 동기화 코드가 아예 동작하지 않음
+- **원인** Strict Mode는 effect를 두 번 실행. 스크립트가 있으면 early return 하도록 짜서, 1회차에 붙인 `MutationObserver` 가 cleanup에서 끊기고 2회차엔 다시 붙지 않음
+- **시도** 주입 여부 플래그 추가 → early return 위치가 그대로여서 증상 동일
+- **해결** early return 범위를 "스크립트 주입"에만 한정. 옵저버 등록은 매번 실행
+- **성과** 테마 토글 시 giscus 프레임으로 `dark_dimmed` 전달 확인
+
+</details>
+
+<details>
+<summary><b>6. 본문 글자 색이 접근성 기준 미달이었다</b> — 대비 3.1:1 → 4.7:1, 96 → 100점</summary>
+
+- **문제** Lighthouse 접근성 96점. 날짜 · 태그 · 설명에 쓰던 흐린 회색이 대비 부족으로 검출
+- **원인** `--ink-muted` 를 눈으로만 정함. 실제 대비 3.1:1 (WCAG AA 본문 기준 4.5:1)
+- **시도** 글자 크기를 키워 "큰 글자" 기준(3:1)으로 통과 → 보조 정보가 커져 화면 위계가 무너짐
+- **해결** 색만 조정. `--ink-muted` 4.7:1, 강조색 4.8:1. CSS 변수 한 곳이라 세 줄 수정으로 끝
+- **성과** **접근성 96 → 100점.** 같은 김에 폰트 `@import` → `<link rel="preconnect">` 로 옮겨 요청 왕복 1회 감소
+
+</details>
+
+## 폴더 구조
+
+```
+app/                    페이지 (App Router)
+  ├ page.tsx            메인 — 포트폴리오 랜딩
+  ├ about/ projects/    소개 · 프로젝트 (목록 + 상세)
+  ├ blog/ posts/[slug]/ 글 목록 · 글 상세
+  ├ calendar/           일정 + 글 쓴 날
+  ├ admin/              관리자 (로그인 · 글 · 일정 · 미리보기)
+  ├ sitemap.ts robots.ts feed.xml/   검색엔진용
+  └ opengraph-image.tsx              링크 미리보기 카드
+components/             화면 조각 (project/ 아래는 프로젝트 상세 전용)
+lib/                    순수 로직 — 날짜 · 마크다운 · RSS · 유튜브 파싱 · 프로젝트 데이터
+tests/                  lib/ 순수 함수 테스트 56개
+.github/workflows/ci.yml  PR마다 5단계 검사
+```
+
+프로젝트를 추가하려면 [`lib/projects.ts`](lib/projects.ts) 배열에 항목 하나를 넣으면 목록 · 상세 · 사이트맵 · 메인 개수 표시가 모두 따라갑니다.
+
+## 개발
+
+```bash
+npm install
+npm run dev           # 개발 서버
+npm run format:check  # 포맷 검사
+npm run lint          # 린트
+npm run typecheck     # 타입 검사
+npm test              # 테스트 (56개)
+npm run build         # 빌드
+```
+
+---
+
+## 직접 굴려보려면 (설치 · 운영)
 
 ### 1. Supabase 프로젝트 준비
 
@@ -77,22 +236,6 @@ Vercel에 배포할 때는 Vercel 프로젝트 설정 > Environment Variables �
 - 글마다 **요약을 적어두면** 그게 검색 결과의 설명 줄로 쓰여요. 안 적으면 본문 앞부분이 대신 들어갑니다.
 - 잘 되고 있는지는 구글에 `site:내도메인.com` 을 검색해보면 알 수 있어요.
 
-## 개발
-
-```bash
-npm install
-npm run dev           # 개발 서버
-npm run format        # 코드 정렬 (Prettier)
-npm run format:check  # 정렬됐는지 검사
-npm run lint          # 린트
-npm run typecheck     # 타입 검사
-npm test              # 테스트
-npm run build         # 빌드
-```
-
-`lib/` 안의 순수 함수(날짜 계산, 마크다운 정리, 유튜브 주소 파싱, RSS 생성)에는
-테스트가 붙어 있어요. PR을 올리면 GitHub Actions가 위 명령을 전부 돌립니다.
-
 ## 보안·개인정보
 
 - 방문자 분석 도구, 광고, 추적 스크립트를 넣지 않았어요. 브라우저에는 다크 모드 설정과
@@ -105,34 +248,6 @@ npm run build         # 빌드
   규칙을 어겨도 막지 않고 콘솔에만 남겨요. 실제 사이트에서 댓글·음악을 켜보고
   콘솔에 경고가 없으면 `Content-Security-Policy-Report-Only`를
   `Content-Security-Policy`로 바꾸면 진짜로 막힙니다.
-
-## 폴더 구조
-
-- `app/page.tsx` — 홈 (글 목록 + 태그 필터)
-- `app/posts/[slug]/page.tsx` — 글 상세
-- `app/calendar/page.tsx` — 달력 (등록한 일정 + 글 쓴 날)
-- `components/Logo.tsx` — 사이트 로고
-- `app/icon.svg` · `app/apple-icon.png` — 파비콘
-- `app/opengraph-image.tsx` — 링크 공유할 때 뜨는 미리보기 이미지 (사이트 전체)
-- `app/posts/[slug]/opengraph-image.tsx` — 글별 미리보기 이미지 (제목이 박힌 카드)
-- `app/feed.xml/route.ts` — RSS 피드
-- `app/sitemap.ts` · `app/robots.ts` — 검색엔진용
-- `components/JsonLd.tsx` — 검색엔진이 읽는 구조화 데이터
-- `lib/text.ts` — 마크다운에서 글자만 뽑아내기 (검색 설명·읽는 시간이 같이 씀)
-- `tests/` — `lib/` 순수 함수 테스트
-- `.github/workflows/ci.yml` — PR마다 린트·타입·테스트·빌드
-- `lib/site.ts` — 사이트 주소·이름 (RSS·sitemap·미리보기가 공유)
-- `lib/playlist.ts` — 배경음악 곡 목록
-- `components/MusicPlayer.tsx` — 오른쪽 아래 노래 플레이어
-- `app/about/page.tsx` — 소개/포트폴리오 페이지 (직접 내용 채워넣기)
-- `app/admin/page.tsx` — 관리자 (로그인 확인 + 탭)
-- `components/admin/SignIn.tsx` · `PostEditor.tsx` — 로그인 화면, 글 편집기
-- `app/privacy/page.tsx` — 개인정보 처리방침
-- `app/admin/preview/[slug]/page.tsx` — 임시저장 글 미리보기 (로그인해야 보여요)
-- `components/PostArticle.tsx` — 글 본문 (공개 페이지와 미리보기가 같이 씀)
-- `components/CodeBlock.tsx` — 코드 블록 (언어 표시 + 복사 버튼)
-- `supabase-schema.sql` — DB 스키마 (새로 시작할 때)
-- `supabase-migration-auth.sql` — 기존 DB를 로그인 기반 보안으로 옮기는 1회용 스크립트
 
 ## 알아두면 좋은 점
 
