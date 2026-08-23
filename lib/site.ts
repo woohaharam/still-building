@@ -32,15 +32,18 @@ export const education = {
 };
 
 /**
- * Giscus 댓글. GitHub Discussions에 댓글을 저장해요.
- * https://giscus.app 에서 저장소를 넣으면 아래 네 값을 알려줍니다.
- * 비워두면 댓글창이 아예 안 그려져요.
+ * Giscus 댓글 — GitHub Discussions에 댓글을 저장해요.
+ *
+ * 네 값 모두 페이지 소스에 그대로 드러나는 공개 식별자라 여기 적어둡니다.
+ * (네이버 소유확인 코드와 같은 이유예요. 환경변수를 매번 챙길 필요가 없어요.)
+ * 저장소를 옮기면 https://giscus.app 에서 새 값을 받아 이 네 줄만 고치면 됩니다.
  */
 export const giscus = {
-  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || '',
-  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || '',
-  category: process.env.NEXT_PUBLIC_GISCUS_CATEGORY || '',
-  categoryId: process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || '',
+  repo: process.env.NEXT_PUBLIC_GISCUS_REPO || 'woohaharam/still-building',
+  repoId: process.env.NEXT_PUBLIC_GISCUS_REPO_ID || 'R_kgDOT5ORmQ',
+  category: process.env.NEXT_PUBLIC_GISCUS_CATEGORY || 'Announcements',
+  categoryId:
+    process.env.NEXT_PUBLIC_GISCUS_CATEGORY_ID || 'DIC_kwDOT5ORmc4DD_AO',
 };
 
 export const giscusEnabled =
