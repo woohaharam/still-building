@@ -2,6 +2,7 @@ import Link from 'next/link';
 import DaysCounter from './DaysCounter';
 import Logo from './Logo';
 import ThemeToggle from './ThemeToggle';
+import { siteDescription, siteName, siteTitle } from '@/lib/site';
 
 const NAV = [
   { href: '/about', label: '소개' },
@@ -19,7 +20,7 @@ export default function Header() {
           억지로 줄이는 대신 두 줄로 나눕니다.
         */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/" aria-label="STILL BUILDING 홈" className="self-start">
+          <Link href="/" aria-label={`${siteTitle} 홈`} className="self-start">
             <Logo />
           </Link>
 
@@ -47,7 +48,9 @@ export default function Header() {
 
         {/* 태그라인은 좁은 화면에서 헤더가 너무 길어지지 않게 감춰요. */}
         <div className="hidden items-center justify-between text-sm text-ink-muted sm:flex">
-          <p>만들며 기록하는 개발과 일상</p>
+          <p>
+            {siteName} · {siteDescription}
+          </p>
           <DaysCounter />
         </div>
       </div>
