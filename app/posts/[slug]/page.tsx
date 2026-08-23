@@ -72,7 +72,7 @@ export default async function PostPage({
           keywords: post!.tags?.join(', ') || undefined,
         }}
       />
-      <PostArticle post={post!} />
+      <PostArticle post={post!} shareUrl={url} />
       <PostNav older={older} newer={newer} />
       <Comments />
     </Container>

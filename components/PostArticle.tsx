@@ -4,6 +4,8 @@ import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import CodeBlock from './CodeBlock';
+import ReadingProgress from './ReadingProgress';
+import ShareLink from './ShareLink';
 import TableOfContents from './TableOfContents';
 import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
@@ -20,13 +22,18 @@ export default function PostArticle({
   post,
   backHref = '/blog',
   backLabel = '← 목록으로',
+  shareUrl,
 }: {
   post: Post;
   backHref?: string;
   backLabel?: string;
+  /** 공개된 글에서만 넘겨요. 미리보기 화면에는 공유 버튼이 뜨지 않습니다. */
+  shareUrl?: string;
 }) {
   return (
     <article>
+      {shareUrl && <ReadingProgress />}
+
       <Link
         href={backHref}
         className="text-sm text-ink-muted transition-colors hover:text-ink-soft"
@@ -70,6 +77,8 @@ export default function PostArticle({
           {post.content}
         </ReactMarkdown>
       </div>
+
+      {shareUrl && <ShareLink url={shareUrl} title={post.title} />}
     </article>
   );
 }
