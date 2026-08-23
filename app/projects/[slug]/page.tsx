@@ -5,6 +5,7 @@ import Reveal from '@/components/Reveal';
 import ArchitectureDiagram from '@/components/project/ArchitectureDiagram';
 import Bullets from '@/components/project/Bullets';
 import Pills from '@/components/project/Pills';
+import BackLink from '@/components/project/BackLink';
 import ProjectLinks from '@/components/project/ProjectLinks';
 import TroubleCard from '@/components/project/TroubleCard';
 import { PROJECTS, getProject } from '@/lib/projects';
@@ -92,10 +93,9 @@ export default function ProjectDetailPage({
     <Container wide>
       <div className="flex flex-col gap-16 pb-6">
         <section>
-          <ProjectLinks
-            links={[{ label: '← 프로젝트 목록', href: '/projects' }]}
-            className="mb-8"
-          />
+          <div className="mb-8">
+            <BackLink href="/projects" label="프로젝트 목록" />
+          </div>
 
           <h1 className="text-3xl font-bold tracking-tight">{title}</h1>
           <p className="mt-5 max-w-2xl leading-relaxed text-ink-soft">

@@ -40,7 +40,7 @@ export default function ProjectsPage() {
           <p className="text-xs tracking-[0.22em] text-ink-muted">PROJECTS</p>
           <h1 className="mt-4 text-3xl font-bold tracking-tight">만든 것들</h1>
           <p className="mt-5 leading-relaxed text-ink-soft">
-            필요해서 만들었고, 만들면서 막힌 것들을 적어뒀어요. 제목을 누르면
+            필요해서 만들었고, 만들다 막힌 것들을 적어뒀습니다. 제목을 누르면
             구조도와 트러블슈팅까지 볼 수 있어요.
           </p>
         </section>
@@ -99,7 +99,12 @@ export default function ProjectsPage() {
                 <article className="border-t border-line pt-10">
                   <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                     <h2 className="text-xl font-bold leading-snug tracking-tight">
-                      {paper.title}
+                      <Link
+                        href={`/papers/${paper.slug}`}
+                        className="transition-colors hover:text-accent"
+                      >
+                        {paper.title}
+                      </Link>
                     </h2>
                     {paper.period && (
                       <span className="text-xs tabular-nums text-ink-muted">
@@ -132,6 +137,12 @@ export default function ProjectsPage() {
 
                   <Bullets items={paper.details} />
                   <Pills items={paper.keywords} />
+                  <ProjectLinks
+                    links={[
+                      { label: '자세히 보기', href: `/papers/${paper.slug}` },
+                      ...(paper.documents ?? []),
+                    ]}
+                  />
                 </article>
               </Reveal>
             ))}
