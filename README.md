@@ -93,6 +93,19 @@ npm run build         # 빌드
 `lib/` 안의 순수 함수(날짜 계산, 마크다운 정리, 유튜브 주소 파싱, RSS 생성)에는
 테스트가 붙어 있어요. PR을 올리면 GitHub Actions가 위 명령을 전부 돌립니다.
 
+## 보안·개인정보
+
+- 방문자 분석 도구, 광고, 추적 스크립트를 넣지 않았어요. 브라우저에는 다크 모드 설정과
+  음악 상태만 저장되고 서버로 가지 않습니다. 자세한 건 `/privacy`에 적어뒀어요.
+- 글·일정·사진을 쓰고 지우는 권한은 데이터베이스가 검사해요. 브라우저 쪽 코드를
+  아무리 고쳐도 우회되지 않습니다.
+- 사진 업로드는 실제 파일 타입과 크기를 확인하고, 확장자를 파일 이름이 아니라
+  타입에서 가져와요. 이름만 믿으면 `사진.html` 같은 파일이 웹페이지로 열릴 수 있어요.
+- 응답에 보안 헤더를 붙였습니다 (`next.config.js`). CSP는 아직 **Report-Only**라
+  규칙을 어겨도 막지 않고 콘솔에만 남겨요. 실제 사이트에서 댓글·음악을 켜보고
+  콘솔에 경고가 없으면 `Content-Security-Policy-Report-Only`를
+  `Content-Security-Policy`로 바꾸면 진짜로 막힙니다.
+
 ## 폴더 구조
 
 - `app/page.tsx` — 홈 (글 목록 + 태그 필터)
@@ -112,7 +125,9 @@ npm run build         # 빌드
 - `lib/playlist.ts` — 배경음악 곡 목록
 - `components/MusicPlayer.tsx` — 오른쪽 아래 노래 플레이어
 - `app/about/page.tsx` — 소개/포트폴리오 페이지 (직접 내용 채워넣기)
-- `app/admin/page.tsx` — 글쓰기 관리자 페이지
+- `app/admin/page.tsx` — 관리자 (로그인 확인 + 탭)
+- `components/admin/SignIn.tsx` · `PostEditor.tsx` — 로그인 화면, 글 편집기
+- `app/privacy/page.tsx` — 개인정보 처리방침
 - `app/admin/preview/[slug]/page.tsx` — 임시저장 글 미리보기 (로그인해야 보여요)
 - `components/PostArticle.tsx` — 글 본문 (공개 페이지와 미리보기가 같이 씀)
 - `components/CodeBlock.tsx` — 코드 블록 (언어 표시 + 복사 버튼)

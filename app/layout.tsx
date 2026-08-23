@@ -96,6 +96,9 @@ export default function RootLayout({
               &copy; {new Date().getFullYear()} {siteName}
             </span>
             <span className="flex items-center gap-4">
+              <a href="/privacy" className="hover:text-ink-soft">
+                개인정보
+              </a>
               <a href="/feed.xml" className="hover:text-ink-soft">
                 RSS
               </a>
