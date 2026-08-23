@@ -2,6 +2,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Reveal from '@/components/Reveal';
 import { PROJECTS } from '@/lib/projects';
+import { PUBLICATIONS } from '@/lib/publications';
 import { siteAuthor, siteAuthorAlias, siteGithub } from '@/lib/site';
 
 interface Section {
@@ -35,7 +36,7 @@ export default function Landing({
       label: '프로젝트',
       english: 'PROJECTS',
       description: '직접 만든 것들과, 만들면서 부딪힌 것들',
-      meta: `${PROJECTS.length}개`,
+      meta: `${PROJECTS.length}개 · 논문 ${PUBLICATIONS.length}편`,
     },
     {
       index: '03',
