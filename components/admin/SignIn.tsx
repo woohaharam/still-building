@@ -29,7 +29,7 @@ export default function SignIn() {
           : signInError.message
       );
     }
-    // 성공하면 onAuthStateChange가 알아서 화면을 바꿔줘요.
+    // 성공하면 onAuthStateChange가 알아서 화면을 바꿔준다.
   }
 
   return (

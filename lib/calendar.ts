@@ -41,7 +41,7 @@ export function eventDateKeys(event: CalendarEvent): DateKey[] {
   const cursor = parseDateKey(start);
   const keys: DateKey[] = [];
 
-  // 실수로 아주 먼 종료일을 넣어도 달력이 멈추지 않도록 상한을 둬요.
+  // 실수로 아주 먼 종료일을 넣어도 달력이 멈추지 않도록 상한을 둔다.
   while (cursor <= end && keys.length < 366) {
     keys.push(toDateKey(cursor));
     cursor.setDate(cursor.getDate() + 1);

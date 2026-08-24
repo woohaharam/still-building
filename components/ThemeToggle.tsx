@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 type Theme = 'light' | 'dark';
 
 /**
- * 첫 칠하기 전에 layout의 인라인 스크립트가 이미 .dark를 붙여둬요.
+ * 첫 칠하기 전에 layout의 인라인 스크립트가 이미 .dark를 붙여둔다.
  * 여기서는 그 상태를 읽어와서 버튼 모양만 맞춥니다.
  */
 export default function ThemeToggle() {
@@ -23,12 +23,12 @@ export default function ThemeToggle() {
     try {
       localStorage.setItem('theme', next);
     } catch {
-      // 저장이 막혀 있어도 이번 방문 동안은 바뀐 채로 써요.
+      // 저장이 막혀 있어도 이번 방문 동안은 바뀐 채로 쓴다.
     }
     setTheme(next);
   }
 
-  // 서버에서는 어느 쪽인지 알 수 없어서, 자리만 잡아두고 마운트 후에 그려요.
+  // 서버에서는 어느 쪽인지 알 수 없어서, 자리만 잡아두고 마운트 후에 그린다.
   if (!theme) return <span className="h-5 w-5" aria-hidden />;
 
   return (

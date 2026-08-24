@@ -42,7 +42,7 @@ export const metadata: Metadata = {
     googleBot: {
       index: true,
       follow: true,
-      // 검색 결과에 큰 썸네일과 긴 설명이 나오도록 허용해요.
+      // 검색 결과에 큰 썸네일과 긴 설명이 나오도록 허용한다.
       'max-image-preview': 'large',
       'max-snippet': -1,
     },

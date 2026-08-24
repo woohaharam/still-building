@@ -1,7 +1,7 @@
 import { siteTitle } from '@/lib/site';
 
 /**
- * 사이트 로고. 마크 3안을 모두 담아두고 DEFAULT_MARK 한 줄로 바꿔 끼울 수 있어요.
+ * 사이트 로고. 마크 3안을 모두 담아두고 DEFAULT_MARK 한 줄로 바꿔 끼울 수 있다.
  * - blocks: 2x2 블록 중 마지막 한 칸이 아직 점선 — "아직 짓는 중"
  * - progress: 진행 바가 60%쯤 차 있는 모양
  * - sunset: 지평선 위로 걸린 해 (따뜻한 포인트 컬러)

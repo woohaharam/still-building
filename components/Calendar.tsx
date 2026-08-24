@@ -35,7 +35,7 @@ function Dot({ className = '' }: { className?: string }) {
 }
 
 function PostMark({ className = '' }: { className?: string }) {
-  // 글은 일정과 구분되게 동그라미 대신 네모로 표시해요.
+  // 글은 일정과 구분되게 동그라미 대신 네모로 표시한다.
   return (
     <span className={`inline-block h-1.5 w-1.5 shrink-0 bg-ink ${className}`} />
   );
@@ -47,7 +47,7 @@ interface CalendarProps {
 }
 
 export default function Calendar({ posts, events }: CalendarProps) {
-  // 서버(UTC)와 브라우저의 '오늘'이 다를 수 있어서 날짜 기준은 마운트 후에 잡아요.
+  // 서버(UTC)와 브라우저의 '오늘'이 다를 수 있어서 날짜 기준은 마운트 후에 잡는다.
   const [mounted, setMounted] = useState(false);
   const [todayKey, setTodayKey] = useState<DateKey>('');
   const [cursor, setCursor] = useState({ year: 1970, month: 0 });
@@ -101,7 +101,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
   }
 
   if (!mounted) {
-    // 마운트 전에는 같은 크기의 빈 틀만 그려서 화면이 튀지 않게 해요.
+    // 마운트 전에는 같은 크기의 빈 틀만 그려서 화면이 튀지 않게 한다.
     return <div className="min-h-[560px]" aria-hidden />;
   }
 

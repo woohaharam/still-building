@@ -5,16 +5,13 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import { toDateKey } from '@/lib/calendar';
-import {
-  IMAGE_SIZE_KEYS,
-  IMAGE_SIZES,
-  markdownComponents,
-} from '@/lib/markdown';
+import { IMAGE_SIZE_KEYS, IMAGE_SIZES } from '@/lib/image-size';
+import { markdownComponents } from '@/lib/markdown';
 import { applyAction, type Action } from '@/lib/markdown-format';
 import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
 import { supabaseClient } from '@/lib/supabase';
-import type { ImageSize } from '@/lib/markdown';
+import type { ImageSize } from '@/lib/image-size';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 const TAG_OPTIONS: PostTag[] = ['tech', 'life', 'retrospective'];
@@ -50,11 +47,11 @@ export default function PostEditor() {
   const [tags, setTags] = useState<PostTag[]>([]);
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [published, setPublished] = useState(false);
-  // 이미 발행된 글의 발행일 — 수정할 때 오늘 날짜로 덮어쓰지 않으려고 들고 있어요.
+  // 이미 발행된 글의 발행일 — 수정할 때 오늘 날짜로 덮어쓰지 않으려고 들고 있다.
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   // 발행일을 직접 고를 때 쓰는 'YYYY-MM-DD'
   const [publishedDate, setPublishedDate] = useState('');
-  // 예약 발행 시각 'HH:MM'. 비워두면 그 날 정오로 잡아요.
+  // 예약 발행 시각 'HH:MM'. 비워두면 그 날 정오로 잡는다.
   const [publishedTime, setPublishedTime] = useState('');
   const [imageSize, setImageSize] = useState<ImageSize>('large');
 
@@ -139,7 +136,7 @@ export default function PostEditor() {
     setContentUploading(true);
     try {
       const url = await uploadImage(file);
-      // 크기는 마크다운 제목 자리에 넣어요. lib/markdown.tsx 가 이걸 읽습니다.
+      // 크기는 마크다운 제목 자리에 넣는다. lib/markdown.tsx 가 이걸 읽는다.
       const suffix = imageSize === 'large' ? '' : ` "${imageSize}"`;
       const markdown = `![${file.name}](${url}${suffix})`;
       const textarea = contentRef.current;
@@ -175,7 +172,7 @@ export default function PostEditor() {
   /**
    * 발행일 결정 규칙
    * - 날짜를 손대지 않았으면 원래 발행일 그대로 (수정할 때마다 오늘로 밀리지 않게)
-   * - 날짜를 바꿨으면 그 날 정오로 — 시간대가 달라져도 날짜가 하루 밀리지 않아요
+   * - 날짜를 바꿨으면 그 날 정오로 — 시간대가 달라져도 날짜가 하루 밀리지 않는다
    * - 처음 발행하는데 날짜를 안 골랐으면 지금
    */
   function resolvePublishedAt(): string | null {
@@ -422,7 +419,7 @@ export default function PostEditor() {
                 checked={published}
                 onChange={(e) => {
                   setPublished(e.target.checked);
-                  // 처음 체크할 때 날짜 칸을 오늘로 채워둬요.
+                  // 처음 체크할 때 날짜 칸을 오늘로 채워둔다.
                   if (e.target.checked && !publishedDate) {
                     setPublishedDate(toDateKey(new Date()));
                   }

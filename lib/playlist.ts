@@ -6,7 +6,7 @@ export interface Track {
 }
 
 /**
- * 블로그에 깔리는 노래 목록. 순서대로 재생되고, 마지막 곡이 끝나면 처음으로 돌아가요.
+ * 블로그에 깔리는 노래 목록. 순서대로 재생되고, 마지막 곡이 끝나면 처음으로 돌아간다.
  * 곡을 바꾸려면 유튜브에서 '공유' 눌러서 나온 주소를 url 자리에 붙여넣기만 하면 됩니다.
  */
 export const PLAYLIST: Track[] = [
@@ -19,7 +19,7 @@ function isVideoId(value: string | null): value is string {
 }
 
 /**
- * 유튜브 주소에서 영상 ID(11글자)만 뽑아내요.
+ * 유튜브 주소에서 영상 ID(11글자)만 뽑아낸다.
  * 주소를 통째로 뜯어보기 때문에 유튜브가 아닌 주소는 걸러집니다.
  * (예전에는 `?v=`만 보고 있어서 아무 사이트 주소나 통과했어요.)
  */
@@ -40,7 +40,7 @@ export function youtubeId(url: string): string | null {
 
   if (host !== 'youtube.com' && host !== 'youtube-nocookie.com') return null;
 
-  // /watch?v=ID — 다른 파라미터가 앞에 붙어 있어도 상관없어요.
+  // /watch?v=ID — 다른 파라미터가 앞에 붙어 있어도 상관없다.
   const fromQuery = parsed.searchParams.get('v');
   if (isVideoId(fromQuery)) return fromQuery;
 

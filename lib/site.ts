@@ -3,7 +3,7 @@ function resolveSiteUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '');
   }
-  // Vercel의 '대표 도메인'. 배포할 때마다 바뀌는 주소가 아니라 고정된 쪽이에요.
+  // Vercel의 '대표 도메인'. 배포할 때마다 바뀌는 주소가 아니라 고정된 쪽이다.
   if (process.env.VERCEL_PROJECT_PRODUCTION_URL) {
     return `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`;
   }
@@ -40,10 +40,10 @@ export const education = {
 };
 
 /**
- * Giscus 댓글 — GitHub Discussions에 댓글을 저장해요.
+ * Giscus 댓글 — GitHub Discussions에 댓글을 저장한다.
  *
  * 네 값 모두 페이지 소스에 그대로 드러나는 공개 식별자라 여기 적어둡니다.
- * (네이버 소유확인 코드와 같은 이유예요. 환경변수를 매번 챙길 필요가 없어요.)
+ * (네이버 소유확인 코드와 같은 이유다. 환경변수를 매번 챙길 필요가 없다.)
  * 저장소를 옮기면 https://giscus.app 에서 새 값을 받아 이 네 줄만 고치면 됩니다.
  */
 export const giscus = {
@@ -61,17 +61,17 @@ export const siteGithub = 'https://github.com/woohaharam';
 
 /**
  * 인스타그램. 공유 주소에 붙어 오는 igsi·utm_source 같은 추적 값은
- * 떼고 계정 주소만 남겼어요.
+ * 떼고 계정 주소만 남겼다.
  */
 export const siteInstagram = 'https://www.instagram.com/woo._.0515';
 export const siteInstagramHandle = '@woo._.0515';
 
 /**
- * 사이트 소유 확인 코드. 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니에요.
+ * 사이트 소유 확인 코드. 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니다.
  *
  * 네이버 값은 환경변수를 보지 않고 여기 적힌 걸 그대로 씁니다.
  * 예전에는 환경변수를 우선했는데, Vercel에 잘못된 값이 남아 있으면 그게 이겨서
- * 소유확인이 조용히 실패하더라고요. 바꿀 일이 생기면 이 줄만 고치면 돼요.
+ * 소유확인이 조용히 실패하더라고요. 바꿀 일이 생기면 이 줄만 고치면 된다.
  */
 export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 

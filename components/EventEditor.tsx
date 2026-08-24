@@ -32,7 +32,7 @@ export default function EventEditor() {
   }
 
   useEffect(() => {
-    // 기본값은 오늘 — 서버/브라우저 시간대 차이를 피하려고 마운트 후에 채워요.
+    // 기본값은 오늘 — 서버/브라우저 시간대 차이를 피하려고 마운트 후에 채운다.
     setStartDate(toDateKey(new Date()));
     loadEvents();
   }, []);

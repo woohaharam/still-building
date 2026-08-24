@@ -67,9 +67,9 @@ export default function PostArticle({
         <ReactMarkdown
           remarkPlugins={[remarkGfm]}
           rehypePlugins={[
-            // 제목에 id를 붙여야 목차 링크가 걸려요.
+            // 제목에 id를 붙여야 목차 링크가 걸린다.
             rehypeSlug,
-            // 모르는 언어를 적어도 그냥 강조 없이 넘어가게 해요.
+            // 모르는 언어를 적어도 그냥 강조 없이 넘어가게 한다.
             [rehypeHighlight, { ignoreMissing: true }],
           ]}
           components={markdownComponents}

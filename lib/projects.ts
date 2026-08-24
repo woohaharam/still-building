@@ -52,7 +52,7 @@ export interface Project {
 }
 
 /**
- * 프로젝트를 추가하려면 여기에 항목을 하나 더 넣으면 돼요.
+ * 프로젝트를 추가하려면 여기에 항목을 하나 더 넣으면 된다.
  * 목록(/projects), 상세(/projects/[slug]), 메인의 개수 표시가 모두 이 배열을 따라갑니다.
  * team·contribution·impact·features·architecture·troubles는 선택이고,
  * 없으면 그 자리만 화면에서 빠집니다. 최근에 한 것부터 위로.
