@@ -24,7 +24,7 @@ export default function ShareLink({
       await navigator.clipboard.writeText(url);
       setCopied(true);
     } catch {
-      // 클립보드를 막아둔 브라우저도 있어요. 그럴 땐 주소를 그대로 보여줍니다.
+      // 클립보드를 막아둔 브라우저에서는 주소를 그대로 보여준다.
       window.prompt('아래 주소를 복사해 주세요', url);
     }
   }

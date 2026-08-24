@@ -10,7 +10,7 @@ import {
 } from 'react';
 
 /**
- * 글 본문의 코드 블록. 위에 얇은 바를 붙여서 언어 이름과 복사 버튼을 보여줘요.
+ * 글 본문의 코드 블록. 위에 얇은 바를 붙여서 언어 이름과 복사 버튼을 보여준다.
  * ReactMarkdown의 `pre` 자리에 그대로 끼워 씁니다.
  */
 export default function CodeBlock({
@@ -21,7 +21,7 @@ export default function CodeBlock({
   const [copied, setCopied] = useState(false);
   const [failed, setFailed] = useState(false);
 
-  // ```ts 처럼 적으면 안쪽 <code>에 language-ts 클래스가 붙어요.
+  // ```ts 처럼 적으면 안쪽 <code>에 language-ts 클래스가 붙는다.
   const codeChild = Children.toArray(children).find(isValidElement) as
     ReactElement<{ className?: string }> | undefined;
   const language =
@@ -37,7 +37,7 @@ export default function CodeBlock({
       setFailed(false);
       setTimeout(() => setCopied(false), 1600);
     } catch {
-      // http나 오래된 브라우저에서는 클립보드가 막혀 있어요.
+      // http나 오래된 브라우저에서는 클립보드가 막혀 있다.
       setFailed(true);
       setTimeout(() => setFailed(false), 2400);
     }

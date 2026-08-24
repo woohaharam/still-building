@@ -1,8 +1,8 @@
 /**
  * 편집기 서식 버튼이 실제로 하는 일.
  *
- * textarea를 직접 만지지 않고 "이 값에서 이 구간을 이렇게 바꾼다"만 계산해요.
- * 순수 함수라 테스트로 묶어둘 수 있습니다.
+ * textarea를 직접 만지지 않고 "이 값에서 이 구간을 이렇게 바꾼다"만 계산한다.
+ * 순수 함수라 테스트로 묶어둘 수 있다.
  */
 
 export interface Action {
@@ -115,7 +115,7 @@ export function applyAction(
     };
   }
 
-  // 줄 단위 서식은 줄 맨 앞을 기준으로 봐요.
+  // 줄 단위 서식은 줄 맨 앞을 기준으로 본다.
   const lineStart = value.lastIndexOf('\n', start - 1) + 1;
   const head = value.slice(lineStart, start);
 
@@ -128,7 +128,7 @@ export function applyAction(
     };
   }
 
-  // 줄 중간에서 눌렀으면 줄을 하나 새로 만들어요.
+  // 줄 중간에서 눌렀으면 줄을 하나 새로 만든다.
   const lead = head.trim() === '' ? '' : '\n';
   const inserted = `${lead}${prefix}${body}`;
 

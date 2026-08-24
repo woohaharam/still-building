@@ -20,7 +20,7 @@ function injectGiscus(container: HTMLElement) {
   script.setAttribute('data-repo-id', giscus.repoId);
   script.setAttribute('data-category', giscus.category);
   script.setAttribute('data-category-id', giscus.categoryId);
-  // 글 주소를 기준으로 Discussion을 하나씩 만들어요.
+  // 글 주소를 기준으로 Discussion을 하나씩 만든다.
   script.setAttribute('data-mapping', 'pathname');
   script.setAttribute('data-strict', '0');
   script.setAttribute('data-reactions-enabled', '1');
@@ -34,7 +34,7 @@ function injectGiscus(container: HTMLElement) {
 
 /**
  * GitHub Discussions에 댓글을 저장하는 giscus.
- * 설정값이 없으면 아무것도 그리지 않아요 — 빈 댓글창이 뜨는 것보다 낫습니다.
+ * 설정값이 없으면 아무것도 그리지 않는다. 빈 댓글창이 뜨는 것보다 낫다.
  */
 export default function Comments() {
   const ref = useRef<HTMLDivElement>(null);
@@ -43,7 +43,7 @@ export default function Comments() {
     const container = ref.current;
     if (!giscusEnabled || !container) return;
 
-    // 개발 모드에서는 effect가 두 번 도니까 스크립트는 한 번만 넣어요.
+    // 개발 모드에서는 effect가 두 번 도니까 스크립트는 한 번만 넣는다.
     // 여기서 통째로 빠져나가면 아래 테마 감시가 안 걸립니다.
     if (container.childElementCount === 0) {
       injectGiscus(container);

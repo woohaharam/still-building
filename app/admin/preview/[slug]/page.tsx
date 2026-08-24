@@ -9,7 +9,7 @@ type State = 'loading' | 'ready' | 'signed-out' | 'missing';
 
 /**
  * 임시저장 글을 실제 글 화면 그대로 볼 수 있는 곳.
- * 브라우저에 로그인 세션이 있어야 DB가 임시저장 글을 내줘요.
+ * 브라우저에 로그인 세션이 있어야 DB가 임시저장 글을 내준다.
  */
 export default function PreviewPage({ params }: { params: { slug: string } }) {
   const [state, setState] = useState<State>('loading');

@@ -14,7 +14,7 @@ interface YouTubePlayer {
   destroy(): void;
 }
 
-// YT 전역 객체에는 타입 정의가 없어서 any로 받고, 쓰는 쪽에서 좁혀요.
+// YT 전역 객체에는 타입 정의가 없어서 any로 받고, 쓰는 쪽에서 좁힌다.
 let apiPromise: Promise<any> | null = null;
 
 /** 유튜브 스크립트는 재생을 누른 순간에만 받아와요. 안 듣는 사람은 한 바이트도 안 씁니다. */
@@ -38,7 +38,7 @@ function loadYouTubeApi(): Promise<any> {
     script.src = 'https://www.youtube.com/iframe_api';
     script.async = true;
     script.onerror = () => {
-      // 실패한 약속을 캐시해두면 영영 재시도가 안 되니 비워둬요.
+      // 실패한 약속을 캐시해두면 영영 재시도가 안 되니 비워둔다.
       apiPromise = null;
       reject(new Error('유튜브 스크립트를 못 받았어요'));
     };
@@ -114,7 +114,7 @@ export default function MusicPlayer() {
       const title = player.getVideoData?.()?.title;
       if (title) setAutoTitle(title);
     } catch {
-      // 제목을 못 읽어도 재생에는 문제 없어요.
+      // 제목을 못 읽어도 재생에는 문제 없다.
     }
   }, []);
 
@@ -130,7 +130,7 @@ export default function MusicPlayer() {
       return null;
     }
 
-    // YT가 이 div를 iframe으로 갈아치우기 때문에, 리액트가 모르는 노드로 만들어서 넘겨요.
+    // YT가 이 div를 iframe으로 갈아치운다. 리액트가 모르는 노드로 만들어 넘긴다.
     const host = document.createElement('div');
     containerRef.current.appendChild(host);
 
@@ -158,7 +158,7 @@ export default function MusicPlayer() {
           }
         },
         onError: () => {
-          // 퍼가기가 막힌 영상이면 조용히 다음 곡으로 넘어가요.
+          // 퍼가기가 막힌 영상이면 조용히 다음 곡으로 넘어간다.
           errorStreakRef.current += 1;
           if (errorStreakRef.current >= TRACKS.length) {
             setPlaying(false);
@@ -187,7 +187,7 @@ export default function MusicPlayer() {
         if (saved.open) setOpen(true);
       }
     } catch {
-      // 저장된 게 깨져 있으면 그냥 처음부터 시작해요.
+      // 저장된 게 깨져 있으면 그냥 처음부터 시작한다.
     }
     setMounted(true);
   }, []);
@@ -197,12 +197,12 @@ export default function MusicPlayer() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify({ open, index }));
     } catch {
-      // 저장 못 해도 이번 방문 동안은 잘 돌아가요.
+      // 저장 못 해도 이번 방문 동안은 잘 돌아간다.
     }
   }, [mounted, open, index]);
 
-  // 지난번에 켜둔 채로 나갔으면 다시 틀어봐요.
-  // 브라우저가 소리 있는 자동재생을 막으면 그냥 멈춘 채로 남고, 누르면 시작돼요.
+  // 지난번에 켜둔 채로 나갔으면 다시 틀어본다.
+  // 브라우저가 소리 있는 자동재생을 막으면 그냥 멈춘 채로 남고, 누르면 시작된다.
   useEffect(() => {
     if (!mounted || !open || playerRef.current) return;
     ensurePlayer();
@@ -239,7 +239,7 @@ export default function MusicPlayer() {
     setOpen(false);
   }
 
-  // 글 쓰는 중에 노래가 따라다니면 방해되니까 관리자 화면에서는 안 띄워요.
+  // 글 쓰는 중에 노래가 따라다니면 방해되니까 관리자 화면에서는 띄우지 않는다.
   if (TRACKS.length === 0 || pathname?.startsWith('/admin')) return null;
 
   const track = TRACKS[index];

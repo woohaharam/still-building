@@ -4,7 +4,7 @@ import { ACTIONS, type Action } from '@/lib/markdown-format';
 
 /**
  * 본문 편집기 위에 붙는 서식 버튼.
- * 마크다운을 외우지 않아도 제목 크기와 글자 두께를 바꿀 수 있게 하는 게 목적이에요.
+ * 마크다운을 외우지 않아도 제목 크기와 글자 두께를 바꿀 수 있게 하는 게 목적이다.
  * 실제 계산은 lib/markdown-format.ts 가 합니다.
  */
 export default function MarkdownToolbar({

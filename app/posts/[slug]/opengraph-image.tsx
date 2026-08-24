@@ -30,9 +30,9 @@ export default async function PostOgImage({
 
   const title = post?.title || siteName;
   const date = formatDate(post?.published_at ?? null);
-  // 제목이 길면 글자를 줄여서 로고와 부딪히지 않게 해요.
+  // 제목이 길면 글자를 줄여서 로고와 부딪히지 않게 한다.
   const titleSize = title.length > 70 ? 46 : title.length > 40 ? 56 : 68;
-  // 카드에 실제로 그릴 글자만 모아서 폰트를 요청해요.
+  // 카드에 실제로 그릴 글자만 모아서 폰트를 요청한다.
   const font = await loadKoreanFont(`${title}${date}${siteName}…`);
 
   return new ImageResponse(

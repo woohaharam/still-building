@@ -25,7 +25,7 @@ export default function PostList({
   const [activeTag, setActiveTag] = useState<PostTag | 'all'>('all');
   const [query, setQuery] = useState('');
 
-  // 제목·요약·본문을 통째로 훑어요. 글이 아주 많아지면 그때 서버 검색으로 옮기면 돼요.
+  // 제목·요약·본문을 통째로 훑어요. 글이 아주 많아지면 그때 서버 검색으로 옮기면 된다.
   const searched = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return posts;

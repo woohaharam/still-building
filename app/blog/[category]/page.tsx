@@ -16,7 +16,7 @@ export const revalidate = 0;
 
 /**
  * 카테고리 주소는 세 개뿐이라 목록을 미리 알려줍니다.
- * 여기 없는 주소는 페이지가 돌기 전에 Next가 404로 돌려보내요.
+ * 여기 없는 주소는 페이지가 돌기 전에 Next가 404로 돌려보낸다.
  */
 export const dynamicParams = false;
 

@@ -8,7 +8,7 @@ export function stripMarkdown(markdown: string): string {
       .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
       .replace(/^\s{0,3}#{1,6}\s+/gm, '')
       .replace(/^\s{0,3}>\s?/gm, '')
-      // 표 구분선(|---|---|)이나 구분선(---)처럼 글자가 아닌 줄은 통째로 버려요.
+      // 표 구분선(|---|---|)이나 구분선(---)처럼 글자가 아닌 줄은 통째로 버린다.
       .replace(/^[-:|\s]{3,}$/gm, ' ')
       .replace(/^\s{0,3}[-*+]\s+/gm, '')
       .replace(/[*_~|]/g, '')
@@ -20,7 +20,7 @@ export function stripMarkdown(markdown: string): string {
 /**
  * 검색 결과에 한 줄로 뜨는 설명.
  * 요약을 안 적어둔 글은 본문 앞부분을 잘라서 써요 — 설명이 비면 구글이
- * 아무 문장이나 골라서 보여주거든요.
+ * 아무 문장이나 골라서 보여주기 때문이다.
  */
 export function metaDescription(
   source: { excerpt?: string | null; content: string },
