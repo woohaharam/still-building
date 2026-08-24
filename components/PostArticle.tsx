@@ -3,10 +3,10 @@ import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
-import CodeBlock from './CodeBlock';
 import ReadingProgress from './ReadingProgress';
 import ShareLink from './ShareLink';
 import TableOfContents from './TableOfContents';
+import { markdownComponents } from '@/lib/markdown';
 import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
 import { Post, TAG_LABELS } from '@/lib/types';
@@ -72,7 +72,7 @@ export default function PostArticle({
             // 모르는 언어를 적어도 그냥 강조 없이 넘어가게 해요.
             [rehypeHighlight, { ignoreMissing: true }],
           ]}
-          components={{ pre: CodeBlock }}
+          components={markdownComponents}
         >
           {post.content}
         </ReactMarkdown>

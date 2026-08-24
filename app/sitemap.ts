@@ -3,6 +3,7 @@ import { getPublishedPosts } from '@/lib/posts';
 import { PROJECTS } from '@/lib/projects';
 import { PUBLICATIONS } from '@/lib/publications';
 import { postUrl, siteUrl } from '@/lib/site';
+import { POST_TAGS, TAG_SLUGS } from '@/lib/types';
 
 export const revalidate = 0;
 
@@ -60,6 +61,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: 'daily',
       priority: 0.9,
     },
+    ...POST_TAGS.map((tag) => ({
+      url: `${siteUrl}/blog/${TAG_SLUGS[tag]}`,
+      lastModified,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    })),
     ...posts.map((post) => ({
       url: postUrl(post.slug),
       lastModified: new Date(post.published_at || post.created_at),

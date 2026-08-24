@@ -9,6 +9,8 @@ import {
   siteAuthorAlias,
   siteEmail,
   siteGithub,
+  siteInstagram,
+  siteInstagramHandle,
   siteUrl,
 } from '@/lib/site';
 
@@ -154,6 +156,19 @@ export default function AboutPage() {
               >
                 <span className="font-medium transition-colors group-hover:text-accent">
                   github.com/woohaharam
+                </span>
+                <span className="text-ink-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                  ↗
+                </span>
+              </a>
+              <a
+                href={siteInstagram}
+                target="_blank"
+                rel="noreferrer"
+                className="group flex items-center justify-between border-b border-line py-5"
+              >
+                <span className="font-medium transition-colors group-hover:text-accent">
+                  인스타그램 {siteInstagramHandle}
                 </span>
                 <span className="text-ink-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
                   ↗

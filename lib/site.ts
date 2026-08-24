@@ -34,8 +34,8 @@ export const siteAuthorAlias = 'Jack';
 
 export const education = {
   school: '동국대학교',
-  major: '컴퓨터공학과',
-  majorEnglish: 'Department of Computer Science and Engineering',
+  major: '컴퓨터공학전공',
+  majorEnglish: 'Major in Computer Science and Engineering',
   gpa: '4.19 / 4.5',
 };
 
@@ -58,6 +58,13 @@ export const giscusEnabled =
   !!giscus.repo && !!giscus.repoId && !!giscus.category && !!giscus.categoryId;
 export const siteEmail = 'pmypmy1234567@naver.com';
 export const siteGithub = 'https://github.com/woohaharam';
+
+/**
+ * 인스타그램. 공유 주소에 붙어 오는 igsi·utm_source 같은 추적 값은
+ * 떼고 계정 주소만 남겼어요.
+ */
+export const siteInstagram = 'https://www.instagram.com/woo._.0515';
+export const siteInstagramHandle = '@woo._.0515';
 
 /**
  * 사이트 소유 확인 코드. 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니에요.

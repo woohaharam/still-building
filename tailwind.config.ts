@@ -6,6 +6,9 @@ const config: Config = {
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
+    // lib에서도 클래스 이름을 쓰는 곳이 있어요(본문 이미지 크기).
+    // 여기 빠져 있으면 그 클래스만 조용히 생성되지 않습니다.
+    './lib/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
     extend: {

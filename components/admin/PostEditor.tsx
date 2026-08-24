@@ -4,13 +4,27 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
-import CodeBlock from '@/components/CodeBlock';
 import { toDateKey } from '@/lib/calendar';
+import {
+  IMAGE_SIZE_KEYS,
+  IMAGE_SIZES,
+  markdownComponents,
+} from '@/lib/markdown';
+import { applyAction, type Action } from '@/lib/markdown-format';
+import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
 import { supabaseClient } from '@/lib/supabase';
+import type { ImageSize } from '@/lib/markdown';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 const TAG_OPTIONS: PostTag[] = ['tech', 'life', 'retrospective'];
+
+/** Date에서 시각 입력칸에 넣을 'HH:MM'을 뽑아요. */
+function toTimeValue(date: Date) {
+  const hh = String(date.getHours()).padStart(2, '0');
+  const mm = String(date.getMinutes()).padStart(2, '0');
+  return `${hh}:${mm}`;
+}
 
 function slugify(title: string) {
   return title
@@ -40,6 +54,9 @@ export default function PostEditor() {
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
   // 발행일을 직접 고를 때 쓰는 'YYYY-MM-DD'
   const [publishedDate, setPublishedDate] = useState('');
+  // 예약 발행 시각 'HH:MM'. 비워두면 그 날 정오로 잡아요.
+  const [publishedTime, setPublishedTime] = useState('');
+  const [imageSize, setImageSize] = useState<ImageSize>('large');
 
   const [coverUploading, setCoverUploading] = useState(false);
   const [contentUploading, setContentUploading] = useState(false);
@@ -73,6 +90,7 @@ export default function PostEditor() {
     setPublished(false);
     setPublishedAt(null);
     setPublishedDate('');
+    setPublishedTime('');
   }
 
   function loadIntoForm(post: Post) {
@@ -87,6 +105,9 @@ export default function PostEditor() {
     setPublishedAt(post.published_at);
     setPublishedDate(
       post.published_at ? toDateKey(new Date(post.published_at)) : ''
+    );
+    setPublishedTime(
+      post.published_at ? toTimeValue(new Date(post.published_at)) : ''
     );
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -118,7 +139,9 @@ export default function PostEditor() {
     setContentUploading(true);
     try {
       const url = await uploadImage(file);
-      const markdown = `![${file.name}](${url})`;
+      // 크기는 마크다운 제목 자리에 넣어요. lib/markdown.tsx 가 이걸 읽습니다.
+      const suffix = imageSize === 'large' ? '' : ` "${imageSize}"`;
+      const markdown = `![${file.name}](${url}${suffix})`;
       const textarea = contentRef.current;
       if (textarea) {
         const start = textarea.selectionStart ?? content.length;
@@ -160,13 +183,42 @@ export default function PostEditor() {
 
     if (publishedDate) {
       const current = publishedAt ? new Date(publishedAt) : null;
-      if (current && toDateKey(current) === publishedDate) return publishedAt;
+      const sameDay = current && toDateKey(current) === publishedDate;
+      const sameTime =
+        current && (!publishedTime || toTimeValue(current) === publishedTime);
+      if (sameDay && sameTime) return publishedAt;
 
       const [year, month, day] = publishedDate.split('-').map(Number);
-      return new Date(year, month - 1, day, 12, 0, 0).toISOString();
+      const [hour, minute] = publishedTime
+        ? publishedTime.split(':').map(Number)
+        : [12, 0];
+      return new Date(year, month - 1, day, hour, minute, 0).toISOString();
     }
 
     return publishedAt || new Date().toISOString();
+  }
+
+  /** 지금 폼 내용대로 저장하면 예약 상태가 되는지. */
+  const scheduledFor = (() => {
+    if (!published) return null;
+    const at = resolvePublishedAt();
+    if (!at) return null;
+    const date = new Date(at);
+    return date.getTime() > Date.now() ? date : null;
+  })();
+
+  /** 서식 버튼을 눌렀을 때 본문에 반영해요. */
+  function handleToolbarAction(action: Action) {
+    const textarea = contentRef.current;
+    const start = textarea?.selectionStart ?? content.length;
+    const end = textarea?.selectionEnd ?? content.length;
+    const next = applyAction(content, start, end, action);
+
+    setContent(next.value);
+    requestAnimationFrame(() => {
+      textarea?.focus();
+      textarea?.setSelectionRange(next.selectionStart, next.selectionEnd);
+    });
   }
 
   async function handleSave() {
@@ -280,6 +332,23 @@ export default function PostEditor() {
           <div className="flex items-center justify-between">
             <span className="text-sm text-ink-soft">본문 (마크다운)</span>
             <div className="flex items-center gap-3">
+              <span className="flex items-center gap-1 text-xs text-ink-muted">
+                사진 크기
+                {IMAGE_SIZE_KEYS.map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    onClick={() => setImageSize(size)}
+                    className={`rounded px-1.5 py-0.5 transition-colors ${
+                      imageSize === size
+                        ? 'bg-ink text-paper'
+                        : 'hover:text-ink-soft'
+                    }`}
+                  >
+                    {IMAGE_SIZES[size].label}
+                  </button>
+                ))}
+              </span>
               <button
                 type="button"
                 onClick={() => contentFileInputRef.current?.click()}
@@ -310,20 +379,23 @@ export default function PostEditor() {
               <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
-                components={{ pre: CodeBlock }}
+                components={markdownComponents}
               >
                 {content || '_내용이 없어요._'}
               </ReactMarkdown>
             </div>
           ) : (
-            <textarea
-              ref={contentRef}
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              placeholder="여기에 마크다운으로 작성하세요..."
-              rows={16}
-              className="resize-y rounded-md border border-line px-3 py-2 font-mono text-sm focus:border-ink-muted focus:outline-none"
-            />
+            <div className="flex flex-col gap-2">
+              <MarkdownToolbar onAction={handleToolbarAction} />
+              <textarea
+                ref={contentRef}
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                placeholder="여기에 마크다운으로 작성하세요..."
+                rows={16}
+                className="resize-y rounded-md border border-line px-3 py-2 font-mono text-sm focus:border-ink-muted focus:outline-none"
+              />
+            </div>
           )}
 
           <div className="flex flex-wrap items-center gap-2">
@@ -368,9 +440,29 @@ export default function PostEditor() {
                   onChange={(e) => setPublishedDate(e.target.value)}
                   className="rounded-md border border-line px-2 py-1 text-sm text-ink focus:border-ink-muted focus:outline-none"
                 />
+                <input
+                  type="time"
+                  value={publishedTime}
+                  onChange={(e) => setPublishedTime(e.target.value)}
+                  className="rounded-md border border-line px-2 py-1 text-sm text-ink focus:border-ink-muted focus:outline-none"
+                />
               </label>
             )}
           </div>
+
+          {published && (
+            <p className="-mt-1 text-xs leading-relaxed text-ink-muted">
+              {scheduledFor ? (
+                <>
+                  <span className="font-medium text-accent">예약 발행</span> —{' '}
+                  {scheduledFor.toLocaleString('ko-KR')} 이후에 공개돼요. 그
+                  전까지는 목록·RSS·사이트맵 어디에도 안 나옵니다.
+                </>
+              ) : (
+                '발행일을 앞으로 잡으면 그 시각까지 감춰뒀다가 자동으로 공개돼요. 시각을 비우면 정오로 잡습니다.'
+              )}
+            </p>
+          )}
 
           <div className="flex items-center gap-3">
             <button
@@ -413,10 +505,15 @@ export default function PostEditor() {
                   >
                     {post.title || '(제목 없음)'}
                   </button>
-                  {!post.published && (
+                  {!post.published ? (
                     <span className="shrink-0 text-xs text-ink-muted">
                       임시
                     </span>
+                  ) : (
+                    post.published_at &&
+                    new Date(post.published_at).getTime() > Date.now() && (
+                      <span className="shrink-0 text-xs text-accent">예약</span>
+                    )
                   )}
                 </div>
                 <div className="mt-1 flex items-center justify-between gap-2">

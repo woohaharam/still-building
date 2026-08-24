@@ -3,6 +3,17 @@ import { supabaseClient } from './supabase';
 import { Post } from './types';
 
 /**
+ * 예약 발행 — published가 켜져 있어도 발행 시각이 아직 안 지났으면 감춰요.
+ *
+ * published_at이 비어 있는 옛 글까지 걸러지면 안 되니까 or로 묶습니다.
+ * 이 검사는 화면 쪽 편의고, 진짜 차단은 DB 정책이 합니다
+ * (supabase-migration-schedule.sql 참고).
+ */
+function visibleNow() {
+  return `published_at.is.null,published_at.lte.${new Date().toISOString()}`;
+}
+
+/**
  * 조회에 실패하면 빈 배열을 돌려주는 대신 에러를 던져요.
  * 조용히 넘어가면 화면에 "아직 작성된 글이 없어요"가 떠서,
  * 글이 없는 건지 서버가 죽은 건지 구분할 수가 없거든요.
@@ -15,6 +26,7 @@ export const getPublishedPosts = cache(
       .from('posts')
       .select('*')
       .eq('published', true)
+      .or(visibleNow())
       .order('published_at', { ascending: false });
 
     if (error) {
@@ -35,6 +47,7 @@ export const getPostBySlug = cache(async function getPostBySlug(
     .select('*')
     .eq('slug', slug)
     .eq('published', true)
+    .or(visibleNow())
     .maybeSingle();
 
   if (error) {
