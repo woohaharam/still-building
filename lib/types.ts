@@ -19,6 +19,26 @@ export const TAG_LABELS: Record<PostTag, string> = {
   retrospective: '회고',
 };
 
+/** 카테고리별 페이지(/blog/개발 …)에서 쓰는 설명. */
+export const TAG_DESCRIPTIONS: Record<PostTag, string> = {
+  tech: '만들면서 막힌 것과 푼 방법. 이 블로그의 본체예요.',
+  life: '개발 사이사이의 하루와 생각.',
+  retrospective: '끝내고 나서 돌아본 것들.',
+};
+
+/** 주소에 쓰는 이름. 한글 slug는 인코딩이 지저분해져서 영문으로 둡니다. */
+export const TAG_SLUGS: Record<PostTag, string> = {
+  tech: 'dev',
+  life: 'life',
+  retrospective: 'retrospective',
+};
+
+export const POST_TAGS: PostTag[] = ['tech', 'life', 'retrospective'];
+
+export function tagFromSlug(slug: string): PostTag | null {
+  return POST_TAGS.find((tag) => TAG_SLUGS[tag] === slug) ?? null;
+}
+
 export type EventKind = 'plan' | 'deadline' | 'note';
 
 export interface CalendarEvent {

@@ -256,10 +256,13 @@ a {
   margin: 0.4em 0;
 }
 
+/*
+  폭은 여기서 정하지 않아요. lib/markdown.tsx 가 크기 클래스를 붙이는데,
+  여기에 max-width를 두면 선택자가 더 세서 그 클래스를 눌러버립니다.
+*/
 .prose-post img {
   border-radius: 8px;
   margin: 1.5em 0;
-  max-width: 100%;
 }
 
 .prose-post hr {

@@ -12,7 +12,16 @@ function formatDate(dateStr: string | null) {
   return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
 }
 
-export default function PostList({ posts }: { posts: Post[] }) {
+export default function PostList({
+  posts,
+  showTagFilter = true,
+  emptyLabel = '이 태그',
+}: {
+  posts: Post[];
+  /** 카테고리 페이지에서는 이미 걸러진 목록이라 필터를 감춰요. */
+  showTagFilter?: boolean;
+  emptyLabel?: string;
+}) {
   const [activeTag, setActiveTag] = useState<PostTag | 'all'>('all');
   const [query, setQuery] = useState('');
 
@@ -45,7 +54,7 @@ export default function PostList({ posts }: { posts: Post[] }) {
     if (posts.length === 0)
       return '아직 작성된 글이 없어요. 첫 글을 기다리고 있어요.';
     if (query.trim()) return `'${query.trim()}'와 맞는 글을 찾지 못했어요.`;
-    return '이 태그에 해당하는 글이 아직 없어요.';
+    return `${emptyLabel}에 해당하는 글이 아직 없어요.`;
   }
 
   return (
@@ -69,7 +78,9 @@ export default function PostList({ posts }: { posts: Post[] }) {
         )}
       </div>
 
-      <TagFilter active={activeTag} onChange={setActiveTag} counts={counts} />
+      {showTagFilter && (
+        <TagFilter active={activeTag} onChange={setActiveTag} counts={counts} />
+      )}
 
       {filtered.length === 0 && (
         <p className="py-12 text-center text-sm text-ink-muted">

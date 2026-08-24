@@ -8,6 +8,7 @@ import {
   naverSiteVerification,
   siteAuthor,
   siteDescription,
+  siteInstagram,
   siteName,
   siteTitle,
   siteUrl,
@@ -114,6 +115,14 @@ export default function RootLayout({
               </a>
               <a href="/feed.xml" className="hover:text-ink-soft">
                 RSS
+              </a>
+              <a
+                href={siteInstagram}
+                target="_blank"
+                rel="noreferrer"
+                className="hover:text-ink-soft"
+              >
+                Instagram
               </a>
               <a
                 href="https://github.com/woohaharam"
