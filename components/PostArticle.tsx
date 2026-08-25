@@ -11,13 +11,8 @@ import { markdownComponents } from '@/lib/markdown';
 import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
 import { formatCount } from '@/lib/count';
+import { formatDate } from '@/lib/date';
 import { Post, TAG_LABELS } from '@/lib/types';
-
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-}
 
 /** 글 한 편의 생김새. 공개 페이지와 관리자 미리보기가 이걸 같이 써요. */
 export default function PostArticle({

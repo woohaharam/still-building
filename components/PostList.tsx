@@ -2,17 +2,9 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { readingMinutes } from '@/lib/reading';
-import { formatCount } from '@/lib/count';
-import { thumbnailOf } from '@/lib/thumbnail';
-import { Post, PostTag, TAG_LABELS } from '@/lib/types';
+import { Post, PostTag } from '@/lib/types';
+import PostRow from './PostRow';
 import TagFilter from './TagFilter';
-
-function formatDate(dateStr: string | null) {
-  if (!dateStr) return '';
-  const d = new Date(dateStr);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-}
 
 export default function PostList({
   posts,
@@ -97,36 +89,7 @@ export default function PostList({
               href={`/posts/${post.slug}`}
               className="group flex items-start gap-4"
             >
-              <span className="min-w-0 flex-1">
-                <span className="block text-lg font-semibold transition-colors group-hover:text-accent">
-                  {post.title}
-                </span>
-                {post.excerpt && (
-                  <span className="mt-2 block text-sm leading-relaxed text-ink-soft">
-                    {post.excerpt}
-                  </span>
-                )}
-                <span className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
-                  <span>{formatDate(post.published_at)}</span>
-                  <span>읽는 데 {readingMinutes(post.content)}분</span>
-                  {post.view_count > 0 && (
-                    <span>조회 {formatCount(post.view_count)}</span>
-                  )}
-                  {post.tags?.map((t) => (
-                    <span key={t}>#{TAG_LABELS[t]}</span>
-                  ))}
-                </span>
-              </span>
-
-              {thumbnailOf(post) && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={thumbnailOf(post)!}
-                  alt=""
-                  loading="lazy"
-                  className="h-20 w-20 shrink-0 rounded-md border border-line object-cover sm:h-24 sm:w-24"
-                />
-              )}
+              <PostRow post={post} />
             </Link>
           </li>
         ))}
