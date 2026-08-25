@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 
-// 블로그를 시작한 날짜 — 원하는 날짜로 바꿔도 됩니다.
+// 블로그를 시작한 날짜 — 원하는 날짜로 바꿔도 된다.
 const LAUNCH_DATE = '2026-08-15';
 
 export default function DaysCounter() {

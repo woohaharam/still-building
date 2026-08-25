@@ -1,4 +1,4 @@
-/** 사이트 주소·이름을 한 곳에서 관리해요. RSS, sitemap, 검색 노출이 모두 이걸 씁니다. */
+/** 사이트 주소·이름을 한 곳에서 관리한다. RSS, sitemap, 검색 노출이 모두 이걸 쓴다. */
 function resolveSiteUrl() {
   if (process.env.NEXT_PUBLIC_SITE_URL) {
     return process.env.NEXT_PUBLIC_SITE_URL.replace(/\/+$/, '');
@@ -42,9 +42,9 @@ export const education = {
 /**
  * Giscus 댓글 — GitHub Discussions에 댓글을 저장한다.
  *
- * 네 값 모두 페이지 소스에 그대로 드러나는 공개 식별자라 여기 적어둡니다.
+ * 네 값 모두 페이지 소스에 그대로 드러나는 공개 식별자라 여기 적어둔다.
  * (네이버 소유확인 코드와 같은 이유다. 환경변수를 매번 챙길 필요가 없다.)
- * 저장소를 옮기면 https://giscus.app 에서 새 값을 받아 이 네 줄만 고치면 됩니다.
+ * 저장소를 옮기면 https://giscus.app 에서 새 값을 받아 이 네 줄만 고치면 된다.
  */
 export const giscus = {
   repo: process.env.NEXT_PUBLIC_GISCUS_REPO || 'woohaharam/still-building',
@@ -69,7 +69,7 @@ export const siteInstagramHandle = '@woo._.0515';
 /**
  * 사이트 소유 확인 코드. 페이지 소스에 그대로 드러나는 공개값이라 비밀이 아니다.
  *
- * 네이버 값은 환경변수를 보지 않고 여기 적힌 걸 그대로 씁니다.
+ * 네이버 값은 환경변수를 보지 않고 여기 적힌 걸 그대로 쓴다.
  * 예전에는 환경변수를 우선했는데, Vercel에 잘못된 값이 남아 있으면 그게 이겨서
  * 소유확인이 조용히 실패하더라고요. 바꿀 일이 생기면 이 줄만 고치면 된다.
  */

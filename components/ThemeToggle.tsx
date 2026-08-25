@@ -6,7 +6,7 @@ type Theme = 'light' | 'dark';
 
 /**
  * 첫 칠하기 전에 layout의 인라인 스크립트가 이미 .dark를 붙여둔다.
- * 여기서는 그 상태를 읽어와서 버튼 모양만 맞춥니다.
+ * 여기서는 그 상태를 읽어와서 버튼 모양만 맞춘다.
  */
 export default function ThemeToggle() {
   const [theme, setTheme] = useState<Theme | null>(null);

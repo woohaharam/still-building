@@ -25,7 +25,7 @@ export default function ShareLink({
     countShare(slug);
   }
 
-  // 복사했다는 표시를 잠깐 보여주고 되돌립니다.
+  // 복사했다는 표시를 잠깐 보여주고 되돌린다.
   useEffect(() => {
     if (!copied) return;
     const timer = setTimeout(() => setCopied(false), 1800);

@@ -1,12 +1,12 @@
 import type { Config } from 'tailwindcss';
 
-/** 실제 색깔 값은 globals.css의 CSS 변수에 있어요. 다크 모드는 거기서 한 번에 갈아끼웁니다. */
+/** 실제 색깔 값은 globals.css의 CSS 변수에 있다. 다크 모드는 거기서 한 번에 갈아끼운다. */
 const config: Config = {
   darkMode: 'class',
   content: [
     './app/**/*.{js,ts,jsx,tsx,mdx}',
     './components/**/*.{js,ts,jsx,tsx,mdx}',
-    // lib에서도 클래스 이름을 쓰는 곳이 있어요(본문 이미지 크기).
+    // lib에서도 클래스 이름을 쓰는 곳이 있다(본문 이미지 크기).
     // 여기 빠져 있으면 그 클래스만 조용히 생성되지 않는다.
     './lib/**/*.{js,ts,jsx,tsx}',
   ],

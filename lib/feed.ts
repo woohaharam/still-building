@@ -11,7 +11,7 @@ export function escapeXml(value: string) {
     .replace(/'/g, '&apos;');
 }
 
-/** 발행된 글을 RSS 2.0으로 묶어요. 네이버는 사이트맵보다 이걸 더 많이 봅니다. */
+/** 발행된 글을 RSS 2.0으로 묶는다. 네이버는 사이트맵보다 이걸 더 많이 본다. */
 export function buildRssFeed(posts: Post[]): string {
   const items = posts
     .map((post) => {

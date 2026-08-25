@@ -24,7 +24,7 @@ export default function PostArticle({
   post: Post;
   backHref?: string;
   backLabel?: string;
-  /** 공개된 글에서만 넘겨요. 미리보기 화면에는 공유 버튼이 뜨지 않습니다. */
+  /** 공개된 글에서만 넘긴다. 미리보기 화면에는 공유 버튼이 뜨지 않는다. */
   shareUrl?: string;
 }) {
   return (

@@ -71,7 +71,7 @@ export const ACTIONS: (Action | 'divider')[] = [
   { label: '구분선', title: '구분선', prefix: '---', block: true },
 ];
 
-/** 블록 서식은 앞뒤에 빈 줄이 있어야 마크다운이 제대로 읽어요. */
+/** 블록 서식은 앞뒤에 빈 줄이 있어야 마크다운이 제대로 읽는다. */
 function padBlock(value: string, start: number, end: number, inserted: string) {
   const before = value.slice(0, start);
   const after = value.slice(end);
@@ -119,7 +119,7 @@ export function applyAction(
   const lineStart = value.lastIndexOf('\n', start - 1) + 1;
   const head = value.slice(lineStart, start);
 
-  // 이미 같은 기호가 붙어 있으면 떼어냅니다.
+  // 이미 같은 기호가 붙어 있으면 떼어낸다.
   if (head === '' && value.slice(start).startsWith(prefix)) {
     return {
       value: value.slice(0, start) + value.slice(start + prefix.length),

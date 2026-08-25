@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 
 /**
- * 페이지 가로폭. 글은 읽기 좋은 680px로 좁게, 랜딩은 넓게 씁니다.
+ * 페이지 가로폭. 글은 읽기 좋은 680px로 좁게, 랜딩은 넓게 쓴다.
  */
 export default function Container({
   wide = false,
