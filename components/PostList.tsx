@@ -2,47 +2,26 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Post, PostTag } from '@/lib/types';
+import { Post } from '@/lib/types';
 import PostRow from './PostRow';
-import TagFilter from './TagFilter';
 
 export default function PostList({
   posts,
-  showTagFilter = true,
-  emptyLabel = '이 태그',
+  emptyLabel = '이 카테고리',
 }: {
   posts: Post[];
-  /** 카테고리 페이지에서는 이미 걸러진 목록이라 필터를 감춰요. */
-  showTagFilter?: boolean;
   emptyLabel?: string;
 }) {
-  const [activeTag, setActiveTag] = useState<PostTag | 'all'>('all');
   const [query, setQuery] = useState('');
 
-  // 제목·요약·본문을 통째로 훑어요. 글이 아주 많아지면 그때 서버 검색으로 옮기면 된다.
-  const searched = useMemo(() => {
+  // 제목·요약·본문을 통째로 훑는다. 글이 아주 많아지면 그때 서버 검색으로 옮기면 된다.
+  const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return posts;
     return posts.filter((p) =>
       `${p.title} ${p.excerpt || ''} ${p.content}`.toLowerCase().includes(q)
     );
   }, [posts, query]);
-
-  const counts = useMemo(() => {
-    const c: Record<string, number> = {
-      all: searched.length,
-      tech: 0,
-      life: 0,
-      retrospective: 0,
-    };
-    searched.forEach((p) => p.tags?.forEach((t) => (c[t] = (c[t] || 0) + 1)));
-    return c;
-  }, [searched]);
-
-  const filtered = useMemo(() => {
-    if (activeTag === 'all') return searched;
-    return searched.filter((p) => p.tags?.includes(activeTag));
-  }, [searched, activeTag]);
 
   function emptyMessage() {
     if (posts.length === 0)
@@ -71,10 +50,6 @@ export default function PostList({
           </button>
         )}
       </div>
-
-      {showTagFilter && (
-        <TagFilter active={activeTag} onChange={setActiveTag} counts={counts} />
-      )}
 
       {filtered.length === 0 && (
         <p className="py-12 text-center text-sm text-ink-muted">
