@@ -130,11 +130,13 @@ grant execute on function public.open_diary(text) to anon, authenticated;
 -- 4. 비밀번호 설정 -----------------------------------------------------------
 --
 -- ↓ 아래 한 줄에서 여기에_비밀번호 만 실제 값으로 바꿔서 실행할 것.
---   이 파일은 공개 저장소에 올라가니까 진짜 비밀번호를 적어두면 안 된다.
+--   이 파일은 공개 저장소에 올라간다. 여기에 실제 비밀번호를 적으면 GitHub
+--   에서 누구나 볼 수 있고, 나중에 지워도 커밋 기록에는 그대로 남는다.
+--   값은 Supabase SQL Editor 창에만 붙여넣을 것.
 --   바꾸고 싶을 때도 같은 문장을 다시 실행하면 된다.
 --
 -- insert into public.diary_access (id, password_hash)
--- values (true, crypt('04150515', gen_salt('bf')))
+-- values (true, crypt('여기에_비밀번호', gen_salt('bf')))
 -- on conflict (id) do update
 --   set password_hash = excluded.password_hash,
 --       updated_at = now();

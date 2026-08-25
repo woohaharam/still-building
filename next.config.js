@@ -31,13 +31,26 @@ const securityHeaders = [
   잘못 조이면 댓글이나 음악이 조용히 안 뜹니다. 실제 사이트에서 콘솔에
   경고가 안 뜨는 걸 확인한 뒤에 Report-Only를 떼고 진짜로 막으면 돼요.
 */
+// 개발 서버는 React Refresh 가 eval 을 쓴다. 프로덕션 번들에는 eval 도
+// new Function 도 없어서(빌드 결과물에서 확인) 그때는 빼둔다. eval 을 열어두면
+// 스크립트를 밀어넣는 공격에 쓸 수 있는 통로가 하나 더 생긴다.
+const scriptSrc = [
+  "script-src 'self' 'unsafe-inline'",
+  process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : '',
+  'https://giscus.app https://www.youtube.com',
+]
+  .filter(Boolean)
+  .join(' ');
+
 const csp = [
   "default-src 'self'",
-  // Next.js가 페이지를 띄울 때 인라인 스크립트를 쓰기 때문에 unsafe-inline이 필요해요.
-  "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://giscus.app https://www.youtube.com",
+  // 테마를 미리 정하는 인라인 스크립트가 있어서 unsafe-inline 은 빼지 못한다.
+  scriptSrc,
   "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
   "font-src 'self' data: https://cdn.jsdelivr.net",
-  "img-src 'self' data: blob: https://*.supabase.co https://avatars.githubusercontent.com",
+  // 글에 외부 이미지 주소를 직접 적을 수 있어서 https 는 열어둔다.
+  // 이미지는 실행되지 않으니 스크립트만큼 위험하지 않다.
+  "img-src 'self' data: blob: https:",
   "connect-src 'self' https://*.supabase.co https://giscus.app",
   'frame-src https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com',
   "object-src 'none'",

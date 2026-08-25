@@ -19,7 +19,7 @@ describe('isImageSize', () => {
     expect(isImageSize('SMALL')).toBe(false);
   });
 
-  // in 연산자를 쓰면 여기서 전부 true 가 나와요.
+  // in 연산자를 쓰면 여기서 전부 true 가 나온다.
   it('프로토타입에 있는 이름에 속지 않는다', () => {
     for (const name of [
       'constructor',

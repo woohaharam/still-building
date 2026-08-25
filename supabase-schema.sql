@@ -1,5 +1,5 @@
 -- STILL BUILDING 블로그 - Supabase 스키마
--- Supabase 프로젝트 > SQL Editor 에서 실행하세요.
+-- Supabase 프로젝트 > SQL Editor 에서 실행한다.
 
 create table if not exists posts (
   id uuid primary key default gen_random_uuid(),
@@ -24,14 +24,14 @@ create policy "public can read published posts"
   on posts for select
   using (published = true);
 
--- ⚠️ 아래 이메일을 본인 Supabase 계정 이메일로 바꿔주세요.
--- 이 이메일로 로그인한 사람만 글과 일정을 쓰고 지울 수 있어요.
+-- ⚠️ 아래 이메일을 본인 Supabase 계정 이메일로 바꿀 것.
+-- 이 이메일로 로그인한 사람만 글과 일정을 쓰고 지울 수 있다.
 create or replace function public.is_owner()
 returns boolean
 language sql
 stable
 as $$
-  -- ⚠️ 이 저장소는 공개되어 있으니 실제 이메일을 여기 적어두지 마세요.
+  -- ⚠️ 이 저장소는 공개되어 있으니 실제 이메일을 여기 적어두지 말 것.
   -- SQL Editor에 붙여넣을 때만 본인 이메일로 바꿔서 실행하면 됩니다.
   select coalesce(auth.jwt() ->> 'email', '') = 'YOUR_EMAIL@example.com';
 $$;
@@ -76,7 +76,7 @@ create policy "owner can manage events"
   with check (public.is_owner());
 
 -- ────────────────────────────────────────────────
--- 이미지 업로드 (Storage) — 'post-images' 버킷을 먼저 만들어주세요
+-- 이미지 업로드 (Storage) — 'post-images' 버킷을 먼저 만들 것
 -- ────────────────────────────────────────────────
 
 create policy "public can read post images"
