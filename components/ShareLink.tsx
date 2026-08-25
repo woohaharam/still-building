@@ -1,7 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { countShare, formatCount } from '@/lib/stats';
+import { formatCount } from '@/lib/count';
+import { countShare } from '@/lib/stats';
 
 /** 글 주소를 복사하거나 X로 바로 보내는 버튼. */
 export default function ShareLink({

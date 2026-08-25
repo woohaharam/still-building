@@ -40,10 +40,3 @@ async function bump(fn: string, slug: string) {
     // 무시
   }
 }
-
-/** 1000 이상은 1.2천처럼 줄여서 보여준다. */
-export function formatCount(n: number) {
-  if (n < 1000) return String(n);
-  const thousands = n / 1000;
-  return `${thousands.toFixed(thousands < 10 ? 1 : 0).replace(/\.0$/, '')}천`;
-}

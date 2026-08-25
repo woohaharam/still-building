@@ -10,7 +10,7 @@ import TableOfContents from './TableOfContents';
 import { markdownComponents } from '@/lib/markdown';
 import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
-import { formatCount } from '@/lib/stats';
+import { formatCount } from '@/lib/count';
 import { Post, TAG_LABELS } from '@/lib/types';
 
 function formatDate(dateStr: string | null) {

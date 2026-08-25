@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatCount } from '@/lib/stats';
+import { formatCount } from '@/lib/count';
 
 describe('formatCount', () => {
   it('천 미만은 그대로', () => {

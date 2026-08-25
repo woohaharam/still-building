@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { readingMinutes } from '@/lib/reading';
-import { formatCount } from '@/lib/stats';
+import { formatCount } from '@/lib/count';
 import { thumbnailOf } from '@/lib/thumbnail';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 import TagFilter from './TagFilter';
