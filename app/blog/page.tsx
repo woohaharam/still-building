@@ -67,6 +67,23 @@ export default async function BlogPage() {
           ))}
         </nav>
 
+        <Link
+          href="/blog/diary"
+          className="group mb-12 flex items-center gap-4 rounded-md border border-dashed border-line px-4 py-4"
+        >
+          <span className="min-w-0 flex-1">
+            <span className="font-semibold transition-colors group-hover:text-accent">
+              일기
+            </span>
+            <span className="mt-1 block text-xs leading-relaxed text-ink-soft">
+              비밀번호를 아는 사람만 볼 수 있어요.
+            </span>
+          </span>
+          <span className="shrink-0 text-ink-muted transition-transform group-hover:translate-x-0.5">
+            →
+          </span>
+        </Link>
+
         <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
           전체 글 {posts.length}편
         </h2>

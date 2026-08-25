@@ -11,6 +11,8 @@ function makePost(overrides: Partial<Post> = {}): Post {
     content: '본문',
     tags: [],
     cover_image_url: null,
+    view_count: 0,
+    share_count: 0,
     published: true,
     published_at: '2026-08-16T09:00:00Z',
     created_at: '2026-08-16T09:00:00Z',

@@ -5,10 +5,12 @@ import rehypeSlug from 'rehype-slug';
 import remarkGfm from 'remark-gfm';
 import ReadingProgress from './ReadingProgress';
 import ShareLink from './ShareLink';
+import ViewCounter from './ViewCounter';
 import TableOfContents from './TableOfContents';
 import { markdownComponents } from '@/lib/markdown';
 import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
+import { formatCount } from '@/lib/stats';
 import { Post, TAG_LABELS } from '@/lib/types';
 
 function formatDate(dateStr: string | null) {
@@ -33,6 +35,7 @@ export default function PostArticle({
   return (
     <article>
       {shareUrl && <ReadingProgress />}
+      {shareUrl && <ViewCounter slug={post.slug} />}
 
       <Link
         href={backHref}
@@ -46,6 +49,7 @@ export default function PostArticle({
         <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
           <span>{formatDate(post.published_at)}</span>
           <span>읽는 데 {readingMinutes(post.content)}분</span>
+          {shareUrl && <span>조회 {formatCount(post.view_count ?? 0)}</span>}
           {post.tags?.map((t) => (
             <span key={t}>#{TAG_LABELS[t]}</span>
           ))}
@@ -78,7 +82,14 @@ export default function PostArticle({
         </ReactMarkdown>
       </div>
 
-      {shareUrl && <ShareLink url={shareUrl} title={post.title} />}
+      {shareUrl && (
+        <ShareLink
+          url={shareUrl}
+          title={post.title}
+          slug={post.slug}
+          shareCount={post.share_count ?? 0}
+        />
+      )}
     </article>
   );
 }

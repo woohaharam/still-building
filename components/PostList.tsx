@@ -3,6 +3,8 @@
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { readingMinutes } from '@/lib/reading';
+import { formatCount } from '@/lib/stats';
+import { thumbnailOf } from '@/lib/thumbnail';
 import { Post, PostTag, TAG_LABELS } from '@/lib/types';
 import TagFilter from './TagFilter';
 
@@ -91,22 +93,40 @@ export default function PostList({
       <ul className="flex flex-col">
         {filtered.map((post) => (
           <li key={post.id} className="border-b border-line py-6 first:pt-0">
-            <Link href={`/posts/${post.slug}`} className="group block">
-              <h2 className="text-lg font-semibold transition-colors group-hover:text-accent">
-                {post.title}
-              </h2>
-              {post.excerpt && (
-                <p className="mt-2 text-sm leading-relaxed text-ink-soft">
-                  {post.excerpt}
-                </p>
+            <Link
+              href={`/posts/${post.slug}`}
+              className="group flex items-start gap-4"
+            >
+              <span className="min-w-0 flex-1">
+                <span className="block text-lg font-semibold transition-colors group-hover:text-accent">
+                  {post.title}
+                </span>
+                {post.excerpt && (
+                  <span className="mt-2 block text-sm leading-relaxed text-ink-soft">
+                    {post.excerpt}
+                  </span>
+                )}
+                <span className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
+                  <span>{formatDate(post.published_at)}</span>
+                  <span>읽는 데 {readingMinutes(post.content)}분</span>
+                  {post.view_count > 0 && (
+                    <span>조회 {formatCount(post.view_count)}</span>
+                  )}
+                  {post.tags?.map((t) => (
+                    <span key={t}>#{TAG_LABELS[t]}</span>
+                  ))}
+                </span>
+              </span>
+
+              {thumbnailOf(post) && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={thumbnailOf(post)!}
+                  alt=""
+                  loading="lazy"
+                  className="h-20 w-20 shrink-0 rounded-md border border-line object-cover sm:h-24 sm:w-24"
+                />
               )}
-              <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
-                <span>{formatDate(post.published_at)}</span>
-                <span>읽는 데 {readingMinutes(post.content)}분</span>
-                {post.tags?.map((t) => (
-                  <span key={t}>#{TAG_LABELS[t]}</span>
-                ))}
-              </div>
             </Link>
           </li>
         ))}
