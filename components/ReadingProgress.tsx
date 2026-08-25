@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 
 /**
  * 글을 얼마나 읽었는지 화면 맨 위에 가는 선으로 보여준다.
- * 순수하게 장식이라 스크린리더에는 숨깁니다.
+ * 순수하게 장식이라 스크린리더에는 숨긴다.
  */
 export default function ReadingProgress() {
   const [ratio, setRatio] = useState(0);

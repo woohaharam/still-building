@@ -1,5 +1,5 @@
 export interface Track {
-  /** 유튜브 주소를 그대로 붙여넣으면 돼요. watch / youtu.be / shorts 다 됩니다. */
+  /** 유튜브 주소를 그대로 붙여넣으면 된다. watch / youtu.be / shorts 다 된다. */
   url: string;
   /** 비워두면 유튜브에 올라간 영상 제목을 그대로 가져와서 보여줘요. */
   title?: string;
@@ -7,7 +7,7 @@ export interface Track {
 
 /**
  * 블로그에 깔리는 노래 목록. 순서대로 재생되고, 마지막 곡이 끝나면 처음으로 돌아간다.
- * 곡을 바꾸려면 유튜브에서 '공유' 눌러서 나온 주소를 url 자리에 붙여넣기만 하면 됩니다.
+ * 곡을 바꾸려면 유튜브에서 '공유' 눌러서 나온 주소를 url 자리에 붙여넣기만 하면 된다.
  */
 export const PLAYLIST: Track[] = [
   { url: 'https://youtu.be/QKK_xchL8j8' },
@@ -20,8 +20,8 @@ function isVideoId(value: string | null): value is string {
 
 /**
  * 유튜브 주소에서 영상 ID(11글자)만 뽑아낸다.
- * 주소를 통째로 뜯어보기 때문에 유튜브가 아닌 주소는 걸러집니다.
- * (예전에는 `?v=`만 보고 있어서 아무 사이트 주소나 통과했어요.)
+ * 주소를 통째로 뜯어보기 때문에 유튜브가 아닌 주소는 걸러진다.
+ * (예전에는 `?v=`만 보고 있어서 아무 사이트 주소나 통과했다.)
  */
 export function youtubeId(url: string): string | null {
   let parsed: URL;

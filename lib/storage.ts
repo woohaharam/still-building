@@ -19,7 +19,7 @@ const ALLOWED_TYPES: Record<string, string> = {
 /**
  * 허용 목록에 실제로 들어 있는 타입인지.
  *
- * ALLOWED_TYPES[file.type] 로 바로 꺼내면 안 됩니다. file.type 이
+ * ALLOWED_TYPES[file.type] 로 바로 꺼내면 안 된다. file.type 이
  * "constructor" 같은 값이면 프로토타입에서 함수가 딸려 나와서, 이미지가
  * 아닌데도 통과해버린다.
  */

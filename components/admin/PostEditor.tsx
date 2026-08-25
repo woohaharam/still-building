@@ -202,7 +202,7 @@ export default function PostEditor() {
     return date.getTime() > Date.now() ? date : null;
   })();
 
-  /** 서식 버튼을 눌렀을 때 본문에 반영해요. */
+  /** 서식 버튼을 눌렀을 때 본문에 반영한다. */
   function handleToolbarAction(action: Action) {
     const textarea = contentRef.current;
     const start = textarea?.selectionStart ?? content.length;

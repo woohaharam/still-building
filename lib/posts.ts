@@ -6,7 +6,7 @@ import { DIARY_TAG, Post } from './types';
  * 예약 발행 — published가 켜져 있어도 발행 시각이 안 지났으면 감춘다.
  *
  * published_at이 비어 있는 옛 글까지 걸러지면 안 되니까 or로 묶는다.
- * 이 검사는 화면 쪽 편의고, 진짜 차단은 DB 정책이 합니다
+ * 이 검사는 화면 쪽 편의고, 진짜 차단은 DB 정책이 한다
  * (supabase-migration-schedule.sql 참고).
  */
 function visibleNow() {
@@ -18,7 +18,7 @@ function visibleNow() {
  * 조용히 넘어가면 화면에 "아직 작성된 글이 없어요"가 떠서,
  * 글이 없는 건지 서버가 죽은 건지 구분할 수가 없기 때문이다.
  *
- * cache()로 감싸서 한 요청 안에서는 DB에 한 번만 물어봅니다.
+ * cache()로 감싸서 한 요청 안에서는 DB에 한 번만 물어본다.
  */
 export const getPublishedPosts = cache(
   async function getPublishedPosts(): Promise<Post[]> {
@@ -64,7 +64,7 @@ export const getPostBySlug = cache(async function getPostBySlug(
   return post;
 });
 
-/** 글 아래에 붙는 이전/다음 글. 목록이 최신순이라 배열 뒤쪽이 더 옛날 글이에요. */
+/** 글 아래에 붙는 이전/다음 글. 목록이 최신순이라 배열 뒤쪽이 더 옛날 글이다. */
 export async function getAdjacentPosts(slug: string): Promise<{
   older: Post | null;
   newer: Post | null;

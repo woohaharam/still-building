@@ -44,7 +44,7 @@ export default function Comments() {
     if (!giscusEnabled || !container) return;
 
     // 개발 모드에서는 effect가 두 번 도니까 스크립트는 한 번만 넣는다.
-    // 여기서 통째로 빠져나가면 아래 테마 감시가 안 걸립니다.
+    // 여기서 통째로 빠져나가면 아래 테마 감시가 안 걸린다.
     if (container.childElementCount === 0) {
       injectGiscus(container);
     }

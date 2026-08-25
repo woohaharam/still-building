@@ -30,7 +30,7 @@ export const TAG_DESCRIPTIONS: Record<PostTag, string> = {
   diary: '비밀번호를 아는 사람만 볼 수 있는 기록.',
 };
 
-/** 주소에 쓰는 이름. 한글 slug는 인코딩이 지저분해져서 영문으로 둡니다. */
+/** 주소에 쓰는 이름. 한글 slug는 인코딩이 지저분해져서 영문으로 둔다. */
 export const TAG_SLUGS: Record<PostTag, string> = {
   tech: 'dev',
   life: 'life',
@@ -48,6 +48,19 @@ export const DIARY_TAG: PostTag = 'diary';
 
 export function tagFromSlug(slug: string): PostTag | null {
   return POST_TAGS.find((tag) => TAG_SLUGS[tag] === slug) ?? null;
+}
+
+/**
+ * tags 는 DB 에서 자유 문자열 배열로 들어온다. 아는 태그가 아니면 null 을 낸다.
+ *
+ * TAG_LABELS[tag] 로 바로 꺼내면 안 된다. 프로토타입까지 훑기 때문에
+ * "constructor" 같은 값에 함수가 잡히고, 그게 화면으로 넘어가면 렌더가 깨진다.
+ * 옛날 글에 남은 모르는 태그는 라벨 없는 # 로 보이는 대신 그냥 빠진다.
+ */
+export function tagLabel(tag: string): string | null {
+  return Object.prototype.hasOwnProperty.call(TAG_LABELS, tag)
+    ? TAG_LABELS[tag as PostTag]
+    : null;
 }
 
 export type EventKind = 'plan' | 'deadline' | 'note';

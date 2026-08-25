@@ -1,6 +1,6 @@
 import { CalendarEvent, Post } from './types';
 
-/** 'YYYY-MM-DD' 형태의 날짜 키. 타임존 이동 없이 '그 날짜'만 다루기 위한 값이에요. */
+/** 'YYYY-MM-DD' 형태의 날짜 키. 타임존 이동 없이 '그 날짜'만 다루기 위한 값이다. */
 export type DateKey = string;
 
 export function toDateKey(date: Date): DateKey {
@@ -10,7 +10,7 @@ export function toDateKey(date: Date): DateKey {
   return `${y}-${m}-${d}`;
 }
 
-/** new Date('2026-08-19')는 UTC 자정으로 해석돼 하루씩 밀릴 수 있어서 직접 파싱해요. */
+/** new Date('2026-08-19')는 UTC 자정으로 해석돼 하루씩 밀릴 수 있어서 직접 파싱한다. */
 export function parseDateKey(key: DateKey): Date {
   const [y, m, d] = key.split('-').map(Number);
   return new Date(y, (m || 1) - 1, d || 1);

@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import CategoryNav from '@/components/CategoryNav';
 import Container from '@/components/Container';
 import PostList from '@/components/PostList';
 import { getPublishedPosts } from '@/lib/posts';
@@ -15,8 +16,8 @@ import {
 export const revalidate = 0;
 
 /**
- * 카테고리 주소는 세 개뿐이라 목록을 미리 알려줍니다.
- * 여기 없는 주소는 페이지가 돌기 전에 Next가 404로 돌려보낸다.
+ * 카테고리 주소는 세 개뿐이라 목록을 미리 알려준다.
+ * 여기 없는 주소는 페이지가 돌기 전에 Next 가 404 로 돌려보낸다.
  */
 export const dynamicParams = false;
 
@@ -47,18 +48,21 @@ export default async function CategoryPage({
   const tag = tagFromSlug(params.category);
   if (!tag) notFound();
 
-  const posts = (await getPublishedPosts()).filter((post) =>
-    post.tags?.includes(tag!)
-  );
+  const all = await getPublishedPosts();
+  const posts = all.filter((post) => post.tags?.includes(tag!));
+
+  const counts = {
+    all: all.length,
+    ...Object.fromEntries(
+      POST_TAGS.map((t) => [t, all.filter((p) => p.tags?.includes(t)).length])
+    ),
+  };
 
   return (
     <Container>
-      <div>
-        <section className="mb-10">
-          <p className="text-xs tracking-[0.22em] text-ink-muted">
-            {params.category.toUpperCase()}
-          </p>
-          <h1 className="mt-3 text-2xl font-bold leading-snug">
+      <div className="flex flex-col gap-8">
+        <section>
+          <h1 className="text-2xl font-bold leading-snug">
             {TAG_LABELS[tag!]} 글
           </h1>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
@@ -66,11 +70,9 @@ export default async function CategoryPage({
           </p>
         </section>
 
-        <PostList
-          posts={posts}
-          showTagFilter={false}
-          emptyLabel="이 카테고리"
-        />
+        <CategoryNav active={tag!} counts={counts} />
+
+        <PostList posts={posts} />
       </div>
     </Container>
   );

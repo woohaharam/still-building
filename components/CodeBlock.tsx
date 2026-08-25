@@ -11,7 +11,7 @@ import {
 
 /**
  * 글 본문의 코드 블록. 위에 얇은 바를 붙여서 언어 이름과 복사 버튼을 보여준다.
- * ReactMarkdown의 `pre` 자리에 그대로 끼워 씁니다.
+ * ReactMarkdown의 `pre` 자리에 그대로 끼워 쓴다.
  */
 export default function CodeBlock({
   children,

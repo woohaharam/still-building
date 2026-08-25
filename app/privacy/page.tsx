@@ -8,11 +8,11 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteUrl}/privacy` },
 };
 
-/** 방침을 고칠 때마다 여기도 같이 올려야 해요. */
+/** 방침을 고칠 때마다 여기도 같이 올려야 한다. */
 const EFFECTIVE_DATE = '2026년 8월 23일';
 
 /**
- * 처리를 맡긴 곳. 전부 해외 사업자라 개인정보가 국외로 나갑니다.
+ * 처리를 맡긴 곳. 전부 해외 사업자라 개인정보가 국외로 나간다.
  * 서비스를 붙이거나 뗄 때 이 표를 같이 고쳐야 한다.
  */
 const PROCESSORS = [

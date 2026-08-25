@@ -4,7 +4,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react';
 
 /**
  * 화면에 들어올 때 한 번만 떠오르듯 나타난다.
- * 움직임을 줄여달라고 설정한 분에게는 애니메이션 없이 바로 보여줍니다.
+ * 움직임을 줄여달라고 설정한 분에게는 애니메이션 없이 바로 보여준다.
  */
 export default function Reveal({
   children,

@@ -16,13 +16,38 @@ export async function openDiary(password: string): Promise<Post[]> {
     p_password: password,
   });
 
-  if (error) {
-    // 비밀번호가 틀렸을 때와 서버가 죽었을 때를 구분해서 알려준다.
-    if (error.code === '28000' || /비밀번호/.test(error.message)) {
-      throw new Error('비밀번호가 맞지 않아요.');
-    }
-    throw new Error('지금은 열 수 없어요. 잠시 뒤에 다시 시도해주세요.');
-  }
+  if (error) throw new Error(explain(error));
 
   return (data ?? []) as Post[];
+}
+
+/**
+ * 실패 이유를 갈라서 알려준다.
+ *
+ * 전부 "지금은 열 수 없어요" 로 뭉뚱그리면, 비밀번호를 틀린 건지 설정이
+ * 안 끝난 건지 알 수가 없어서 고칠 데를 못 찾는다.
+ */
+function explain(error: { code?: string; message?: string }) {
+  const code = error.code ?? '';
+  const message = error.message ?? '';
+
+  // 함수 자체가 없다 — 마이그레이션을 아직 안 돌렸다.
+  if (code === 'PGRST202' || /open_diary/.test(message)) {
+    return '일기 기능이 아직 준비되지 않았어요. (마이그레이션 필요)';
+  }
+
+  // crypt 를 못 찾는다 — search_path 에 extensions 가 빠졌다.
+  if (code === '42883' || /crypt/.test(message)) {
+    return '서버 설정이 덜 끝났어요. (pgcrypto 경로 확인 필요)';
+  }
+
+  if (code === '28000' || /비밀번호/.test(message)) {
+    return '비밀번호가 맞지 않아요.';
+  }
+
+  // 남은 경우는 원인을 알 수 없으니 콘솔에 원문을 남긴다.
+  if (typeof console !== 'undefined') {
+    console.error('open_diary 실패:', error);
+  }
+  return '지금은 열 수 없어요. 잠시 뒤에 다시 시도해주세요.';
 }

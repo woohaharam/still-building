@@ -2,7 +2,7 @@ import { formatDate } from '@/lib/date';
 import { formatCount } from '@/lib/count';
 import { readingMinutes } from '@/lib/reading';
 import { thumbnailOf } from '@/lib/thumbnail';
-import { Post, TAG_LABELS } from '@/lib/types';
+import { Post, tagLabel } from '@/lib/types';
 
 /**
  * 목록에 걸리는 글 한 줄.
@@ -41,7 +41,10 @@ export default function PostRow({
             <span>조회 {formatCount(post.view_count)}</span>
           )}
           {showTags &&
-            post.tags?.map((tag) => <span key={tag}>#{TAG_LABELS[tag]}</span>)}
+            post.tags?.map((tag) => {
+              const label = tagLabel(tag);
+              return label ? <span key={tag}>#{label}</span> : null;
+            })}
         </span>
       </span>
 

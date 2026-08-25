@@ -2,7 +2,7 @@ import type { Architecture } from '@/lib/projects';
 
 /**
  * 시스템 구조도. 라이브러리 없이 CSS만으로 그린다.
- * 넓은 화면에서는 칸이 가로로, 좁은 화면에서는 세로로 이어집니다.
+ * 넓은 화면에서는 칸이 가로로, 좁은 화면에서는 세로로 이어진다.
  */
 export default function ArchitectureDiagram({
   architecture,

@@ -1,4 +1,4 @@
-/** 점 찍힌 목록. 프로젝트와 논문이 같이 씁니다. */
+/** 점 찍힌 목록. 프로젝트와 논문이 같이 쓴다. */
 export default function Bullets({
   items,
   className = 'mt-6',
