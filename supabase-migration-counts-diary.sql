@@ -125,7 +125,7 @@ grant execute on function public.open_diary(text) to anon, authenticated;
 --   바꾸고 싶을 때도 같은 문장을 다시 실행하면 된다.
 --
 -- insert into public.diary_access (id, password_hash)
--- values (true, crypt('여기에_비밀번호', gen_salt('bf')))
+-- values (true, crypt('04150515', gen_salt('bf')))
 -- on conflict (id) do update
 --   set password_hash = excluded.password_hash,
 --       updated_at = now();
