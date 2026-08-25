@@ -12,9 +12,7 @@ import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
 import { supabaseClient } from '@/lib/supabase';
 import type { ImageSize } from '@/lib/image-size';
-import { Post, PostTag, TAG_LABELS } from '@/lib/types';
-
-const TAG_OPTIONS: PostTag[] = ['tech', 'life', 'retrospective'];
+import { ALL_POST_TAGS, Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 /** Date에서 시각 입력칸에 넣을 'HH:MM'을 뽑아요. */
 function toTimeValue(date: Date) {
@@ -396,7 +394,7 @@ export default function PostEditor() {
           )}
 
           <div className="flex flex-wrap items-center gap-2">
-            {TAG_OPTIONS.map((tag) => (
+            {ALL_POST_TAGS.map((tag) => (
               <button
                 key={tag}
                 type="button"

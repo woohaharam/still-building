@@ -1,6 +1,6 @@
 import { cache } from 'react';
 import { supabaseClient } from './supabase';
-import { Post } from './types';
+import { DIARY_TAG, Post } from './types';
 
 /**
  * 예약 발행 — published가 켜져 있어도 발행 시각이 안 지났으면 감춘다.
@@ -33,7 +33,8 @@ export const getPublishedPosts = cache(
       throw new Error(`글 목록을 불러오지 못했어요: ${error.message}`);
     }
 
-    return data as Post[];
+    // 정책에서도 빼두지만, 마이그레이션 전이라도 새어나가지 않게 한 번 더 거른다.
+    return (data as Post[]).filter((post) => !post.tags?.includes(DIARY_TAG));
   }
 );
 
@@ -54,7 +55,13 @@ export const getPostBySlug = cache(async function getPostBySlug(
     throw new Error(`글을 불러오지 못했어요: ${error.message}`);
   }
 
-  return (data as Post) ?? null;
+  const post = (data as Post) ?? null;
+
+  // 일기는 비밀번호를 통과한 뒤 /blog/diary 안에서만 읽는다.
+  // 주소만 알면 열리면 비밀번호가 아무 의미가 없다.
+  if (post?.tags?.includes(DIARY_TAG)) return null;
+
+  return post;
 });
 
 /** 글 아래에 붙는 이전/다음 글. 목록이 최신순이라 배열 뒤쪽이 더 옛날 글이에요. */
