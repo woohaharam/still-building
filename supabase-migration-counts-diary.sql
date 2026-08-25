@@ -81,7 +81,9 @@ create policy "posts_select_owner"
 
 -- 3. 일기 비밀번호 -----------------------------------------------------------
 
-create extension if not exists pgcrypto;
+-- Supabase 는 확장을 public 이 아니라 extensions 스키마에 설치한다.
+-- 이미 깔려 있으면 아무 일도 하지 않는다.
+create extension if not exists pgcrypto with schema extensions;
 
 -- 비밀번호는 원문이 아니라 해시로 넣는다. 이 표는 RLS 를 켜두고 정책을
 -- 하나도 만들지 않는다. 그러면 anon 은 한 줄도 읽지 못한다. 아래 함수는
@@ -98,11 +100,14 @@ alter table public.diary_access enable row level security;
 
 -- 한계: 시도 횟수를 세지 않는다. 비밀번호가 짧거나 규칙적이면 반복 시도로
 -- 뚫린다. 남에게 보이면 안 되는 내용이라면 길고 불규칙한 값을 쓸 것.
+-- search_path 에 extensions 가 반드시 있어야 한다. crypt() 가 거기 살기
+-- 때문이다. public 만 적어두면 함수 안에서 crypt 를 찾지 못해서, 비밀번호가
+-- 맞든 틀리든 함수 자체가 실패한다.
 create or replace function public.open_diary(p_password text)
 returns setof public.posts
 language plpgsql
 security definer
-set search_path = public
+set search_path = public, extensions
 as $$
 begin
   if not exists (
@@ -140,3 +145,30 @@ grant execute on function public.open_diary(text) to anon, authenticated;
 -- on conflict (id) do update
 --   set password_hash = excluded.password_hash,
 --       updated_at = now();
+
+
+-- 5. 잘 됐는지 확인 ----------------------------------------------------------
+--
+-- 일기가 안 열리면 아래를 순서대로 실행해서 어디가 비었는지 본다.
+--
+-- (1) 함수가 있는지 — 3줄이 나와야 한다
+-- select routine_name from information_schema.routines
+--  where routine_schema = 'public'
+--    and routine_name in ('open_diary','increment_post_view','increment_post_share');
+--
+-- (2) 비밀번호가 들어갔는지 — 1이 나와야 한다
+-- select count(*) from public.diary_access;
+--
+-- (3) crypt 가 어느 스키마에 있는지 — 보통 extensions 로 나온다
+-- select n.nspname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+--  where p.proname = 'crypt' limit 1;
+--
+-- (4) 비밀번호가 맞는지 — true 가 나와야 한다
+--     crypt 를 못 찾는다고 하면 (3) 에서 나온 스키마를 앞에 붙인다
+--     (예: extensions.crypt(...)).
+-- select exists (select 1 from public.diary_access
+--                 where password_hash = crypt('여기에_비밀번호', password_hash));
+--
+-- (5) 일기로 표시된 글이 있는지
+-- select slug, title, published, published_at from public.posts
+--  where 'diary' = any(tags);
