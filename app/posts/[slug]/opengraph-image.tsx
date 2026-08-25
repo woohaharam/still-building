@@ -1,5 +1,6 @@
 import { ImageResponse } from 'next/og';
 import { getPostBySlug } from '@/lib/posts';
+import { formatDate } from '@/lib/date';
 import { loadKoreanFont } from '@/lib/og-font';
 import { siteName } from '@/lib/site';
 
@@ -14,12 +15,6 @@ const MARK = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width=
   <rect x="13.9" y="3.4" width="6.7" height="6.7" rx="1.6" fill="none"
     stroke="#211E1B" stroke-width="1.9" stroke-dasharray="2.6 2.4" stroke-linecap="round"/>
 </svg>`;
-
-function formatDate(value: string | null) {
-  if (!value) return '';
-  const d = new Date(value);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-}
 
 export default async function PostOgImage({
   params,

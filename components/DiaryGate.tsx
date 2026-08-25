@@ -6,15 +6,10 @@ import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
 import { openDiary } from '@/lib/diary';
 import { markdownComponents } from '@/lib/markdown';
+import { formatDate } from '@/lib/date';
 import { readingMinutes } from '@/lib/reading';
-import { thumbnailOf } from '@/lib/thumbnail';
 import { Post } from '@/lib/types';
-
-function formatDate(value: string | null) {
-  if (!value) return '';
-  const d = new Date(value);
-  return `${d.getFullYear()}년 ${d.getMonth() + 1}월 ${d.getDate()}일`;
-}
+import PostRow from './PostRow';
 
 export default function DiaryGate() {
   const [password, setPassword] = useState('');
@@ -92,29 +87,7 @@ export default function DiaryGate() {
               onClick={() => setOpenSlug(post.slug)}
               className="group flex w-full items-start gap-4 text-left"
             >
-              <span className="min-w-0 flex-1">
-                <span className="block text-lg font-semibold transition-colors group-hover:text-accent">
-                  {post.title}
-                </span>
-                {post.excerpt && (
-                  <span className="mt-2 block text-sm leading-relaxed text-ink-soft">
-                    {post.excerpt}
-                  </span>
-                )}
-                <span className="mt-3 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
-                  <span>{formatDate(post.published_at)}</span>
-                  <span>읽는 데 {readingMinutes(post.content)}분</span>
-                </span>
-              </span>
-              {thumbnailOf(post) && (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={thumbnailOf(post)!}
-                  alt=""
-                  loading="lazy"
-                  className="h-20 w-20 shrink-0 rounded-md border border-line object-cover sm:h-24 sm:w-24"
-                />
-              )}
+              <PostRow post={post} showTags={false} />
             </button>
           </li>
         ))}

@@ -13,6 +13,11 @@ alter table public.posts
 -- 방문자가 posts 를 직접 UPDATE 하게 두면 제목이든 본문이든 다 고칠 수 있다.
 -- 그래서 쓰기 권한은 주지 않고, 딱 이 두 함수만 열어준다.
 -- security definer 라 함수 안에서만 주인 권한으로 돈다.
+--
+-- 한계: 이 함수는 누구나 부를 수 있고 횟수 제한이 없다. 마음먹으면 반복
+-- 호출로 숫자를 부풀릴 수 있다. 막으려면 IP 단위 기록이 필요한데 그건
+-- 방문자를 추적하는 일이라 이 사이트가 하지 않기로 한 것이다.
+-- 그래서 이 숫자는 참고용이지 분석 지표가 아니다.
 
 create or replace function public.increment_post_view(p_slug text)
 returns void
@@ -78,8 +83,10 @@ create policy "posts_select_owner"
 
 create extension if not exists pgcrypto;
 
--- 비밀번호는 원문이 아니라 해시로 넣는다. 이 표는 아무 정책도 만들지 않아서
--- anon 은 한 줄도 읽지 못하고, 아래 함수만 주인 권한으로 들여다본다.
+-- 비밀번호는 원문이 아니라 해시로 넣는다. 이 표는 RLS 를 켜두고 정책을
+-- 하나도 만들지 않는다. 그러면 anon 은 한 줄도 읽지 못한다. 아래 함수는
+-- security definer 라 표 주인 권한으로 돌기 때문에 정책에 걸리지 않는다.
+-- (force row level security 는 켜면 안 된다. 켜면 함수까지 막힌다.)
 create table if not exists public.diary_access (
   id boolean primary key default true,
   password_hash text not null,
@@ -89,6 +96,8 @@ create table if not exists public.diary_access (
 
 alter table public.diary_access enable row level security;
 
+-- 한계: 시도 횟수를 세지 않는다. 비밀번호가 짧거나 규칙적이면 반복 시도로
+-- 뚫린다. 남에게 보이면 안 되는 내용이라면 길고 불규칙한 값을 쓸 것.
 create or replace function public.open_diary(p_password text)
 returns setof public.posts
 language plpgsql
