@@ -66,7 +66,7 @@ export default function RootLayout({
         {/*
           폰트는 globals.css의 @import가 아니라 여기서 불러와요.
           @import는 CSS를 받아 파싱한 뒤에야 폰트 요청이 시작돼서
-          왕복이 한 번 더 늘어납니다.
+          왕복이 한 번 더 늘어난다.
         */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
         <link

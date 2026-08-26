@@ -31,8 +31,8 @@ returns boolean
 language sql
 stable
 as $$
-  -- ⚠️ 이 저장소는 공개되어 있으니 실제 이메일을 여기 적어두지 말 것.
-  -- SQL Editor에 붙여넣을 때만 본인 이메일로 바꿔서 실행하면 됩니다.
+  -- 이 저장소는 공개되어 있으니 실제 이메일을 여기 적어두지 말 것.
+  -- SQL Editor 에 붙여넣을 때만 본인 이메일로 바꿔서 실행한다.
   select coalesce(auth.jwt() ->> 'email', '') = 'YOUR_EMAIL@example.com';
 $$;
 

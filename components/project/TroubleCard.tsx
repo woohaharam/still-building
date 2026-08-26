@@ -7,7 +7,7 @@ const STEPS: { key: keyof Trouble; label: string }[] = [
   { key: 'solution', label: '해결' },
 ];
 
-/** 문제 → 원인 → 시도 → 해결 → 성과를 한 덩어리로 보여줘요. */
+/** 문제 → 원인 → 시도 → 해결 → 성과를 한 덩어리로 보여준다. */
 export default function TroubleCard({
   trouble,
   index,

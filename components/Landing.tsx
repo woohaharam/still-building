@@ -9,7 +9,6 @@ interface Section {
   index: string;
   href: string;
   label: string;
-  english: string;
   description: string;
   meta: string;
 }
@@ -26,7 +25,6 @@ export default function Landing({
       index: '01',
       href: '/about',
       label: '소개',
-      english: 'ABOUT',
       description: '어떤 사람이고 지금 뭘 배우고 있는지',
       meta: `${siteAuthor} · ${siteAuthorAlias}`,
     },
@@ -34,7 +32,6 @@ export default function Landing({
       index: '02',
       href: '/projects',
       label: '프로젝트',
-      english: 'PROJECTS',
       description: '만든 것들과, 만들다 막혔던 것들',
       meta: `${PROJECTS.length}개 · 논문 ${PUBLICATIONS.length}편`,
     },
@@ -42,7 +39,6 @@ export default function Landing({
       index: '03',
       href: '/blog',
       label: '블로그',
-      english: 'BLOG',
       description: '개발하며 배운 것과 그 사이의 일상',
       meta: failed ? '' : `글 ${postCount}편`,
     },
@@ -50,7 +46,6 @@ export default function Landing({
       index: '04',
       href: '/calendar',
       label: '달력',
-      english: 'CALENDAR',
       description: '앞으로의 일정과 지금까지 글 쓴 날들',
       meta: '',
     },
@@ -135,13 +130,8 @@ export default function Landing({
                   </span>
 
                   <span className="min-w-0 flex-1">
-                    <span className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                      <span className="text-xl font-bold tracking-tight transition-colors group-hover:text-accent sm:text-2xl">
-                        {section.label}
-                      </span>
-                      <span className="text-[11px] tracking-[0.18em] text-ink-muted">
-                        {section.english}
-                      </span>
+                    <span className="block text-xl font-bold tracking-tight transition-colors group-hover:text-accent sm:text-2xl">
+                      {section.label}
                     </span>
                     <span className="mt-2 block text-sm leading-relaxed text-ink-soft">
                       {section.description}

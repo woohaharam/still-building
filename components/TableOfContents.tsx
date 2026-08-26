@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { Heading } from '@/lib/toc';
 
-/** 글이 짧으면 목차가 오히려 방해라, 제목이 셋 이상일 때만 보여줘요. */
+/** 글이 짧으면 목차가 오히려 방해라, 제목이 셋 이상일 때만 보여준다. */
 export default function TableOfContents({ headings }: { headings: Heading[] }) {
   const [open, setOpen] = useState(true);
 

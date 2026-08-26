@@ -37,7 +37,6 @@ export default function ProjectsPage() {
     <Container wide>
       <div className="flex flex-col gap-16 pb-6">
         <section>
-          <p className="text-xs tracking-[0.22em] text-ink-muted">PROJECTS</p>
           <h1 className="mt-4 text-3xl font-bold tracking-tight">만든 것들</h1>
           <p className="mt-5 leading-relaxed text-ink-soft">
             필요해서 만들었고, 만들다 막힌 것들을 적어뒀습니다. 제목을 누르면
@@ -92,7 +91,7 @@ export default function ProjectsPage() {
 
         {PUBLICATIONS.length > 0 && (
           <section className="flex flex-col gap-12">
-            <p className="text-xs tracking-[0.22em] text-ink-muted">PAPER</p>
+            <h2 className="text-xs tracking-[0.18em] text-ink-muted">논문</h2>
 
             {PUBLICATIONS.map((paper) => (
               <Reveal key={paper.slug}>

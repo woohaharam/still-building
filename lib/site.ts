@@ -75,7 +75,7 @@ export const siteInstagramHandle = '@woo._.0515';
  */
 export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 
-/** 구글은 아직 등록 전이라, 코드를 받으면 환경변수로 넣으면 돼요. */
+/** 구글은 아직 등록 전이라, 코드를 받으면 환경변수로 넣으면 된다. */
 export const googleSiteVerification =
   process.env.GOOGLE_SITE_VERIFICATION || '';
 
