@@ -77,7 +77,6 @@ export default function PrivacyPage() {
     <Container>
       <div className="flex flex-col gap-12 pb-6">
         <section>
-          <p className="text-xs tracking-[0.22em] text-ink-muted">PRIVACY</p>
           <h1 className="mt-4 text-3xl font-bold tracking-tight">
             개인정보 처리방침
           </h1>

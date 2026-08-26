@@ -32,7 +32,7 @@ export function buildMonthMatrix(year: number, month: number): Date[] {
   );
 }
 
-/** 여러 날에 걸친 일정은 걸쳐 있는 모든 날짜에 표시돼요. */
+/** 여러 날에 걸친 일정은 걸쳐 있는 모든 날짜에 표시된다. */
 export function eventDateKeys(event: CalendarEvent): DateKey[] {
   const start = event.start_date;
   if (!event.end_date || event.end_date <= start) return [start];

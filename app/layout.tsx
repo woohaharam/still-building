@@ -64,9 +64,9 @@ export default function RootLayout({
     <html lang="ko" suppressHydrationWarning>
       <head>
         {/*
-          폰트는 globals.css의 @import가 아니라 여기서 불러와요.
+          폰트는 globals.css 의 @import 가 아니라 여기서 불러온다.
           @import는 CSS를 받아 파싱한 뒤에야 폰트 요청이 시작돼서
-          왕복이 한 번 더 늘어납니다.
+          왕복이 한 번 더 늘어난다.
         */}
         <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="" />
         <link
@@ -76,7 +76,7 @@ export default function RootLayout({
 
         {/*
           화면이 한 번 하얗게 번쩍였다가 어두워지는 걸 막으려고,
-          리액트가 붙기 전에 테마를 먼저 정해둬요.
+          리액트가 붙기 전에 테마를 먼저 정해둔다.
         */}
         <script
           dangerouslySetInnerHTML={{

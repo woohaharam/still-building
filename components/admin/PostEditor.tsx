@@ -7,14 +7,14 @@ import remarkGfm from 'remark-gfm';
 import { toDateKey } from '@/lib/calendar';
 import { IMAGE_SIZE_KEYS, IMAGE_SIZES } from '@/lib/image-size';
 import { markdownComponents } from '@/lib/markdown';
-import { applyAction, type Action } from '@/lib/markdown-format';
+import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
 import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
 import { supabaseClient } from '@/lib/supabase';
 import type { ImageSize } from '@/lib/image-size';
 import { ALL_POST_TAGS, Post, PostTag, TAG_LABELS } from '@/lib/types';
 
-/** Date에서 시각 입력칸에 넣을 'HH:MM'을 뽑아요. */
+/** Date 에서 시각 입력칸에 넣을 'HH:MM' 을 뽑는다. */
 function toTimeValue(date: Date) {
   const hh = String(date.getHours()).padStart(2, '0');
   const mm = String(date.getMinutes()).padStart(2, '0');
@@ -107,58 +107,74 @@ export default function PostEditor() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploadError('');
-    setCoverUploading(true);
-    try {
-      const url = await uploadImage(file);
-      setCoverImageUrl(url);
-    } catch (err) {
-      setUploadError(
-        err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
-      );
-    } finally {
-      setCoverUploading(false);
-      if (coverFileInputRef.current) coverFileInputRef.current.value = '';
-    }
+  /**
+   * 본문 textarea 의 선택 영역을 바꾸고 커서를 옮긴다.
+   * 툴바 버튼과 이미지 삽입이 같은 일을 해서 한 군데로 모았다.
+   */
+  function editContent(
+    transform: (
+      value: string,
+      start: number,
+      end: number
+    ) => { value: string; selectionStart: number; selectionEnd: number }
+  ) {
+    const textarea = contentRef.current;
+    const start = textarea?.selectionStart ?? content.length;
+    const end = textarea?.selectionEnd ?? content.length;
+    const next = transform(content, start, end);
+
+    setContent(next.value);
+    requestAnimationFrame(() => {
+      textarea?.focus();
+      textarea?.setSelectionRange(next.selectionStart, next.selectionEnd);
+    });
   }
 
-  async function handleContentImageUpload(
-    e: React.ChangeEvent<HTMLInputElement>
+  /**
+   * 커버와 본문 업로드가 같은 뼈대를 쓴다. 다른 건 올린 뒤에 주소로 무엇을
+   * 하느냐뿐이라 그 부분만 받는다.
+   */
+  async function runUpload(
+    e: React.ChangeEvent<HTMLInputElement>,
+    setBusy: (busy: boolean) => void,
+    inputRef: React.RefObject<HTMLInputElement>,
+    onUploaded: (url: string, file: File) => void
   ) {
     const file = e.target.files?.[0];
     if (!file) return;
+
     setUploadError('');
-    setContentUploading(true);
+    setBusy(true);
     try {
-      const url = await uploadImage(file);
-      // 크기는 마크다운 제목 자리에 넣는다. lib/markdown.tsx 가 이걸 읽는다.
-      const suffix = imageSize === 'large' ? '' : ` "${imageSize}"`;
-      const markdown = `![${file.name}](${url}${suffix})`;
-      const textarea = contentRef.current;
-      if (textarea) {
-        const start = textarea.selectionStart ?? content.length;
-        const end = textarea.selectionEnd ?? content.length;
-        const next = content.slice(0, start) + markdown + content.slice(end);
-        setContent(next);
-        requestAnimationFrame(() => {
-          textarea.focus();
-          const cursor = start + markdown.length;
-          textarea.setSelectionRange(cursor, cursor);
-        });
-      } else {
-        setContent((prev) => `${prev}\n${markdown}\n`);
-      }
+      onUploaded(await uploadImage(file), file);
     } catch (err) {
       setUploadError(
         err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
       );
     } finally {
-      setContentUploading(false);
-      if (contentFileInputRef.current) contentFileInputRef.current.value = '';
+      setBusy(false);
+      if (inputRef.current) inputRef.current.value = '';
     }
+  }
+
+  function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    return runUpload(e, setCoverUploading, coverFileInputRef, setCoverImageUrl);
+  }
+
+  function handleContentImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    return runUpload(
+      e,
+      setContentUploading,
+      contentFileInputRef,
+      (url, file) => {
+        // 크기는 마크다운 제목 자리에 넣는다. lib/markdown.tsx 가 이걸 읽는다.
+        const suffix = imageSize === 'large' ? '' : ` "${imageSize}"`;
+        const markdown = `![${file.name}](${url}${suffix})`;
+        editContent((value, start, end) =>
+          insertBlock(value, start, end, markdown)
+        );
+      }
+    );
   }
 
   function toggleTag(tag: PostTag) {
@@ -204,16 +220,7 @@ export default function PostEditor() {
 
   /** 서식 버튼을 눌렀을 때 본문에 반영한다. */
   function handleToolbarAction(action: Action) {
-    const textarea = contentRef.current;
-    const start = textarea?.selectionStart ?? content.length;
-    const end = textarea?.selectionEnd ?? content.length;
-    const next = applyAction(content, start, end, action);
-
-    setContent(next.value);
-    requestAnimationFrame(() => {
-      textarea?.focus();
-      textarea?.setSelectionRange(next.selectionStart, next.selectionEnd);
-    });
+    editContent((value, start, end) => applyAction(value, start, end, action));
   }
 
   async function handleSave() {

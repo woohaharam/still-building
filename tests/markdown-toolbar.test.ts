@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyAction, type Action } from '@/lib/markdown-format';
+import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
 
 const BOLD: Action = {
   label: '굵게',
@@ -56,5 +56,37 @@ describe('applyAction', () => {
   it('이미 빈 줄이 있으면 더 만들지 않는다', () => {
     const r = applyAction('본문\n\n', 4, 4, RULE);
     expect(r.value).toBe('본문\n\n---');
+  });
+});
+
+describe('insertBlock', () => {
+  const IMG = '![사진](https://example.com/a.png)';
+
+  it('빈 본문에는 그대로 넣는다', () => {
+    const next = insertBlock('', 0, 0, IMG);
+    expect(next.value).toBe(IMG);
+  });
+
+  it('문단 한가운데 넣어도 이미지가 제 줄을 갖는다', () => {
+    // 빈 줄 없이 넣으면 마크다운이 이미지를 글자 취급해 줄 안에 그린다.
+    const next = insertBlock('앞글자뒷글자', 3, 3, IMG);
+    expect(next.value).toBe(`앞글자\n\n${IMG}\n\n뒷글자`);
+  });
+
+  it('이미 빈 줄이 있으면 더 만들지 않는다', () => {
+    const next = insertBlock('앞글자\n\n', 5, 5, IMG);
+    expect(next.value).toBe(`앞글자\n\n${IMG}`);
+  });
+
+  it('선택한 글자를 갈아끼운다', () => {
+    const next = insertBlock('앞 지울것 뒤', 2, 5, IMG);
+    expect(next.value).not.toContain('지울것');
+    expect(next.value).toContain(IMG);
+  });
+
+  it('커서를 넣은 블록 뒤에 둔다', () => {
+    const next = insertBlock('', 0, 0, IMG);
+    expect(next.selectionStart).toBe(IMG.length);
+    expect(next.selectionStart).toBe(next.selectionEnd);
   });
 });

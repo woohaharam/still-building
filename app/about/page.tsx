@@ -51,7 +51,6 @@ export default function AboutPage() {
             className="h-auto w-[124px] shrink-0 rounded-2xl border border-line object-cover sm:w-[168px]"
           />
           <div>
-            <p className="text-xs tracking-[0.22em] text-ink-muted">ABOUT</p>
             <h1 className="mt-4 text-3xl font-bold tracking-tight">
               {siteAuthor}
               <span className="ml-3 text-lg font-medium text-ink-muted">
@@ -68,7 +67,7 @@ export default function AboutPage() {
         <Reveal>
           <section>
             <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              NOW
+              요즘
             </h2>
             <div className="flex flex-col gap-4">
               {NOW.map((line) => (
@@ -83,7 +82,7 @@ export default function AboutPage() {
         <Reveal>
           <section>
             <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              EDUCATION
+              학력
             </h2>
             <div className="border-t border-line pt-5">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
@@ -107,7 +106,7 @@ export default function AboutPage() {
         <Reveal>
           <section>
             <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              STACK
+              기술
             </h2>
             <dl className="flex flex-col gap-6">
               {STACK.map((row) => (
@@ -134,7 +133,7 @@ export default function AboutPage() {
         <Reveal>
           <section>
             <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              CONTACT
+              연락
             </h2>
             <div className="flex flex-col">
               <a

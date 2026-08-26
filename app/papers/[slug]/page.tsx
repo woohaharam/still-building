@@ -54,7 +54,6 @@ export default function PaperPage({ params }: { params: { slug: string } }) {
             <BackLink href="/projects" label="프로젝트 목록" />
           </div>
 
-          <p className="text-xs tracking-[0.22em] text-ink-muted">PAPER</p>
           <h1 className="mt-4 text-2xl font-bold leading-snug tracking-tight sm:text-3xl">
             {title}
           </h1>
@@ -89,8 +88,7 @@ export default function PaperPage({ params }: { params: { slug: string } }) {
         {paper!.numbers && paper!.numbers.length > 0 && (
           <Reveal>
             <section>
-              <p className="text-xs tracking-[0.22em] text-ink-muted">RESULT</p>
-              <h2 className="mb-8 mt-3 text-xl font-bold tracking-tight">
+              <h2 className="mb-8 text-xl font-bold tracking-tight">
                 숫자로 본 결과
               </h2>
               <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">

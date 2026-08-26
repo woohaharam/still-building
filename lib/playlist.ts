@@ -1,7 +1,7 @@
 export interface Track {
   /** 유튜브 주소를 그대로 붙여넣으면 된다. watch / youtu.be / shorts 다 된다. */
   url: string;
-  /** 비워두면 유튜브에 올라간 영상 제목을 그대로 가져와서 보여줘요. */
+  /** 비워두면 유튜브에 올라간 영상 제목을 그대로 가져와서 보여준다. */
   title?: string;
 }
 
@@ -51,7 +51,7 @@ export function youtubeId(url: string): string | null {
   return fromPath ? fromPath[1] : null;
 }
 
-/** 주소가 잘못 적힌 곡은 아예 목록에서 빼요. */
+/** 주소가 잘못 적힌 곡은 아예 목록에서 뺀다. */
 export const TRACKS = PLAYLIST.map((track) => ({
   ...track,
   videoId: youtubeId(track.url),
