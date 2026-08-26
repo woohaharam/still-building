@@ -14,16 +14,34 @@ function endsWithBieup(ch: string): boolean {
 }
 
 /**
- * 말끝에서만 센다. 뒤에 글자가 더 붙으면 종결이 아니라 단어의 일부다
- * ('해요체', '합니다체'처럼).
+ * 종결의 '요' 앞 음절은 받침이 없고, 모음이 어미에 쓰이는 것들이다
+ * ('가져와요' · '감춰요' · '그려요' · '남겨요' · '빼요').
+ *
+ * 명사로 끝나는 '요'는 이 조건에서 걸러진다. 필요·중요는 앞 음절에 받침이
+ * 있고, 주요·수요는 모음이 ㅜ라 어미가 될 수 없다.
  */
-const TAIL = /(해요|어요|에요|예요|세요|돼요|봐요|줘요)(?![가-힣])/;
+const ENDING_VOWELS = new Set([0, 1, 4, 5, 6, 7, 8, 9, 10, 11, 14, 15]);
+
+function isPoliteYo(ch: string): boolean {
+  const code = ch.charCodeAt(0);
+  if (code < 0xac00 || code > 0xd7a3) return false;
+  const offset = code - 0xac00;
+  if (offset % 28 !== 0) return false; // 받침이 있으면 어미가 아니다
+  return ENDING_VOWELS.has(Math.floor(offset / 28) % 21);
+}
 
 export function hasPoliteEnding(text: string): boolean {
   // 주석이 화면 문구를 인용한 자리는 원문이라 건드리지 않는다.
   const bare = text.replace(/"[^"]*"|'[^']*'|`[^`]*`/g, '');
 
-  if (TAIL.test(bare)) return true;
+  // 뒤에 글자가 더 붙으면 종결이 아니라 단어의 일부다 ('해요체'처럼).
+  let yo = bare.indexOf('요');
+  while (yo !== -1) {
+    const next = bare[yo + 1];
+    const isWordEnd = !next || !/[가-힣]/.test(next);
+    if (yo > 0 && isWordEnd && isPoliteYo(bare[yo - 1])) return true;
+    yo = bare.indexOf('요', yo + 1);
+  }
 
   let at = bare.indexOf('니다');
   while (at !== -1) {

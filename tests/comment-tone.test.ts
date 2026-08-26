@@ -35,6 +35,33 @@ describe('hasPoliteEnding', () => {
     expect(hasPoliteEnding('그대로 두세요.')).toBe(true);
   });
 
+  it('어간이 달라도 종결의 요를 잡는다', () => {
+    for (const line of [
+      '제목을 가져와요.',
+      '좁은 화면에서는 감춰요',
+      '선을 그려요.',
+      '메모만 남겨요',
+      '목록에서 빼요',
+      '여기서는 안 써요.',
+      '그건 하지 않아요',
+      '먼저 잡아요',
+    ]) {
+      expect(hasPoliteEnding(line)).toBe(true);
+    }
+  });
+
+  it('요로 끝나는 명사는 종결이 아니다', () => {
+    // 필요·중요는 앞 음절에 받침이 있고, 주요·수요는 모음이 어미가 될 수 없다.
+    for (const line of [
+      '이 검사는 필요 없다',
+      '순서가 중요',
+      '주요 흐름은 아래와 같다',
+      '수요',
+    ]) {
+      expect(hasPoliteEnding(line)).toBe(false);
+    }
+  });
+
   it('문체를 가리키는 단어 자체는 종결이 아니다', () => {
     expect(hasPoliteEnding('코드 주석은 평서체, 화면은 해요체다.')).toBe(false);
     expect(hasPoliteEnding('합니다체를 쓰지 않는다.')).toBe(false);

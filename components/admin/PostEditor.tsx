@@ -14,7 +14,7 @@ import { supabaseClient } from '@/lib/supabase';
 import type { ImageSize } from '@/lib/image-size';
 import { ALL_POST_TAGS, Post, PostTag, TAG_LABELS } from '@/lib/types';
 
-/** Date에서 시각 입력칸에 넣을 'HH:MM'을 뽑아요. */
+/** Date 에서 시각 입력칸에 넣을 'HH:MM' 을 뽑는다. */
 function toTimeValue(date: Date) {
   const hh = String(date.getHours()).padStart(2, '0');
   const mm = String(date.getMinutes()).padStart(2, '0');

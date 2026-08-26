@@ -50,7 +50,7 @@ export default function Comments() {
     }
 
     /*
-      giscus의 preferred_color_scheme는 기기 설정을 따라가요.
+      giscus 의 preferred_color_scheme 는 기기 설정을 따라간다.
       이 사이트는 직접 고르는 토글이 있어서, 토글을 눌렀는데 댓글만 밝은 채로
       남는 일이 생긴다. 그래서 <html>의 class를 지켜보다가 iframe에 알려준다.
     */

@@ -33,7 +33,7 @@ export default function ArchitectureDiagram({
                 </ul>
               </div>
 
-              {/* 칸 사이의 화살표. 마지막 칸 뒤에는 붙이지 않아요. */}
+              {/* 칸 사이의 화살표. 마지막 칸 뒤에는 붙이지 않는다. */}
               {i < columns.length - 1 && (
                 <span
                   aria-hidden

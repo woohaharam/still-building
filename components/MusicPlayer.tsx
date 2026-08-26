@@ -89,7 +89,7 @@ export default function MusicPlayer() {
   const [index, setIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
   const [note, setNote] = useState('');
-  // 곡 제목은 유튜브에 올라간 걸 그대로 가져와요. 목록에 제목을 안 적어도 되게.
+  // 곡 제목은 유튜브에 올라간 걸 그대로 가져온다. 목록에 제목을 안 적어도 되게.
   const [autoTitle, setAutoTitle] = useState('');
 
   const playerRef = useRef<YouTubePlayer | null>(null);

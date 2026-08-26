@@ -1,4 +1,4 @@
-/** 마크다운 문법을 걷어내고 사람이 읽는 글자만 남겨요. */
+/** 마크다운 문법을 걷어내고 사람이 읽는 글자만 남긴다. */
 export function stripMarkdown(markdown: string): string {
   return (
     markdown

@@ -51,7 +51,7 @@ export function youtubeId(url: string): string | null {
   return fromPath ? fromPath[1] : null;
 }
 
-/** 주소가 잘못 적힌 곡은 아예 목록에서 빼요. */
+/** 주소가 잘못 적힌 곡은 아예 목록에서 뺀다. */
 export const TRACKS = PLAYLIST.map((track) => ({
   ...track,
   videoId: youtubeId(track.url),

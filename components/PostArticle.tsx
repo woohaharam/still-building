@@ -14,7 +14,7 @@ import { formatCount } from '@/lib/count';
 import { formatDate } from '@/lib/date';
 import { Post, TAG_LABELS } from '@/lib/types';
 
-/** 글 한 편의 생김새. 공개 페이지와 관리자 미리보기가 이걸 같이 써요. */
+/** 글 한 편의 생김새. 공개 페이지와 관리자 미리보기가 이걸 같이 쓴다. */
 export default function PostArticle({
   post,
   backHref = '/blog',

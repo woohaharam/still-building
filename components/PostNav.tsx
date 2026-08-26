@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { Post } from '@/lib/types';
 
-/** 글 아래에 붙는 이전/다음 글. 둘 다 없으면 아무것도 안 그려요. */
+/** 글 아래에 붙는 이전/다음 글. 둘 다 없으면 아무것도 안 그린다. */
 export default function PostNav({
   older,
   newer,

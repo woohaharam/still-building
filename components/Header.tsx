@@ -16,7 +16,7 @@ export default function Header() {
     <header className="border-b border-line">
       <div className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-8 sm:gap-3 sm:py-10">
         {/*
-          좁은 화면에서는 로고와 메뉴가 한 줄에 다 안 들어가요.
+          좁은 화면에서는 로고와 메뉴가 한 줄에 다 안 들어간다.
           억지로 줄이는 대신 두 줄로 나눈다.
         */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -46,7 +46,7 @@ export default function Header() {
           </nav>
         </div>
 
-        {/* 태그라인은 좁은 화면에서 헤더가 너무 길어지지 않게 감춰요. */}
+        {/* 태그라인은 좁은 화면에서 헤더가 너무 길어지지 않게 감춘다. */}
         <div className="hidden items-center justify-between text-sm text-ink-muted sm:flex">
           <p>
             {siteName} · {siteDescription}

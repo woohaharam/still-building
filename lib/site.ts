@@ -71,7 +71,7 @@ export const siteInstagramHandle = '@woo._.0515';
  *
  * 네이버 값은 환경변수를 보지 않고 여기 적힌 걸 그대로 쓴다.
  * 예전에는 환경변수를 우선했는데, Vercel에 잘못된 값이 남아 있으면 그게 이겨서
- * 소유확인이 조용히 실패하더라고요. 바꿀 일이 생기면 이 줄만 고치면 된다.
+ * 소유확인이 조용히 실패한다. 바꿀 일이 생기면 이 줄만 고치면 된다.
  */
 export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 
@@ -79,7 +79,7 @@ export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 export const googleSiteVerification =
   process.env.GOOGLE_SITE_VERIFICATION || '';
 
-/** 한글 slug가 그대로 들어가면 안 되는 자리(RSS·sitemap·canonical)에서 써요. */
+/** 한글 slug 가 그대로 들어가면 안 되는 자리(RSS · sitemap · canonical)에서 쓴다. */
 export function postUrl(slug: string) {
   return `${siteUrl}/posts/${encodeURIComponent(slug)}`;
 }
