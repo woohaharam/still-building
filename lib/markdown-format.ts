@@ -80,6 +80,27 @@ function padBlock(value: string, start: number, end: number, inserted: string) {
   return { text: `${leading}${inserted}${trailing}`, leading: leading.length };
 }
 
+/**
+ * 커서 자리에 블록 하나를 끼워 넣는다. 이미지 업로드가 쓴다.
+ *
+ * 앞뒤 빈 줄은 padBlock 이 챙긴다. 문단 한가운데 그냥 넣으면 마크다운이
+ * 이미지를 글자 취급해서 줄 안에 그려버린다.
+ */
+export function insertBlock(
+  value: string,
+  start: number,
+  end: number,
+  block: string
+): { value: string; selectionStart: number; selectionEnd: number } {
+  const padded = padBlock(value, start, end, block);
+  const cursor = start + padded.text.length;
+  return {
+    value: value.slice(0, start) + padded.text + value.slice(end),
+    selectionStart: cursor,
+    selectionEnd: cursor,
+  };
+}
+
 export function applyAction(
   value: string,
   start: number,
