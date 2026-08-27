@@ -75,3 +75,61 @@ describe('buildRssFeed', () => {
     expect(xml).toContain('<pubDate>Sun, 16 Aug 2026 09:00:00 GMT</pubDate>');
   });
 });
+
+describe('content:encoded', () => {
+  it('네임스페이스를 선언한다', () => {
+    const xml = buildRssFeed([makePost()]);
+    expect(xml).toContain(
+      'xmlns:content="http://purl.org/rss/1.0/modules/content/"'
+    );
+  });
+
+  it('본문을 마크다운이 아니라 HTML로 싣는다', () => {
+    const xml = buildRssFeed([
+      makePost({ content: '## 제목\n\n**굵게** 그리고 `코드`.' }),
+    ]);
+    expect(xml).toContain('<h2>제목</h2>');
+    expect(xml).toContain('<strong>굵게</strong>');
+    expect(xml).toContain('<code>코드</code>');
+    expect(xml).not.toContain('## 제목');
+  });
+
+  it('요약과 본문을 둘 다 싣는다', () => {
+    const xml = buildRssFeed([
+      makePost({ excerpt: '한 줄 요약', content: '본문은 훨씬 길다.' }),
+    ]);
+    expect(xml).toContain('<description>한 줄 요약</description>');
+    expect(xml).toContain('본문은 훨씬 길다.');
+  });
+
+  it('본문 안의 ]]> 가 CDATA 를 끝내지 않는다', () => {
+    // 쪼개지 않으면 여기서 XML 이 통째로 깨진다.
+    const xml = buildRssFeed([makePost({ content: '배열은 `a[b[c]]>d` 꼴' })]);
+    const body = xml.slice(xml.indexOf('<content:encoded>'));
+    const opens = (body.match(/<!\[CDATA\[/g) || []).length;
+    const closes = (body.match(/\]\]>/g) || []).length;
+    expect(opens).toBe(closes);
+    expect(xml).toContain('<item>');
+  });
+
+  it('표와 목록도 HTML로 나온다', () => {
+    const xml = buildRssFeed([
+      makePost({ content: '- 하나\n- 둘\n\n| a | b |\n| - | - |\n| 1 | 2 |' }),
+    ]);
+    expect(xml).toContain('<li>하나</li>');
+    expect(xml).toContain('<table>');
+  });
+
+  it('태그를 category 로 싣는다', () => {
+    const xml = buildRssFeed([makePost({ tags: ['tech'] })]);
+    expect(xml).toContain('<category>개발</category>');
+  });
+
+  it('모르는 태그는 category 에서 뺀다', () => {
+    const xml = buildRssFeed([
+      makePost({ tags: ['constructor' as never, 'life'] }),
+    ]);
+    expect(xml).toContain('<category>일상</category>');
+    expect(xml).not.toContain('<category>constructor</category>');
+  });
+});
