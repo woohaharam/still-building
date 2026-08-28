@@ -12,6 +12,7 @@ import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
 import { supabaseClient } from '@/lib/supabase';
 import type { ImageSize } from '@/lib/image-size';
+import { slugify, toSlug } from '@/lib/slug';
 import { ALL_POST_TAGS, Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 /** Date 에서 시각 입력칸에 넣을 'HH:MM' 을 뽑는다. */
@@ -19,15 +20,6 @@ function toTimeValue(date: Date) {
   const hh = String(date.getHours()).padStart(2, '0');
   const mm = String(date.getMinutes()).padStart(2, '0');
   return `${hh}:${mm}`;
-}
-
-function slugify(title: string) {
-  return title
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9가-힣\s-]/g, '')
-    .replace(/\s+/g, '-')
-    .slice(0, 60);
 }
 
 export default function PostEditor() {
@@ -228,12 +220,21 @@ export default function PostEditor() {
       setStatus('제목과 본문은 필수예요.');
       return;
     }
+
+    // 손으로 적은 slug 도 그대로 두지 않는다. 공백이나 대괄호가 섞이면
+    // 공유했을 때 링크가 끊긴다.
+    const finalSlug = toSlug(slug, title);
+    if (!finalSlug) {
+      setStatus('주소로 쓸 글자가 없어요. slug를 직접 적어주세요.');
+      return;
+    }
+
     setSaving(true);
     setStatus('');
 
     const payload = {
       title,
-      slug: slug || slugify(title),
+      slug: finalSlug,
       excerpt,
       content,
       tags,
@@ -286,6 +287,7 @@ export default function PostEditor() {
             value={slug}
             onChange={(e) => setSlug(e.target.value)}
             placeholder={`slug (비워두면 자동 생성: ${slugify(title) || '제목-기반'})`}
+            title={`저장되는 주소: ${toSlug(slug, title) || '(비어 있음)'}`}
             className="rounded-md border border-line px-3 py-2 text-sm text-ink-muted focus:border-ink-muted focus:outline-none"
           />
           <textarea
