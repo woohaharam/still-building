@@ -184,8 +184,9 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
 - `NEXT_PUBLIC_SITE_URL` — `https://내도메인.com`. 링크 미리보기 · sitemap · 검색 노출 주소의 기준이다.
   안 넣으면 Vercel 배포 주소를 쓴다. 검색 등록을 할 거라면 반드시 넣어야 한다. 비어 있으면
   구글에 알려주는 주소와 실제 주소가 달라져서 색인이 꼬인다.
-- `GOOGLE_SITE_VERIFICATION` — (선택) 구글 서치 콘솔에서 받은 소유 확인 코드
-- `NAVER_SITE_VERIFICATION` — (선택) 네이버 서치어드바이저에서 받은 소유 확인 코드
+  검색엔진 소유 확인 코드는 환경변수가 아니라 `lib/site.ts` 에 적혀 있다. 페이지 소스에
+  그대로 드러나는 공개값이라 숨길 이유가 없고, Vercel 에 잘못된 값이 남아 있으면 그게
+  이겨서 소유확인이 조용히 실패한 적이 있어서 옮겼다.
 
 ### 3. GitHub 업로드 → Vercel 배포
 
@@ -217,7 +218,7 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
 
 1. https://search.google.com/search-console 접속 → 속성 추가 → URL 접두어에 내 주소 입력
 2. 소유권 확인 방법 중 HTML 태그를 고르면 `content="..."` 안에 코드가 보인다. 그 값만 복사
-3. Vercel → Settings → Environment Variables 에 `GOOGLE_SITE_VERIFICATION` 으로 추가 → 재배포
+3. `lib/site.ts` 의 `googleSiteVerification` 을 그 값으로 바꾸고 커밋 → 배포
 4. 서치 콘솔로 돌아가 확인 누르기
 5. 왼쪽 메뉴 Sitemaps → `sitemap.xml` 입력하고 제출
 
@@ -225,7 +226,7 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
 
 1. https://searchadvisor.naver.com 접속 → 웹마스터도구 → 사이트 등록
 2. 소유확인에서 HTML 태그 방식 선택 → 코드 복사
-3. Vercel에 `NAVER_SITE_VERIFICATION` 으로 추가 → 재배포 → 확인 누르기
+3. `lib/site.ts` 의 `naverSiteVerification` 을 그 값으로 바꾸고 커밋 → 배포 → 확인 누르기
 4. 요청 → 사이트맵 제출 에 `sitemap.xml`
 5. 요청 → RSS 제출 에 `feed.xml` — 네이버는 RSS 를 꽤 많이 본다
 
