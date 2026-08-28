@@ -12,9 +12,8 @@ import { PROJECTS, getProject } from '@/lib/projects';
 import { siteUrl } from '@/lib/site';
 
 /**
- * 프로젝트 목록은 빌드 시점에 다 안다. 여기 없는 주소는 Next가 곧바로
- * 404로 돌려보낸다. notFound()에 맡기면 응답 코드가 200으로 나가서
- * 검색엔진이 "내용 없는 페이지"로 색인해 버린다.
+ * 프로젝트 목록은 빌드 시점에 다 안다. 여기 없는 주소는 Next 가 곧바로
+ * 404 로 돌려보낸다.
  */
 export const dynamicParams = false;
 
