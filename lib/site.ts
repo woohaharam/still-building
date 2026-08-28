@@ -75,9 +75,9 @@ export const siteInstagramHandle = '@woo._.0515';
  */
 export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 
-/** 구글은 아직 등록 전이라, 코드를 받으면 환경변수로 넣으면 된다. */
+/** 구글도 같은 이유로 환경변수를 보지 않는다. 바꿀 일이 생기면 이 줄만 고친다. */
 export const googleSiteVerification =
-  process.env.GOOGLE_SITE_VERIFICATION || '';
+  'FcpYmsOGIQlDaefZrJXdKBaQ0Y9hPh6OZm0MX_tuRUk';
 
 /** 한글 slug 가 그대로 들어가면 안 되는 자리(RSS · sitemap · canonical)에서 쓴다. */
 export function postUrl(slug: string) {
