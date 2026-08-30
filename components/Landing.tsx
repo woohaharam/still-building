@@ -44,6 +44,13 @@ export default function Landing({
     },
     {
       index: '04',
+      href: '/books',
+      label: '독후감',
+      description: '읽은 책과, 읽고 나서 남은 생각',
+      meta: '',
+    },
+    {
+      index: '05',
       href: '/calendar',
       label: '달력',
       description: '앞으로의 일정과 지금까지 글 쓴 날들',

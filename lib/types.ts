@@ -63,6 +63,25 @@ export function tagLabel(tag: string): string | null {
     : null;
 }
 
+/** 독후감 한 편. 책 정보와 감상을 같이 들고 있다. */
+export interface Book {
+  id: string;
+  slug: string;
+  title: string;
+  author: string;
+  cover_image_url: string | null;
+  /** 1~5. 안 매겼으면 null. */
+  rating: number | null;
+  review: string;
+  /** 다 읽은 날. 목록 정렬 기준. */
+  finished_at: string | null;
+  published: boolean;
+  created_at: string;
+}
+
+export const MIN_RATING = 1;
+export const MAX_RATING = 5;
+
 export type EventKind = 'plan' | 'deadline' | 'note';
 
 export interface CalendarEvent {
