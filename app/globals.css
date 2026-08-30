@@ -2,7 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* 색은 전부 여기서 정해요. .dark가 붙으면 값만 갈아끼워집니다. */
+/* 색은 전부 여기서 정한다. .dark 가 붙으면 값만 갈아끼워진다. */
 :root {
   --paper: 251 249 245;
   --surface: 243 239 231;
@@ -61,7 +61,7 @@ html {
   scroll-behavior: smooth;
 }
 
-/* 목차에서 넘어왔을 때 제목이 화면 꼭대기에 붙지 않게 여백을 둬요 */
+/* 목차에서 넘어왔을 때 제목이 화면 꼭대기에 붙지 않게 여백을 둔다 */
 .prose-post h2,
 .prose-post h3 {
   scroll-margin-top: 2rem;
@@ -144,7 +144,7 @@ a {
   font-size: 0.875em;
 }
 
-/* 코드 블록 — 위에 언어 이름과 복사 버튼이 붙은 얇은 바가 있어요 */
+/* 코드 블록 — 위에 언어 이름과 복사 버튼이 붙은 얇은 바가 있다 */
 .prose-post .code-block {
   margin: 1.5em 0;
   border-radius: 8px;
@@ -188,7 +188,7 @@ a {
   padding: 1.05em;
   overflow-x: auto;
   margin: 0;
-  /* 본문 줄간격(1.85)을 그대로 쓰면 코드가 너무 성겨 보여요 */
+  /* 본문 줄간격(1.85)을 그대로 쓰면 코드가 너무 성겨 보인다 */
   line-height: 1.65;
 }
 
@@ -197,7 +197,7 @@ a {
   padding: 0;
 }
 
-/* 문법 강조 — 사이트 톤에 맞춰 색을 두 가지만 써요 */
+/* 문법 강조 — 사이트 톤에 맞춰 색을 두 가지만 쓴다 */
 .prose-post .hljs-comment,
 .prose-post .hljs-quote {
   color: rgb(var(--code-fg) / 0.42);
@@ -246,10 +246,24 @@ a {
   font-style: italic;
 }
 
-.prose-post ul,
+/*
+  Tailwind 의 preflight 가 ul·ol 의 list-style 을 none 으로 지운다. 화면 곳곳의
+  목록에는 그게 맞지만 본문에서는 아니다. 여기서만 되돌린다.
+*/
+.prose-post ul {
+  margin: 1.1em 0;
+  padding-left: 1.4em;
+  list-style: disc;
+}
+
 .prose-post ol {
   margin: 1.1em 0;
   padding-left: 1.4em;
+  list-style: decimal;
+}
+
+.prose-post ul ul {
+  list-style: circle;
 }
 
 .prose-post li {
@@ -257,8 +271,8 @@ a {
 }
 
 /*
-  폭은 여기서 정하지 않아요. lib/markdown.tsx 가 크기 클래스를 붙이는데,
-  여기에 max-width를 두면 선택자가 더 세서 그 클래스를 눌러버립니다.
+  폭은 여기서 정하지 않는다. lib/markdown.tsx 가 크기 클래스를 붙이는데,
+  여기에 max-width 를 두면 선택자가 더 세서 그 클래스를 눌러버린다.
 */
 .prose-post img {
   border-radius: 8px;

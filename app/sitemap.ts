@@ -1,4 +1,5 @@
 import type { MetadataRoute } from 'next';
+import { getPublishedBooks } from '@/lib/books';
 import { getPublishedPosts } from '@/lib/posts';
 import { PROJECTS } from '@/lib/projects';
 import { PUBLICATIONS } from '@/lib/publications';
@@ -21,6 +22,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     posts = await getPublishedPosts();
   } catch (error) {
     console.error('sitemap 글 목록 조회 실패:', error);
+  }
+
+  let books: Awaited<ReturnType<typeof getPublishedBooks>> = [];
+  try {
+    books = await getPublishedBooks();
+  } catch (error) {
+    console.error('sitemap 독후감 목록 조회 실패:', error);
   }
 
   // 글이 새로 올라온 날을 사이트가 바뀐 날로 본다.
@@ -85,6 +93,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       lastModified: new Date(post.published_at || post.created_at),
       changeFrequency: 'monthly' as const,
       priority: 0.8,
+    })),
+    {
+      url: `${siteUrl}/books`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.7,
+    },
+    ...books.map((book) => ({
+      url: `${siteUrl}/books/${encodeURIComponent(book.slug)}`,
+      lastModified: new Date(book.finished_at || book.created_at),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
     })),
   ];
 }

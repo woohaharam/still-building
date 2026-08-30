@@ -8,6 +8,7 @@ const NAV = [
   { href: '/about', label: '소개' },
   { href: '/projects', label: '프로젝트' },
   { href: '/blog', label: '블로그' },
+  { href: '/books', label: '독후감' },
   { href: '/calendar', label: '달력' },
 ];
 
@@ -34,14 +35,6 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-            <a
-              href="https://github.com/woohaharam"
-              target="_blank"
-              rel="noreferrer"
-              className="whitespace-nowrap transition-colors hover:text-ink"
-            >
-              GitHub
-            </a>
             <ThemeToggle />
           </nav>
         </div>

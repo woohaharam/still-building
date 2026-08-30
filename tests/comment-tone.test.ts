@@ -3,6 +3,7 @@ import { join, relative } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   extractComments,
+  extractCssComments,
   extractSqlComments,
   hasPoliteEnding,
 } from '@/lib/comment-tone';
@@ -15,7 +16,7 @@ function walk(dir: string, out: string[] = []) {
     if (SKIP.has(name)) continue;
     const full = join(dir, name);
     if (statSync(full).isDirectory()) walk(full, out);
-    else if (/\.(ts|tsx|js|sql)$/.test(name) && !name.endsWith('.d.ts'))
+    else if (/\.(ts|tsx|js|sql|css)$/.test(name) && !name.endsWith('.d.ts'))
       out.push(full);
   }
   return out;
@@ -100,7 +101,9 @@ describe('저장소 전체', () => {
       const src = readFileSync(file, 'utf-8');
       const comments = file.endsWith('.sql')
         ? extractSqlComments(src)
-        : extractComments(src);
+        : file.endsWith('.css')
+          ? extractCssComments(src)
+          : extractComments(src);
 
       for (const { line, text } of comments) {
         if (hasPoliteEnding(text)) {

@@ -120,3 +120,35 @@ export function extractSqlComments(src: string) {
     .map((text, k) => ({ line: k + 1, text: text.trim() }))
     .filter((row) => row.text.startsWith('--'));
 }
+
+/**
+ * CSS 는 /* *\/ 하나뿐이고 문자열 안에 주석 기호가 들어갈 일이 거의 없다.
+ * 그래서 블록만 훑는다.
+ */
+export function extractCssComments(src: string) {
+  const out: { line: number; text: string }[] = [];
+  let i = 0;
+  let line = 1;
+
+  while (i < src.length) {
+    if (src[i] === '\n') {
+      line++;
+      i++;
+      continue;
+    }
+    if (src[i] === '/' && src[i + 1] === '*') {
+      const end = src.indexOf('*/', i + 2);
+      const stop = end === -1 ? src.length : end + 2;
+      const block = src.slice(i, stop);
+      block
+        .split('\n')
+        .forEach((text, k) => out.push({ line: line + k, text }));
+      line += (block.match(/\n/g) || []).length;
+      i = stop;
+      continue;
+    }
+    i++;
+  }
+
+  return out;
+}
