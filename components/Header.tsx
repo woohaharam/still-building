@@ -9,7 +9,8 @@ const NAV = [
   { href: '/projects', label: '프로젝트' },
   { href: '/blog', label: '블로그' },
   { href: '/books', label: '독후감' },
-  { href: '/calendar', label: '달력' },
+  { href: '/travel', label: '여행' },
+  { href: '/calendar', label: '캘린더' },
 ];
 
 export default function Header() {
@@ -21,11 +22,23 @@ export default function Header() {
           억지로 줄이는 대신 두 줄로 나눈다.
         */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <Link href="/" aria-label={`${siteTitle} 홈`} className="self-start">
-            <Logo />
-          </Link>
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/" aria-label={`${siteTitle} 홈`}>
+              <Logo />
+            </Link>
 
-          <nav className="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-ink-soft">
+            {/*
+              메뉴가 여섯 개라 좁은 화면에서는 토글이 줄 끝에 못 붙고 혼자
+              다음 줄로 떨어진다. 그래서 좁을 때는 로고 옆에 둔다.
+              display:none 으로 감춘 쪽은 접근성 트리에서도 빠지므로
+              버튼이 둘로 읽히지 않는다.
+            */}
+            <span className="sm:hidden">
+              <ThemeToggle />
+            </span>
+          </div>
+
+          <nav className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-ink-soft sm:gap-x-5">
             {NAV.map((item) => (
               <Link
                 key={item.href}
@@ -35,7 +48,9 @@ export default function Header() {
                 {item.label}
               </Link>
             ))}
-            <ThemeToggle />
+            <span className="hidden sm:inline-flex">
+              <ThemeToggle />
+            </span>
           </nav>
         </div>
 

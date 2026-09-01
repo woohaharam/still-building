@@ -51,8 +51,15 @@ export default function Landing({
     },
     {
       index: '05',
+      href: '/travel',
+      label: '여행',
+      description: '다녀온 곳과, 거기서 남은 기록',
+      meta: '',
+    },
+    {
+      index: '06',
       href: '/calendar',
-      label: '달력',
+      label: '캘린더',
       description: '앞으로의 일정과 지금까지 글 쓴 날들',
       meta: '',
     },

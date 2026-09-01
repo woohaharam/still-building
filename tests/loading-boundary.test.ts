@@ -19,6 +19,7 @@ const NEEDS_404 = [
   'projects/[slug]',
   'papers/[slug]',
   'books/[slug]',
+  'travel/[slug]',
 ];
 
 function loadingFilesIn(dir: string, out: string[] = []) {
