@@ -82,6 +82,23 @@ export interface Book {
 export const MIN_RATING = 1;
 export const MAX_RATING = 5;
 
+/** 여행 한 번. 다녀온 곳과 여행기를 같이 들고 있다. */
+export interface Trip {
+  id: string;
+  slug: string;
+  /** 도시나 지역 이름. '오사카', '제주'. */
+  place: string;
+  /** ISO 3166-1 alpha-2. 국기와 나라 이름을 여기서 만든다 (lib/country.ts). */
+  country_code: string;
+  started_on: string;
+  /** 당일치기면 null. */
+  ended_on: string | null;
+  cover_image_url: string | null;
+  journal: string;
+  published: boolean;
+  created_at: string;
+}
+
 export type EventKind = 'plan' | 'deadline' | 'note';
 
 export interface CalendarEvent {

@@ -4,11 +4,12 @@ import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import EventEditor from '@/components/EventEditor';
 import BookEditor from '@/components/admin/BookEditor';
+import TripEditor from '@/components/admin/TripEditor';
 import PostEditor from '@/components/admin/PostEditor';
 import SignIn from '@/components/admin/SignIn';
 import { supabaseClient } from '@/lib/supabase';
 
-type AdminTab = 'posts' | 'books' | 'events';
+type AdminTab = 'posts' | 'books' | 'trips' | 'events';
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -46,6 +47,7 @@ export default function AdminPage() {
             [
               ['posts', '글'],
               ['books', '독후감'],
+              ['trips', '여행'],
               ['events', '일정'],
             ] as [AdminTab, string][]
           ).map(([value, label]) => (
@@ -76,6 +78,7 @@ export default function AdminPage() {
 
       {tab === 'posts' && <PostEditor />}
       {tab === 'books' && <BookEditor />}
+      {tab === 'trips' && <TripEditor />}
       {tab === 'events' && <EventEditor />}
     </div>
   );
