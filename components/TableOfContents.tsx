@@ -20,7 +20,7 @@ export default function TableOfContents({ headings }: { headings: Heading[] }) {
         aria-expanded={open}
         className="flex w-full items-center justify-between text-left"
       >
-        <span className="text-xs tracking-[0.18em] text-ink-muted">목차</span>
+        <span className="section-label">목차</span>
         <span className="text-xs text-ink-muted">
           {open ? '접기' : '펼치기'}
         </span>

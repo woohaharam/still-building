@@ -91,7 +91,7 @@ export default function ProjectsPage() {
 
         {PUBLICATIONS.length > 0 && (
           <section className="flex flex-col gap-12">
-            <h2 className="text-xs tracking-[0.18em] text-ink-muted">논문</h2>
+            <h2 className="section-label">논문</h2>
 
             {PUBLICATIONS.map((paper) => (
               <Reveal key={paper.slug}>

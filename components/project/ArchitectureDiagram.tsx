@@ -18,7 +18,7 @@ export default function ArchitectureDiagram({
           {columns.map((column, i) => (
             <div key={column.title} className="flex flex-1 md:items-stretch">
               <div className="flex-1 rounded-lg border border-line bg-surface/60 p-4">
-                <p className="text-[11px] tracking-[0.16em] text-ink-muted">
+                <p className="text-[11px] tracking-[0.04em] text-ink-muted">
                   {column.title.toUpperCase()}
                 </p>
                 <ul className="mt-3 flex flex-col gap-2">

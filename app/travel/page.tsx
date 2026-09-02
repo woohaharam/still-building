@@ -93,9 +93,7 @@ export default async function TravelPage() {
 
             {abroad.length > 0 && (
               <section>
-                <h2 className="mb-4 text-xs tracking-[0.18em] text-ink-muted">
-                  해외
-                </h2>
+                <h2 className="section-label mb-4">해외</h2>
                 <ul className="flex flex-col">
                   {abroad.map((trip) => (
                     <TripRow key={trip.id} trip={trip} />
@@ -106,9 +104,7 @@ export default async function TravelPage() {
 
             {domestic.length > 0 && (
               <section>
-                <h2 className="mb-4 text-xs tracking-[0.18em] text-ink-muted">
-                  국내
-                </h2>
+                <h2 className="section-label mb-4">국내</h2>
                 <ul className="flex flex-col">
                   {domestic.map((trip) => (
                     <TripRow key={trip.id} trip={trip} />

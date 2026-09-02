@@ -57,6 +57,20 @@
   }
 }
 
+/*
+  섹션을 여는 작은 라벨.
+
+  원래 영문 대문자용으로 자간을 넓혀뒀는데, 라벨을 한글로 바꾸고 나니
+  '요 즘', '학 력'처럼 글자가 벌어져서 오히려 읽기 나빠졌다. 한글은 자간을
+  넓히지 않는다.
+*/
+.section-label {
+  font-size: 0.75rem;
+  line-height: 1.25rem;
+  letter-spacing: 0.02em;
+  color: rgb(var(--ink-muted));
+}
+
 html {
   scroll-behavior: smooth;
 }

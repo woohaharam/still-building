@@ -76,7 +76,7 @@ export default function Comments() {
 
   return (
     <section className="mt-16 border-t border-line pt-10">
-      <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">댓글</h2>
+      <h2 className="section-label mb-6">댓글</h2>
       <div ref={ref} />
     </section>
   );

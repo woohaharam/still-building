@@ -66,9 +66,7 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              요즘
-            </h2>
+            <h2 className="section-label mb-6">요즘</h2>
             <div className="flex flex-col gap-4">
               {NOW.map((line) => (
                 <p key={line} className="leading-relaxed text-ink-soft">
@@ -81,9 +79,7 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              학력
-            </h2>
+            <h2 className="section-label mb-6">학력</h2>
             <div className="border-t border-line pt-5">
               <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
                 <h3 className="text-lg font-semibold">
@@ -105,9 +101,7 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              기술
-            </h2>
+            <h2 className="section-label mb-6">기술</h2>
             <dl className="flex flex-col gap-6">
               {STACK.map((row) => (
                 <div key={row.group} className="sm:flex sm:gap-8">
@@ -132,9 +126,7 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="mb-6 text-xs tracking-[0.18em] text-ink-muted">
-              연락
-            </h2>
+            <h2 className="section-label mb-6">연락</h2>
             <div className="flex flex-col">
               <a
                 href={`mailto:${siteEmail}`}
