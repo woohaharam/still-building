@@ -4,9 +4,9 @@ import { useEffect, useState } from 'react';
 import { toDateKey } from '@/lib/calendar';
 import { countryName, flagEmoji, isCountryCode } from '@/lib/country';
 import { toSlug } from '@/lib/slug';
-import { uploadImage } from '@/lib/storage';
 import { stayLabel } from '@/lib/travel';
 import { supabaseClient } from '@/lib/supabase';
+import CoverImageField from './CoverImageField';
 import { Trip } from '@/lib/types';
 
 /** 자주 가는 곳은 눌러서 넣는다. 코드를 외우고 있을 이유가 없다. */
@@ -27,9 +27,6 @@ export default function TripEditor() {
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [journal, setJournal] = useState('');
   const [published, setPublished] = useState(false);
-
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
 
   async function loadTrips() {
     setLoading(true);
@@ -57,7 +54,6 @@ export default function TripEditor() {
     setCoverImageUrl('');
     setJournal('');
     setPublished(false);
-    setUploadError('');
   }
 
   function loadIntoForm(trip: Trip) {
@@ -71,26 +67,7 @@ export default function TripEditor() {
     setJournal(trip.journal);
     setPublished(trip.published);
     setStatus('');
-    setUploadError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadError('');
-    setUploading(true);
-    try {
-      setCoverImageUrl(await uploadImage(file));
-    } catch (err) {
-      setUploadError(
-        err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
-      );
-    } finally {
-      setUploading(false);
-      e.target.value = '';
-    }
   }
 
   async function handleSave() {
@@ -240,36 +217,13 @@ export default function TripEditor() {
             )}
           </div>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-3">
-              <input
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="대표 사진 주소 (선택)"
-                className="min-w-0 flex-1 rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
-              />
-              <label className="cursor-pointer whitespace-nowrap rounded-md border border-line px-3 py-2 text-sm text-ink-soft hover:border-ink-muted">
-                {uploading ? '올리는 중...' : '사진 올리기'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverUpload}
-                  className="hidden"
-                />
-              </label>
-            </div>
-            {uploadError && (
-              <p className="text-xs text-accent">{uploadError}</p>
-            )}
-            {coverImageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={coverImageUrl}
-                alt="대표 사진 미리보기"
-                className="h-32 w-full rounded-md border border-line object-cover"
-              />
-            )}
-          </div>
+          <CoverImageField
+            value={coverImageUrl}
+            onChange={setCoverImageUrl}
+            placeholder="대표 사진 주소 (선택)"
+            buttonLabel="사진 올리기"
+            previewAlt="대표 사진 미리보기"
+          />
 
           <textarea
             value={journal}

@@ -233,7 +233,7 @@ export default function EventEditor() {
                   </span>
                   <button
                     onClick={() => handleDelete(event.id)}
-                    className="shrink-0 text-xs text-red-500 hover:underline"
+                    className="shrink-0 text-xs text-danger hover:underline"
                   >
                     삭제
                   </button>

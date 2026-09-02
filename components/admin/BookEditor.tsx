@@ -2,10 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { supabaseClient } from '@/lib/supabase';
+import CoverImageField from './CoverImageField';
 import { toDateKey } from '@/lib/calendar';
 import { isRating, stars } from '@/lib/rating';
 import { toSlug } from '@/lib/slug';
-import { uploadImage } from '@/lib/storage';
 import { Book, MAX_RATING } from '@/lib/types';
 
 const RATINGS = Array.from({ length: MAX_RATING }, (_, i) => i + 1);
@@ -25,9 +25,6 @@ export default function BookEditor() {
   const [review, setReview] = useState('');
   const [finishedAt, setFinishedAt] = useState('');
   const [published, setPublished] = useState(false);
-
-  const [uploading, setUploading] = useState(false);
-  const [uploadError, setUploadError] = useState('');
 
   async function loadBooks() {
     setLoading(true);
@@ -55,7 +52,6 @@ export default function BookEditor() {
     setReview('');
     setFinishedAt(toDateKey(new Date()));
     setPublished(false);
-    setUploadError('');
   }
 
   function loadIntoForm(book: Book) {
@@ -69,26 +65,7 @@ export default function BookEditor() {
     setFinishedAt(book.finished_at || '');
     setPublished(book.published);
     setStatus('');
-    setUploadError('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }
-
-  async function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadError('');
-    setUploading(true);
-    try {
-      setCoverImageUrl(await uploadImage(file));
-    } catch (err) {
-      setUploadError(
-        err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
-      );
-    } finally {
-      setUploading(false);
-      e.target.value = '';
-    }
   }
 
   async function handleSave() {
@@ -214,36 +191,14 @@ export default function BookEditor() {
             />
           </label>
 
-          <div className="flex flex-col gap-2">
-            <div className="flex flex-wrap items-center gap-3">
-              <input
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="표지 이미지 주소 (선택)"
-                className="min-w-0 flex-1 rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
-              />
-              <label className="cursor-pointer whitespace-nowrap rounded-md border border-line px-3 py-2 text-sm text-ink-soft hover:border-ink-muted">
-                {uploading ? '올리는 중...' : '표지 올리기'}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleCoverUpload}
-                  className="hidden"
-                />
-              </label>
-            </div>
-            {uploadError && (
-              <p className="text-xs text-accent">{uploadError}</p>
-            )}
-            {coverImageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={coverImageUrl}
-                alt="표지 미리보기"
-                className="h-32 w-24 rounded-md border border-line object-cover"
-              />
-            )}
-          </div>
+          <CoverImageField
+            value={coverImageUrl}
+            onChange={setCoverImageUrl}
+            placeholder="표지 이미지 주소 (선택)"
+            buttonLabel="표지 올리기"
+            previewAlt="표지 미리보기"
+            previewClassName="h-32 w-24"
+          />
 
           <textarea
             value={review}
