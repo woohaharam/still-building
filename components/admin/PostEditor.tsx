@@ -13,6 +13,7 @@ import { uploadImage } from '@/lib/storage';
 import { supabaseClient } from '@/lib/supabase';
 import type { ImageSize } from '@/lib/image-size';
 import { slugify, toSlug } from '@/lib/slug';
+import CoverImageField from './CoverImageField';
 import { ALL_POST_TAGS, Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 /** Date 에서 시각 입력칸에 넣을 'HH:MM' 을 뽑는다. */
@@ -45,11 +46,9 @@ export default function PostEditor() {
   const [publishedTime, setPublishedTime] = useState('');
   const [imageSize, setImageSize] = useState<ImageSize>('large');
 
-  const [coverUploading, setCoverUploading] = useState(false);
   const [contentUploading, setContentUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
   const contentRef = useRef<HTMLTextAreaElement>(null);
-  const coverFileInputRef = useRef<HTMLInputElement>(null);
   const contentFileInputRef = useRef<HTMLInputElement>(null);
 
   async function loadPosts() {
@@ -147,10 +146,6 @@ export default function PostEditor() {
       setBusy(false);
       if (inputRef.current) inputRef.current.value = '';
     }
-  }
-
-  function handleCoverUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    return runUpload(e, setCoverUploading, coverFileInputRef, setCoverImageUrl);
   }
 
   function handleContentImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -297,41 +292,15 @@ export default function PostEditor() {
             rows={2}
             className="resize-none rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
           />
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-2">
-              <input
-                value={coverImageUrl}
-                onChange={(e) => setCoverImageUrl(e.target.value)}
-                placeholder="커버 이미지 URL (선택)"
-                className="flex-1 rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
-              />
-              <button
-                type="button"
-                onClick={() => coverFileInputRef.current?.click()}
-                disabled={coverUploading}
-                className="shrink-0 rounded-md border border-line px-3 py-2 text-sm text-ink-soft hover:border-ink-muted disabled:opacity-50"
-              >
-                {coverUploading ? '업로드 중...' : '사진 업로드'}
-              </button>
-              <input
-                ref={coverFileInputRef}
-                type="file"
-                accept="image/*"
-                onChange={handleCoverUpload}
-                className="hidden"
-              />
-            </div>
-            {coverImageUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={coverImageUrl}
-                alt="커버 미리보기"
-                className="h-32 w-full rounded-md border border-line object-cover"
-              />
-            )}
-          </div>
+          <CoverImageField
+            value={coverImageUrl}
+            onChange={setCoverImageUrl}
+            placeholder="커버 이미지 주소 (선택)"
+            buttonLabel="사진 올리기"
+            previewAlt="커버 미리보기"
+          />
 
-          {uploadError && <p className="text-sm text-red-600">{uploadError}</p>}
+          {uploadError && <p className="text-xs text-danger">{uploadError}</p>}
 
           <div className="flex items-center justify-between">
             <span className="text-sm text-ink-soft">본문 (마크다운)</span>
@@ -535,7 +504,7 @@ export default function PostEditor() {
                     </a>
                     <button
                       onClick={() => handleDelete(post.id)}
-                      className="text-xs text-red-500 hover:underline"
+                      className="text-xs text-danger hover:underline"
                     >
                       삭제
                     </button>

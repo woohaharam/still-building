@@ -69,10 +69,7 @@ export default function Landing({
     <div className="flex flex-col gap-24 pb-10 sm:gap-32">
       <section className="flex min-h-[72vh] flex-col justify-center gap-10 sm:flex-row sm:items-center sm:gap-14">
         <div className="order-2 flex-1 sm:order-1">
-          <p
-            className="rise text-xs tracking-[0.22em] text-ink-muted"
-            style={{ animationDelay: '60ms' }}
-          >
+          <p className="rise section-label" style={{ animationDelay: '60ms' }}>
             {siteAuthor} · {siteAuthorAlias}
           </p>
 
