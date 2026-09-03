@@ -65,6 +65,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
+      // 포트폴리오가 아니라 개인 기록이라 우선순위를 낮게 둔다.
+      url: `${siteUrl}/service`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.3,
+    },
+    {
       url: `${siteUrl}/privacy`,
       changeFrequency: 'yearly',
       priority: 0.3,
