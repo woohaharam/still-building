@@ -23,6 +23,12 @@ const config: Config = {
         line: 'rgb(var(--line) / <alpha-value>)',
         accent: 'rgb(var(--accent) / <alpha-value>)',
         danger: 'rgb(var(--danger) / <alpha-value>)',
+        leave: {
+          outing: 'rgb(var(--leave-outing) / <alpha-value>)',
+          overnight: 'rgb(var(--leave-overnight) / <alpha-value>)',
+          leave: 'rgb(var(--leave-leave) / <alpha-value>)',
+          final: 'rgb(var(--leave-final) / <alpha-value>)',
+        },
       },
       fontFamily: {
         sans: [

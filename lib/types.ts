@@ -99,6 +99,38 @@ export interface Trip {
   created_at: string;
 }
 
+/**
+ * 부대 밖으로 나가는 일정.
+ *
+ * 캘린더의 일정(events)과 섞지 않고 따로 둔다. 포트폴리오를 보러 온 사람이
+ * 보는 캘린더와, 내가 언제 나가는지를 세는 표는 쓰임이 다르다.
+ */
+export type LeaveKind = 'outing' | 'overnight' | 'leave' | 'final';
+
+export interface Leave {
+  id: string;
+  kind: LeaveKind;
+  started_on: string;
+  /** 하루짜리면 null. */
+  ended_on: string | null;
+  note: string | null;
+  created_at: string;
+}
+
+export const LEAVE_KINDS: LeaveKind[] = [
+  'outing',
+  'overnight',
+  'leave',
+  'final',
+];
+
+export const LEAVE_KIND_LABELS: Record<LeaveKind, string> = {
+  outing: '외출',
+  overnight: '외박',
+  leave: '휴가',
+  final: '말출',
+};
+
 export type EventKind = 'plan' | 'deadline' | 'note';
 
 export interface CalendarEvent {
