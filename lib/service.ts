@@ -1,14 +1,11 @@
 import { DateKey, parseDateKey, toDateKey } from './calendar';
 
 /**
- * 복무 기간.
- *
- * 전역일과 D-day 는 군돌이 화면과 맞춰봤고, 진행률을 역산해서 입대일을 냈다.
- * 날짜가 다르면 이 두 줄만 고치면 화면 전체가 따라간다.
+ * 복무 기간. 날짜가 바뀌면 이 두 줄만 고치면 화면 전체가 따라간다.
  */
 export const SERVICE = {
   branch: '공군',
-  enlistedOn: '2025-07-27' as DateKey,
+  enlistedOn: '2025-07-28' as DateKey,
   dischargeOn: '2027-04-27' as DateKey,
 };
 
