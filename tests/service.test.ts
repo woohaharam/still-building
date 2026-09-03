@@ -9,7 +9,8 @@ describe('serviceStatus', () => {
     // 2026-09-03 기준 D-236, 63.1% 로 찍혀 있었다.
     const s = serviceStatus('2026-09-03');
     expect(s.daysLeft).toBe(236);
-    expect(s.totalDays).toBe(640);
+    expect(s.totalDays).toBe(639);
+    expect(s.servedDays).toBe(403);
     expect(Math.round(s.percent * 10) / 10).toBe(63.1);
   });
 
