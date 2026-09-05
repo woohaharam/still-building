@@ -133,7 +133,9 @@ https://mynameiswoo.vercel.app
 ```
 app/                    페이지 (App Router)
   ├ page.tsx            메인 — 포트폴리오 랜딩
-  ├ about/ projects/    소개 · 프로젝트 (목록 + 상세)
+  ├ about/              소개
+  ├ projects/ papers/   프로젝트 · 논문 (목록 + 상세)
+  ├ activities/         공모전 · 대외활동 지원 기록
   ├ blog/ posts/[slug]/ 글 목록 · 글 상세
   ├ books/              독후감 (목록 + 상세)
   ├ travel/             여행 기록 (목록 + 상세)
