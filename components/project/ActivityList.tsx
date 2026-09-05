@@ -25,18 +25,11 @@ export default function ActivityList({
 
   return (
     <section>
-      <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
-        <h2 className="text-xl font-bold tracking-tight">활동</h2>
-        <p className="text-xs tabular-nums text-ink-muted">
-          지원 {applied}번 · 활동 {engaged}번
-        </p>
-      </div>
-
-      <p className="mt-3 text-sm leading-relaxed text-ink-soft">
-        지원한 공모전과 대외활동. 떨어진 것도 같이 적어둡니다.
+      <p className="text-xs tabular-nums text-ink-muted">
+        지원 {applied}번 · 활동 {engaged}번
       </p>
 
-      <div className="mt-8 flex flex-col gap-8">
+      <div className="mt-6 flex flex-col gap-8">
         {years.map(({ year, items }) => (
           <div key={year}>
             <h3 className="section-label mb-3 tabular-nums">{year}</h3>

@@ -50,7 +50,7 @@ export default function PaperPage({ params }: { params: { slug: string } }) {
       <div className="flex flex-col gap-16 pb-6">
         <section>
           <div className="mb-8">
-            <BackLink href="/projects" label="프로젝트 목록" />
+            <BackLink href="/papers" label="논문 목록" />
           </div>
 
           <h1 className="mt-4 text-2xl font-bold leading-snug tracking-tight sm:text-3xl">
