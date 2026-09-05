@@ -84,3 +84,14 @@ export function formatDayLabel(key: DateKey) {
   const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${weekday})`;
 }
+
+/**
+ * 'YYYY-MM-DD' → 'YYYY.MM'.
+ *
+ * 활동·복무·이력서처럼 며칠인지보다 어느 달인지가 중요한 자리에서 쓴다.
+ * 문자열을 그대로 자른다. Date 로 돌리면 시간대 때문에 달이 밀릴 수 있다.
+ */
+export function formatMonthLabel(key: DateKey) {
+  const [year, month] = key.split('-');
+  return `${year}.${month}`;
+}

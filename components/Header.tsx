@@ -15,7 +15,7 @@ const NAV = [
 
 export default function Header() {
   return (
-    <header className="border-b border-line">
+    <header className="no-print border-b border-line">
       <div className="mx-auto flex max-w-4xl flex-col gap-4 px-6 py-8 sm:gap-3 sm:py-10">
         {/*
           좁은 화면에서는 로고와 메뉴가 한 줄에 다 안 들어간다.

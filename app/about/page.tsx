@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Container from '@/components/Container';
 import Reveal from '@/components/Reveal';
+import { skillsFromProjects } from '@/lib/skills';
 import {
   education,
   siteAuthor,
@@ -25,19 +26,15 @@ const NOW = [
   '막힌 건 그때그때 글로 남깁니다. 반년 뒤의 제가 같은 데서 또 막힐 게 뻔해서요.',
 ];
 
-const STACK = [
-  {
-    group: '쓰는 것',
-    items: ['TypeScript', 'React', 'Next.js', 'Tailwind CSS'],
-  },
-  {
-    group: '붙여본 것',
-    items: ['Supabase (Postgres · Auth · Storage)', 'Vercel', 'GitHub Actions'],
-  },
-  { group: '배우는 중', items: ['테스트 작성', '접근성', '검색엔진 최적화'] },
-];
+/**
+ * 아직 프로젝트에 올릴 만큼 쓰지 못한 것들. 이건 손으로 적는다.
+ * 쓴 기술 목록은 반대로 프로젝트에서 뽑는다 (lib/skills.ts).
+ */
+const LEARNING = ['테스트 작성', '접근성', '검색엔진 최적화'];
 
 export default function AboutPage() {
+  const skills = skillsFromProjects();
+
   return (
     <Container>
       <div className="flex flex-col gap-20 pb-6">
@@ -61,6 +58,16 @@ export default function AboutPage() {
               필요한 걸 직접 만들고, 만들다 막힌 지점을 남깁니다. 잘 굴러가게
               만드는 것보다 왜 그렇게 굴러가는지 아는 쪽에 관심이 있어요.
             </p>
+
+            <Link
+              href="/resume"
+              className="group mt-7 inline-flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-medium text-paper transition-opacity hover:opacity-90"
+            >
+              이력서 보기
+              <span className="transition-transform group-hover:translate-x-0.5">
+                →
+              </span>
+            </Link>
           </div>
         </section>
 
@@ -101,26 +108,52 @@ export default function AboutPage() {
 
         <Reveal>
           <section>
-            <h2 className="section-label mb-6">기술</h2>
-            <dl className="flex flex-col gap-6">
-              {STACK.map((row) => (
-                <div key={row.group} className="sm:flex sm:gap-8">
-                  <dt className="w-24 shrink-0 text-sm text-ink-muted">
-                    {row.group}
-                  </dt>
-                  <dd className="mt-2 flex flex-wrap gap-2 sm:mt-0">
-                    {row.items.map((item) => (
-                      <span
-                        key={item}
-                        className="rounded-full border border-line px-3 py-1 text-xs text-ink-soft"
-                      >
-                        {item}
+            <h2 className="section-label mb-4">기술</h2>
+            <p className="mb-6 text-sm leading-relaxed text-ink-soft">
+              이름만 적어두면 어디까지 해봤는지는 알 수 없어서, 실제로 쓴
+              프로젝트를 옆에 같이 적습니다. 목록은 프로젝트 데이터에서 뽑으므로
+              쓴 적 없는 이름이 올라올 자리가 없습니다.
+            </p>
+
+            <ul className="flex flex-col">
+              {skills.map((skill) => (
+                <li
+                  key={skill.name}
+                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-line py-3.5 last:border-b"
+                >
+                  <span className="font-medium">{skill.name}</span>
+                  <span className="ml-auto text-xs text-ink-muted">
+                    {skill.projects.map((project, i) => (
+                      <span key={project.slug}>
+                        {i > 0 && <span className="mx-1.5 opacity-50">·</span>}
+                        <Link
+                          href={`/projects/${project.slug}`}
+                          className="transition-colors hover:text-accent"
+                        >
+                          {project.title}
+                        </Link>
                       </span>
                     ))}
-                  </dd>
-                </div>
+                  </span>
+                </li>
               ))}
-            </dl>
+            </ul>
+
+            <div className="mt-7 sm:flex sm:gap-8">
+              <span className="w-24 shrink-0 text-sm text-ink-muted">
+                배우는 중
+              </span>
+              <div className="mt-2 flex flex-wrap gap-2 sm:mt-0">
+                {LEARNING.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded-full border border-line px-3 py-1 text-xs text-ink-soft"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
           </section>
         </Reveal>
 

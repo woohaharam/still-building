@@ -103,6 +103,12 @@ export default function Landing({
                 →
               </span>
             </Link>
+            <Link
+              href="/resume"
+              className="inline-flex items-center rounded-full border border-line px-5 py-3 text-sm font-medium text-ink-soft transition-colors hover:border-ink-muted hover:text-ink"
+            >
+              이력서
+            </Link>
             <a
               href={siteGithub}
               target="_blank"

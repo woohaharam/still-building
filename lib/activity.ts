@@ -1,3 +1,4 @@
+import { formatMonthLabel } from './calendar';
 import { Activity, ActivityOutcome } from './types';
 
 /**
@@ -49,16 +50,11 @@ export function groupByYear(
  * 'YYYY.MM' 까지만 쓴다. 활동은 날짜보다 어느 달이었는지가 중요하다.
  */
 export function periodLabel(activity: Activity): string {
-  const start = monthLabel(activity.started_on);
+  const start = formatMonthLabel(activity.started_on);
   if (!activity.ended_on) return start;
 
-  const end = monthLabel(activity.ended_on);
+  const end = formatMonthLabel(activity.ended_on);
   return start === end ? start : `${start} — ${end}`;
-}
-
-function monthLabel(key: string): string {
-  const [year, month] = key.split('-');
-  return `${year}.${month}`;
 }
 
 /** 결과가 좋은 쪽인지. 화면에서 강조할지 정할 때 쓴다. */
