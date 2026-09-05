@@ -3,11 +3,16 @@
 import { useEffect, useState } from 'react';
 import { toDateKey } from '@/lib/calendar';
 import { useAdminCollection } from '@/lib/use-admin-collection';
-import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
+import {
+  Activity,
+  ACTIVITY_OUTCOMES,
+  ACTIVITY_OUTCOME_LABELS,
+  ActivityOutcome,
+} from '@/lib/types';
 
-export default function LeaveEditor() {
+export default function ActivityEditor() {
   const {
-    items: leaves,
+    items: activities,
     loading,
     editingId,
     setEditingId,
@@ -16,12 +21,15 @@ export default function LeaveEditor() {
     setStatus,
     save,
     remove,
-  } = useAdminCollection<Leave>('service_leaves', { column: 'started_on' });
+  } = useAdminCollection<Activity>('activities', { column: 'started_on' });
 
-  const [kind, setKind] = useState<LeaveKind>('outing');
+  const [name, setName] = useState('');
+  const [organizer, setOrganizer] = useState('');
+  const [outcome, setOutcome] = useState<ActivityOutcome>('applied');
   const [startedOn, setStartedOn] = useState('');
   const [endedOn, setEndedOn] = useState('');
   const [note, setNote] = useState('');
+  const [published, setPublished] = useState(true);
 
   useEffect(() => {
     // 기본값은 오늘 — 서버와 브라우저의 시간대 차이를 피하려고 마운트 후에 채운다.
@@ -30,37 +38,46 @@ export default function LeaveEditor() {
 
   function resetForm() {
     setEditingId(null);
-    setKind('outing');
+    setName('');
+    setOrganizer('');
+    setOutcome('applied');
     setStartedOn(toDateKey(new Date()));
     setEndedOn('');
     setNote('');
+    setPublished(true);
   }
 
-  function loadIntoForm(leave: Leave) {
-    setEditingId(leave.id);
-    setKind(leave.kind);
-    setStartedOn(leave.started_on);
-    setEndedOn(leave.ended_on || '');
-    setNote(leave.note || '');
+  function loadIntoForm(activity: Activity) {
+    setEditingId(activity.id);
+    setName(activity.name);
+    setOrganizer(activity.organizer || '');
+    setOutcome(activity.outcome);
+    setStartedOn(activity.started_on);
+    setEndedOn(activity.ended_on || '');
+    setNote(activity.note || '');
+    setPublished(activity.published);
     setStatus('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   async function handleSave() {
-    if (!startedOn) {
-      setStatus('나가는 날은 필수예요.');
+    if (!name.trim() || !startedOn) {
+      setStatus('이름과 날짜는 필수예요.');
       return;
     }
     if (endedOn && endedOn < startedOn) {
-      setStatus('복귀일이 나가는 날보다 빨라요.');
+      setStatus('끝난 날이 시작한 날보다 빨라요.');
       return;
     }
 
     const saved = await save({
-      kind,
+      name: name.trim(),
+      organizer: organizer.trim() || null,
+      outcome,
       started_on: startedOn,
       ended_on: endedOn || null,
       note: note.trim() || null,
+      published,
     });
 
     if (saved) resetForm();
@@ -70,30 +87,44 @@ export default function LeaveEditor() {
     <div className="grid gap-10 md:grid-cols-[1fr_320px]">
       <div>
         <h1 className="mb-6 text-xl font-bold">
-          {editingId ? '나가는 일정 수정' : '새 일정'}
+          {editingId ? '활동 수정' : '새 활동'}
         </h1>
 
         <div className="flex flex-col gap-4">
+          <input
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="공모전 · 활동 이름"
+            className="rounded-md border border-line px-3 py-2 text-lg font-semibold focus:border-ink-muted focus:outline-none"
+          />
+
+          <input
+            value={organizer}
+            onChange={(e) => setOrganizer(e.target.value)}
+            placeholder="주최 (선택)"
+            className="rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
+          />
+
           <div className="flex flex-wrap items-center gap-2">
-            {LEAVE_KINDS.map((option) => (
+            {ACTIVITY_OUTCOMES.map((option) => (
               <button
                 key={option}
                 type="button"
-                onClick={() => setKind(option)}
+                onClick={() => setOutcome(option)}
                 className={`rounded-full border px-3 py-1.5 text-sm transition-colors ${
-                  kind === option
+                  outcome === option
                     ? 'border-ink bg-ink text-paper'
                     : 'border-line text-ink-soft hover:border-ink-muted'
                 }`}
               >
-                {LEAVE_KIND_LABELS[option]}
+                {ACTIVITY_OUTCOME_LABELS[option]}
               </button>
             ))}
           </div>
 
           <div className="flex flex-wrap items-center gap-3 text-sm text-ink-soft">
             <label className="flex items-center gap-2">
-              나가는 날
+              시작
               <input
                 type="date"
                 value={startedOn}
@@ -102,7 +133,7 @@ export default function LeaveEditor() {
               />
             </label>
             <label className="flex items-center gap-2">
-              복귀일
+              끝
               <input
                 type="date"
                 value={endedOn}
@@ -112,12 +143,22 @@ export default function LeaveEditor() {
             </label>
           </div>
 
-          <input
+          <textarea
             value={note}
             onChange={(e) => setNote(e.target.value)}
-            placeholder="메모 (선택)"
-            className="rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
+            placeholder="메모 (선택) — 뭘 했는지, 왜 떨어졌다고 생각하는지"
+            rows={3}
+            className="resize-none rounded-md border border-line px-3 py-2 text-sm leading-relaxed focus:border-ink-muted focus:outline-none"
           />
+
+          <label className="flex items-center gap-2 text-sm text-ink-soft">
+            <input
+              type="checkbox"
+              checked={published}
+              onChange={(e) => setPublished(e.target.checked)}
+            />
+            사이트에 보이기
+          </label>
 
           <div className="flex flex-wrap items-center gap-3">
             <button
@@ -141,43 +182,43 @@ export default function LeaveEditor() {
       </div>
 
       <aside>
-        <h2 className="mb-4 text-sm text-ink-muted">일정 {leaves.length}개</h2>
+        <h2 className="mb-4 text-sm text-ink-muted">
+          활동 {activities.length}개
+        </h2>
 
         {loading ? (
           <p className="text-sm text-ink-muted">불러오는 중...</p>
-        ) : leaves.length === 0 ? (
+        ) : activities.length === 0 ? (
           <p className="text-sm text-ink-muted">아직 없어요.</p>
         ) : (
           <ul className="flex flex-col gap-3">
-            {leaves.map((leave) => (
+            {activities.map((activity) => (
               <li
-                key={leave.id}
+                key={activity.id}
                 className="border-b border-line pb-3 last:border-b-0"
               >
                 <p className="text-sm font-medium">
-                  {LEAVE_KIND_LABELS[leave.kind]}
-                  {leave.note && (
+                  {activity.name}
+                  {!activity.published && (
                     <span className="ml-2 text-xs font-normal text-ink-muted">
-                      {leave.note}
+                      숨김
                     </span>
                   )}
                 </p>
                 <p className="mt-1 text-xs tabular-nums text-ink-muted">
-                  {leave.started_on}
-                  {leave.ended_on && leave.ended_on !== leave.started_on && (
-                    <> — {leave.ended_on}</>
-                  )}
+                  {ACTIVITY_OUTCOME_LABELS[activity.outcome]} ·{' '}
+                  {activity.started_on}
                 </p>
                 <div className="mt-2 flex gap-3 text-xs">
                   <button
-                    onClick={() => loadIntoForm(leave)}
+                    onClick={() => loadIntoForm(activity)}
                     className="text-ink-soft underline hover:text-ink"
                   >
                     수정
                   </button>
                   <button
                     onClick={() =>
-                      remove(leave.id, '이 일정을 삭제할까요?').then(
+                      remove(activity.id, '이 활동을 삭제할까요?').then(
                         (done) => done && resetForm()
                       )
                     }

@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useAdminCollection } from '@/lib/use-admin-collection';
 import { toDateKey } from '@/lib/calendar';
 import { countryName, flagEmoji, isCountryCode } from '@/lib/country';
 import { toSlug } from '@/lib/slug';
 import { stayLabel } from '@/lib/travel';
-import { supabaseClient } from '@/lib/supabase';
 import CoverImageField from './CoverImageField';
 import { Trip } from '@/lib/types';
 
@@ -13,11 +13,17 @@ import { Trip } from '@/lib/types';
 const QUICK_CODES = ['KR', 'JP', 'TW', 'VN', 'TH', 'US', 'FR', 'IT'];
 
 export default function TripEditor() {
-  const [trips, setTrips] = useState<Trip[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState('');
+  const {
+    items: trips,
+    loading,
+    editingId,
+    setEditingId,
+    saving,
+    status,
+    setStatus,
+    save,
+    remove,
+  } = useAdminCollection<Trip>('trips', { column: 'started_on' });
 
   const [place, setPlace] = useState('');
   const [slug, setSlug] = useState('');
@@ -28,20 +34,9 @@ export default function TripEditor() {
   const [journal, setJournal] = useState('');
   const [published, setPublished] = useState(false);
 
-  async function loadTrips() {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from('trips')
-      .select('*')
-      .order('started_on', { ascending: false });
-    if (!error && data) setTrips(data as Trip[]);
-    setLoading(false);
-  }
-
   useEffect(() => {
     // 기본값은 오늘 — 서버와 브라우저의 시간대 차이를 피하려고 마운트 후에 채운다.
     setStartedOn(toDateKey(new Date()));
-    loadTrips();
   }, []);
 
   function resetForm() {
@@ -90,10 +85,7 @@ export default function TripEditor() {
       return;
     }
 
-    setSaving(true);
-    setStatus('');
-
-    const payload = {
+    const saved = await save({
       slug: finalSlug,
       place: place.trim(),
       country_code: countryCode.trim().toUpperCase(),
@@ -102,33 +94,9 @@ export default function TripEditor() {
       cover_image_url: coverImageUrl.trim() || null,
       journal,
       published,
-    };
+    });
 
-    let error;
-    if (editingId) {
-      ({ error } = await supabaseClient
-        .from('trips')
-        .update(payload)
-        .eq('id', editingId));
-    } else {
-      ({ error } = await supabaseClient.from('trips').insert(payload));
-    }
-
-    setSaving(false);
-    if (error) {
-      setStatus(`저장 실패: ${error.message}`);
-    } else {
-      setStatus('저장했어요.');
-      resetForm();
-      loadTrips();
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('이 여행 기록을 삭제할까요?')) return;
-    await supabaseClient.from('trips').delete().eq('id', id);
-    if (editingId === id) resetForm();
-    loadTrips();
+    if (saved) resetForm();
   }
 
   return (
@@ -297,7 +265,11 @@ export default function TripEditor() {
                     수정
                   </button>
                   <button
-                    onClick={() => handleDelete(trip.id)}
+                    onClick={() =>
+                      remove(trip.id, '이 여행 기록을 삭제할까요?').then(
+                        (done) => done && resetForm()
+                      )
+                    }
                     className="text-ink-muted underline hover:text-ink-soft"
                   >
                     삭제

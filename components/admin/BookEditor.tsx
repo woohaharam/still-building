@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { supabaseClient } from '@/lib/supabase';
+import { useAdminCollection } from '@/lib/use-admin-collection';
 import CoverImageField from './CoverImageField';
 import { toDateKey } from '@/lib/calendar';
 import { isRating, stars } from '@/lib/rating';
@@ -11,11 +11,17 @@ import { Book, MAX_RATING } from '@/lib/types';
 const RATINGS = Array.from({ length: MAX_RATING }, (_, i) => i + 1);
 
 export default function BookEditor() {
-  const [books, setBooks] = useState<Book[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState('');
+  const {
+    items: books,
+    loading,
+    editingId,
+    setEditingId,
+    saving,
+    status,
+    setStatus,
+    save,
+    remove,
+  } = useAdminCollection<Book>('books', { column: 'finished_at' });
 
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
@@ -26,20 +32,9 @@ export default function BookEditor() {
   const [finishedAt, setFinishedAt] = useState('');
   const [published, setPublished] = useState(false);
 
-  async function loadBooks() {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from('books')
-      .select('*')
-      .order('finished_at', { ascending: false, nullsFirst: false });
-    if (!error && data) setBooks(data as Book[]);
-    setLoading(false);
-  }
-
   useEffect(() => {
     // 기본값은 오늘 — 서버와 브라우저의 시간대 차이를 피하려고 마운트 후에 채운다.
     setFinishedAt(toDateKey(new Date()));
-    loadBooks();
   }, []);
 
   function resetForm() {
@@ -81,10 +76,7 @@ export default function BookEditor() {
       return;
     }
 
-    setSaving(true);
-    setStatus('');
-
-    const payload = {
+    const saved = await save({
       slug: finalSlug,
       title: title.trim(),
       author: author.trim(),
@@ -93,33 +85,9 @@ export default function BookEditor() {
       review,
       finished_at: finishedAt || null,
       published,
-    };
+    });
 
-    let error;
-    if (editingId) {
-      ({ error } = await supabaseClient
-        .from('books')
-        .update(payload)
-        .eq('id', editingId));
-    } else {
-      ({ error } = await supabaseClient.from('books').insert(payload));
-    }
-
-    setSaving(false);
-    if (error) {
-      setStatus(`저장 실패: ${error.message}`);
-    } else {
-      setStatus('저장했어요.');
-      resetForm();
-      loadBooks();
-    }
-  }
-
-  async function handleDelete(id: string) {
-    if (!confirm('이 독후감을 삭제할까요?')) return;
-    await supabaseClient.from('books').delete().eq('id', id);
-    if (editingId === id) resetForm();
-    loadBooks();
+    if (saved) resetForm();
   }
 
   return (
@@ -276,7 +244,11 @@ export default function BookEditor() {
                     수정
                   </button>
                   <button
-                    onClick={() => handleDelete(book.id)}
+                    onClick={() =>
+                      remove(book.id, '이 독후감을 삭제할까요?').then(
+                        (done) => done && resetForm()
+                      )
+                    }
                     className="text-ink-muted underline hover:text-ink-soft"
                   >
                     삭제

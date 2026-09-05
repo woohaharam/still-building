@@ -2,9 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Container from '@/components/Container';
 import Reveal from '@/components/Reveal';
+import ActivityList from '@/components/project/ActivityList';
 import Bullets from '@/components/project/Bullets';
 import Pills from '@/components/project/Pills';
 import ProjectLinks from '@/components/project/ProjectLinks';
+import { getActivities } from '@/lib/activities';
 import { PROJECTS } from '@/lib/projects';
 import { PUBLICATIONS } from '@/lib/publications';
 import { siteUrl } from '@/lib/site';
@@ -32,7 +34,11 @@ function Facts({ items }: { items: (string | undefined)[] }) {
   );
 }
 
-export default function ProjectsPage() {
+export const revalidate = 0;
+
+export default async function ProjectsPage() {
+  const activities = await getActivities();
+
   return (
     <Container wide>
       <div className="flex flex-col gap-16 pb-6">
@@ -88,6 +94,10 @@ export default function ProjectsPage() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal>
+          <ActivityList activities={activities} />
+        </Reveal>
 
         {PUBLICATIONS.length > 0 && (
           <section className="flex flex-col gap-12">
