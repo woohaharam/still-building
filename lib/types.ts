@@ -105,6 +105,40 @@ export interface Trip {
  * 캘린더의 일정(events)과 섞지 않고 따로 둔다. 포트폴리오를 보러 온 사람이
  * 보는 캘린더와, 내가 언제 나가는지를 세는 표는 쓰임이 다르다.
  */
+/**
+ * 공모전·대외활동 지원 기록.
+ *
+ * 붙은 것만 적으면 몇 번 시도했는지가 사라진다. 떨어진 것도 같이 남긴다.
+ */
+export type ActivityOutcome = 'applied' | 'ongoing' | 'done' | 'rejected';
+
+export interface Activity {
+  id: string;
+  name: string;
+  /** 주최. 모르면 비워둔다. */
+  organizer: string | null;
+  outcome: ActivityOutcome;
+  started_on: string;
+  ended_on: string | null;
+  note: string | null;
+  published: boolean;
+  created_at: string;
+}
+
+export const ACTIVITY_OUTCOMES: ActivityOutcome[] = [
+  'applied',
+  'ongoing',
+  'done',
+  'rejected',
+];
+
+export const ACTIVITY_OUTCOME_LABELS: Record<ActivityOutcome, string> = {
+  applied: '결과 대기',
+  ongoing: '활동 중',
+  done: '활동함',
+  rejected: '떨어짐',
+};
+
 export type LeaveKind = 'outing' | 'overnight' | 'leave' | 'final';
 
 export interface Leave {
