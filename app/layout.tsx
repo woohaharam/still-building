@@ -104,12 +104,19 @@ export default function RootLayout({
         />
         <Header />
         <main className="min-h-[60vh] py-12">{children}</main>
-        <footer className="mt-20 border-t border-line">
-          <div className="mx-auto flex max-w-4xl justify-between px-6 py-8 text-xs text-ink-muted">
+        <footer className="no-print mt-20 border-t border-line">
+          {/*
+            좁은 화면에서는 링크가 한 줄에 다 안 들어간다. 줄바꿈을 막아두면
+            글자가 세로로 눌려서 '이 력 서'처럼 쌓인다. 넘치면 접히게 둔다.
+          */}
+          <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-8 text-xs text-ink-muted">
             <span>
               &copy; {new Date().getFullYear()} {siteName}
             </span>
-            <span className="flex items-center gap-4">
+            <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <a href="/resume" className="hover:text-ink-soft">
+                이력서
+              </a>
               <a href="/service" className="hover:text-ink-soft">
                 복무
               </a>

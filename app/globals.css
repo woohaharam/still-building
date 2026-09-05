@@ -318,3 +318,63 @@ a {
   border-top: 1px solid rgb(var(--line));
   margin: 2.5em 0;
 }
+
+/*
+  인쇄와 PDF 저장.
+
+  이력서(/resume)는 화면으로도 보지만, 지원서에 첨부할 파일은 결국 PDF다.
+  브라우저의 '인쇄 → PDF로 저장'이 그 파일을 만든다. 그래서 인쇄 화면을
+  따로 만들지 않고 같은 페이지에 인쇄용 규칙만 얹었다. 화면과 PDF가 서로
+  다른 코드를 쓰면 둘 중 하나는 반드시 뒤처진다.
+*/
+@media print {
+  /*
+    종이에는 종이 색으로. 어두운 테마로 보다가 그대로 인쇄하면 배경이
+    통째로 잉크가 된다. .dark 가 :root 보다 세니까 둘 다 적어야 눌린다.
+  */
+  :root,
+  .dark {
+    --paper: 255 255 255;
+    --surface: 255 255 255;
+    --ink: 17 17 17;
+    --ink-soft: 51 51 51;
+    --ink-muted: 90 90 90;
+    --line: 198 198 198;
+    --accent: 17 17 17;
+    --prose: 17 17 17;
+  }
+
+  @page {
+    size: A4;
+    margin: 14mm;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  /* 화면에서만 쓸모 있는 것들 — 헤더, 푸터, 버튼, 음악 플레이어. */
+  .no-print {
+    display: none !important;
+  }
+
+  main {
+    padding: 0 !important;
+  }
+
+  /*
+    떠오르는 효과는 시작 상태가 opacity 0 이다. 인쇄 시점에 애니메이션이
+    아직 안 돌았으면 그 상태로 박제된다. 종이에서는 아예 끈다.
+  */
+  .rise {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* 항목 하나가 페이지 경계에서 반 토막 나지 않게. */
+  .print-keep {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}

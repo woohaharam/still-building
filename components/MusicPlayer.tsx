@@ -249,7 +249,7 @@ export default function MusicPlayer() {
       <div
         ref={containerRef}
         aria-hidden
-        className="fixed left-[-9999px] top-0 h-px w-px overflow-hidden"
+        className="no-print fixed left-[-9999px] top-0 h-px w-px overflow-hidden"
       />
 
       {!mounted ? null : !open ? (
@@ -257,12 +257,12 @@ export default function MusicPlayer() {
           onClick={handleOpen}
           aria-label="노래 켜기"
           title="노래 켜기"
-          className="fixed bottom-5 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-paper text-ink-soft shadow-sm transition-colors hover:text-ink"
+          className="no-print fixed bottom-5 right-5 z-40 flex h-11 w-11 items-center justify-center rounded-full border border-line bg-paper text-ink-soft shadow-sm transition-colors hover:text-ink"
         >
           <NoteIcon />
         </button>
       ) : (
-        <div className="fixed bottom-5 right-5 z-40 flex items-center gap-1 rounded-full border border-line bg-paper py-1.5 pl-2 pr-1.5 shadow-sm">
+        <div className="no-print fixed bottom-5 right-5 z-40 flex items-center gap-1 rounded-full border border-line bg-paper py-1.5 pl-2 pr-1.5 shadow-sm">
           <button
             onClick={() => step(-1)}
             aria-label="이전 곡"
