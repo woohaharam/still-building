@@ -1,5 +1,10 @@
 import { DateKey, parseDateKey, toDateKey } from './calendar';
-import { hasReturned } from './service';
+import {
+  WEEKEND_LEAVE_AT,
+  defaultSchedule,
+  formatClock,
+  parseClock,
+} from './service';
 import { Leave } from './types';
 
 /**
@@ -70,15 +75,59 @@ export function leaveOn(leaves: Leave[], key: DateKey): Leave | null {
   return null;
 }
 
+/** 그 일정이 실제로 밖에 있는 시간대. 자정에서 몇 분인지로. */
+export interface LeaveWindow {
+  /** 나가는 날의 출영 시각. null 이면 그날 처음부터 나가 있다. */
+  leftAt: number | null;
+  /** 복귀하는 날의 복귀 시각. null 이면 그날 끝까지 나가 있다. */
+  returnedAt: number | null;
+}
+
+/** 토요일과 일요일. */
+function isWeekend(key: DateKey): boolean {
+  const day = parseDateKey(key).getDay();
+  return day === 0 || day === 6;
+}
+
 /**
- * 지금 나가 있는 일정. 복귀 시각까지 본다.
+ * 그 일정의 출영·복귀 시각.
  *
- * leaveOn 은 날짜만 본다. 달력 칸을 칠할 때는 그게 맞다. 복귀하는 날도 그날의
- * 일정이니까 색은 남아야 한다. 반면 헤더의 '외출 중'은 지금 밖에 있느냐를
- * 묻는 말이라, 저녁에 들어온 뒤로는 꺼져야 한다.
+ * 적어둔 값이 있으면 그게 이기고, 없으면 종류별 규정값을 쓴다. 휴가만 예외로
+ * 나가는 날이 주말이면 출영이 삼십 분 늦다.
+ */
+export function leaveWindow(leave: Leave): LeaveWindow {
+  const fallback = defaultSchedule(leave.kind);
+
+  const defaultLeftAt =
+    leave.kind === 'leave' && isWeekend(leave.started_on)
+      ? WEEKEND_LEAVE_AT
+      : fallback.leftAt;
+
+  return {
+    leftAt: resolve(leave.left_at, defaultLeftAt),
+    returnedAt: resolve(leave.returned_at, fallback.returnedAt),
+  };
+}
+
+/** 적어둔 값 → 규정값 순으로 읽는다. 둘 다 없거나 모양이 어긋나면 null. */
+function resolve(written: string | null, fallback: string | null) {
+  if (written !== null) {
+    const at = parseClock(written);
+    if (at !== null) return at;
+  }
+
+  return fallback === null ? null : parseClock(fallback);
+}
+
+/**
+ * 지금 나가 있는 일정. 출영·복귀 시각까지 본다.
  *
- * 복귀한 일정은 건너뛰고 계속 찾는다. 들어온 휴가 때문에 같은 날 잡힌 다른
- * 일정까지 가려지면 안 된다.
+ * leaveOn 은 날짜만 본다. 달력 칸을 칠할 때는 그게 맞다. 나가는 날도 복귀하는
+ * 날도 그날의 일정이니까 색은 남아야 한다. 반면 헤더의 '외출 중'은 지금 밖에
+ * 있느냐를 묻는 말이라, 출영 전과 복귀 뒤로는 꺼져야 한다.
+ *
+ * 아닌 일정은 건너뛰고 계속 찾는다. 아직 안 나간 일정이나 이미 들어온 일정
+ * 때문에 같은 날 잡힌 다른 일정까지 가려지면 안 된다.
  */
 export function leaveNow(
   leaves: Leave[],
@@ -89,11 +138,37 @@ export function leaveNow(
     const end = leave.ended_on || leave.started_on;
     if (leave.started_on > key || end < key) continue;
 
-    // 복귀하는 날에만 시각을 따진다. 그전 날들은 온종일 밖이다.
-    if (key === end && hasReturned(leave.kind, minutes)) continue;
+    const { leftAt, returnedAt } = leaveWindow(leave);
+
+    // 나가는 날에만 출영 시각을 따진다. 그 뒤의 날들은 이미 밖이다.
+    if (key === leave.started_on && leftAt !== null && minutes < leftAt) {
+      continue;
+    }
+
+    // 복귀하는 날에만 복귀 시각을 따진다. 그전 날들은 아직 밖이다.
+    if (key === end && returnedAt !== null && minutes >= returnedAt) {
+      continue;
+    }
 
     return leave;
   }
 
   return null;
+}
+
+/**
+ * '13:30 — 21:30'. 한쪽이 없으면 있는 쪽만, 둘 다 없으면 빈 문자열.
+ *
+ * 말출처럼 돌아오지 않는 일정은 '13:30 나감'으로 끝난다.
+ */
+export function leaveTimeLabel(leave: Leave): string {
+  const { leftAt, returnedAt } = leaveWindow(leave);
+
+  if (leftAt !== null && returnedAt !== null) {
+    return `${formatClock(leftAt)} — ${formatClock(returnedAt)}`;
+  }
+  if (leftAt !== null) return `${formatClock(leftAt)} 나감`;
+  if (returnedAt !== null) return `${formatClock(returnedAt)} 복귀`;
+
+  return '';
 }

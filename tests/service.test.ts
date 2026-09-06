@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
-  RETURN_TIMES,
+  LEAVE_SCHEDULE,
   SERVICE,
   dDayLabel,
-  hasReturned,
+  defaultSchedule,
+  formatClock,
   parseClock,
   serviceStanding,
   serviceStatus,
@@ -139,8 +140,13 @@ describe('serviceStanding', () => {
 describe('parseClock', () => {
   it('시각을 자정에서 몇 분인지로 바꾼다', () => {
     expect(parseClock('00:00')).toBe(0);
-    expect(parseClock('20:30')).toBe(1230);
+    expect(parseClock('13:30')).toBe(810);
     expect(parseClock('23:59')).toBe(1439);
+  });
+
+  it("Postgres 가 주는 'HH:MM:SS' 도 읽는다", () => {
+    expect(parseClock('13:30:00')).toBe(810);
+    expect(parseClock('21:30:45')).toBe(1290);
   });
 
   it('모양이나 범위가 어긋나면 null', () => {
@@ -151,27 +157,26 @@ describe('parseClock', () => {
   });
 });
 
-describe('hasReturned', () => {
-  it('복귀 시각이 지나면 참', () => {
-    expect(hasReturned('outing', 1229)).toBe(false);
-    expect(hasReturned('outing', 1230)).toBe(true);
+describe('formatClock', () => {
+  it('parseClock 의 반대다', () => {
+    for (const clock of ['00:00', '06:30', '13:30', '21:30', '23:59']) {
+      expect(formatClock(parseClock(clock)!)).toBe(clock);
+    }
+  });
+});
+
+describe('LEAVE_SCHEDULE', () => {
+  it('적어둔 시각은 전부 읽을 수 있다', () => {
+    for (const kind of LEAVE_KINDS) {
+      const { leftAt, returnedAt } = LEAVE_SCHEDULE[kind];
+      if (leftAt !== null) expect(parseClock(leftAt)).not.toBeNull();
+      if (returnedAt !== null) expect(parseClock(returnedAt)).not.toBeNull();
+    }
   });
 
-  it('복귀 시각이 없는 종류는 언제나 거짓', () => {
-    expect(hasReturned('final', 1439)).toBe(false);
-    expect(hasReturned('off', 1439)).toBe(false);
-  });
-
-  it('모르는 종류가 와도 프로토타입 값이 새어 나오지 않는다', () => {
+  it('모르는 종류는 시각을 따지지 않는 쪽으로 둔다', () => {
     const odd = 'constructor' as unknown as LeaveKind;
 
-    expect(hasReturned(odd, 1439)).toBe(false);
-  });
-
-  it('RETURN_TIMES 의 값은 전부 읽을 수 있는 시각이거나 null 이다', () => {
-    for (const kind of LEAVE_KINDS) {
-      const clock = RETURN_TIMES[kind];
-      if (clock !== null) expect(parseClock(clock)).not.toBeNull();
-    }
+    expect(defaultSchedule(odd)).toEqual({ leftAt: null, returnedAt: null });
   });
 });

@@ -4,7 +4,7 @@ import DischargeCounter from '@/components/service/DischargeCounter';
 import LeaveCalendar from '@/components/service/LeaveCalendar';
 import { seoulDateKey } from '@/lib/calendar';
 import { formatDate } from '@/lib/date';
-import { upcomingLeaves } from '@/lib/leave-dates';
+import { leaveTimeLabel, upcomingLeaves } from '@/lib/leave-dates';
 import { getLeaves } from '@/lib/leaves';
 import { serviceStatus } from '@/lib/service';
 import { siteUrl } from '@/lib/site';
@@ -64,6 +64,11 @@ export default async function ServicePage() {
                     {formatDate(leave.started_on)}
                     {leave.ended_on && leave.ended_on !== leave.started_on && (
                       <> — {formatDate(leave.ended_on)}</>
+                    )}
+                    {leaveTimeLabel(leave) && (
+                      <span className="ml-2 opacity-80">
+                        {leaveTimeLabel(leave)}
+                      </span>
                     )}
                   </span>
                 </li>
