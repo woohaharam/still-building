@@ -3,6 +3,7 @@
 import { useMemo, useState } from 'react';
 import { buildMonthMatrix, isSameMonth, toDateKey } from '@/lib/calendar';
 import { buildLeaveIndex } from '@/lib/leave-dates';
+import { SERVICE } from '@/lib/service';
 import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
 
 /**
@@ -14,26 +15,42 @@ import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
  */
 const KIND_STYLE: Record<LeaveKind, { cell: string; dot: string }> = {
   outing: { cell: 'bg-leave-outing/15', dot: 'bg-leave-outing' },
+  special_outing: { cell: 'bg-leave-special/15', dot: 'bg-leave-special' },
   overnight: { cell: 'bg-leave-overnight/15', dot: 'bg-leave-overnight' },
   leave: { cell: 'bg-leave-leave/15', dot: 'bg-leave-leave' },
   final: { cell: 'bg-leave-final/15', dot: 'bg-leave-final' },
+  off: { cell: 'bg-leave-off/15', dot: 'bg-leave-off' },
 };
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
+/** 지금 보고 있는 달. */
+interface Cursor {
+  year: number;
+  month: number;
+}
+
+function monthOf(date: Date): Cursor {
+  return { year: date.getFullYear(), month: date.getMonth() };
+}
+
 export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
   const today = new Date();
-  const [year, setYear] = useState(today.getFullYear());
-  const [month, setMonth] = useState(today.getMonth());
+
+  /*
+    연·월을 각각 useState 로 두면 move 가 화면에 그려진 값을 읽는다. 그러면
+    한 번 그려지기 전에 화살표를 여러 번 누를 때 전부 같은 달을 계산해서
+    한 달만 넘어간다. 하나로 묶고 이전 값을 받아 계산한다.
+  */
+  const [cursor, setCursor] = useState(() => monthOf(today));
+  const { year, month } = cursor;
 
   const index = useMemo(() => buildLeaveIndex(leaves), [leaves]);
   const days = useMemo(() => buildMonthMatrix(year, month), [year, month]);
   const todayKey = toDateKey(today);
 
   function move(step: number) {
-    const next = new Date(year, month + step, 1);
-    setYear(next.getFullYear());
-    setMonth(next.getMonth());
+    setCursor((prev) => monthOf(new Date(prev.year, prev.month + step, 1)));
   }
 
   return (
@@ -51,10 +68,7 @@ export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
             ‹
           </button>
           <button
-            onClick={() => {
-              setYear(today.getFullYear());
-              setMonth(today.getMonth());
-            }}
+            onClick={() => setCursor(monthOf(new Date()))}
             className="rounded-md px-3 py-1.5 text-xs text-ink-muted transition-colors hover:bg-surface hover:text-ink"
           >
             오늘
@@ -83,29 +97,47 @@ export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
         {days.map((date) => {
           const key = toDateKey(date);
           const inMonth = isSameMonth(date, year, month);
-          const leave = index.get(key);
+
+          /*
+            전역일은 적어두는 게 아니라 lib/service.ts 의 날짜에서 바로 온다.
+            그날 말출이 걸쳐 있어도 전역이 이긴다. 달력에서 제일 중요한 칸이다.
+          */
+          const discharge = key === SERVICE.dischargeOn;
+          const leave = discharge ? undefined : index.get(key);
           const style = leave ? KIND_STYLE[leave.kind] : null;
 
           return (
             <div
               key={key}
               className={`flex min-h-[3.5rem] flex-col items-center justify-center gap-1 rounded-md border text-sm tabular-nums ${
-                style ? style.cell : ''
-              } ${
-                key === todayKey
-                  ? 'border-ink-muted font-semibold'
-                  : 'border-transparent'
+                discharge
+                  ? 'border-transparent bg-leave-discharge-fill font-bold text-white'
+                  : `${style ? style.cell : ''} ${
+                      key === todayKey
+                        ? 'border-ink-muted font-semibold'
+                        : 'border-transparent'
+                    }`
               } ${inMonth ? '' : 'opacity-30'}`}
             >
               <span>{date.getDate()}</span>
-              {leave && (
+
+              {discharge ? (
+                <span className="text-[10px] font-bold leading-none tracking-tight">
+                  전역
+                </span>
+              ) : leave ? (
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${style!.dot}`}
                   title={LEAVE_KIND_LABELS[leave.kind]}
                 />
-              )}
+              ) : null}
+
               <span className="sr-only">
-                {leave ? LEAVE_KIND_LABELS[leave.kind] : ''}
+                {discharge
+                  ? '전역일'
+                  : leave
+                    ? LEAVE_KIND_LABELS[leave.kind]
+                    : ''}
               </span>
             </div>
           );
@@ -122,6 +154,15 @@ export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
             {LEAVE_KIND_LABELS[kind]}
           </li>
         ))}
+
+        {/* 전역만 점이 아니라 칠한 칸이라, 범례도 칸 모양으로 둔다. */}
+        <li className="flex items-center gap-2 font-semibold text-leave-discharge">
+          <span
+            className="h-2.5 w-2.5 rounded-sm bg-leave-discharge-fill"
+            aria-hidden
+          />
+          전역
+        </li>
       </ul>
     </section>
   );

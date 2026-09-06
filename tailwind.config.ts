@@ -25,9 +25,13 @@ const config: Config = {
         danger: 'rgb(var(--danger) / <alpha-value>)',
         leave: {
           outing: 'rgb(var(--leave-outing) / <alpha-value>)',
+          special: 'rgb(var(--leave-special) / <alpha-value>)',
           overnight: 'rgb(var(--leave-overnight) / <alpha-value>)',
           leave: 'rgb(var(--leave-leave) / <alpha-value>)',
           final: 'rgb(var(--leave-final) / <alpha-value>)',
+          off: 'rgb(var(--leave-off) / <alpha-value>)',
+          discharge: 'rgb(var(--leave-discharge) / <alpha-value>)',
+          'discharge-fill': 'rgb(var(--leave-discharge-fill) / <alpha-value>)',
         },
       },
       fontFamily: {

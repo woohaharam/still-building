@@ -4,6 +4,7 @@ import {
   eventDateKeys,
   isSameMonth,
   parseDateKey,
+  seoulDateKey,
   toDateKey,
 } from '@/lib/calendar';
 import { CalendarEvent } from '@/lib/types';
@@ -106,5 +107,24 @@ describe('eventDateKeys', () => {
   it('종료일을 아주 멀리 적어도 무한정 늘어나지 않는다', () => {
     const keys = eventDateKeys(makeEvent('2026-01-01', '2099-01-01'));
     expect(keys.length).toBeLessThanOrEqual(366);
+  });
+});
+
+describe('seoulDateKey', () => {
+  it('UTC 로는 아직 어제인 시각도 한국 날짜로 준다', () => {
+    // 한국 시간 2027-04-27 오전 8시. UTC 로는 아직 26일 밤이다.
+    expect(seoulDateKey(new Date('2027-04-26T23:00:00Z'))).toBe('2027-04-27');
+  });
+
+  it('한국 자정 직전과 직후가 갈린다', () => {
+    expect(seoulDateKey(new Date('2027-04-26T14:59:59Z'))).toBe('2027-04-26');
+    expect(seoulDateKey(new Date('2027-04-26T15:00:00Z'))).toBe('2027-04-27');
+  });
+
+  it('parseDateKey 가 읽을 수 있는 모양으로 준다', () => {
+    const key = seoulDateKey(new Date('2026-09-06T01:23:45Z'));
+
+    expect(key).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+    expect(toDateKey(parseDateKey(key))).toBe(key);
   });
 });

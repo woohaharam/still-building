@@ -53,3 +53,18 @@ export function upcomingLeaves(leaves: Leave[], today: DateKey): Leave[] {
     .filter((leave) => (leave.ended_on || leave.started_on) >= today)
     .sort((a, b) => a.started_on.localeCompare(b.started_on));
 }
+
+/**
+ * 그날 걸쳐 있는 일정. 없으면 null.
+ *
+ * 겹칠 때의 규칙은 buildLeaveIndex 와 같다. 목록이 최신순으로 오므로 앞에서
+ * 먼저 걸리는 쪽, 곧 나중에 적은 쪽이 이긴다.
+ */
+export function leaveOn(leaves: Leave[], key: DateKey): Leave | null {
+  for (const leave of leaves) {
+    const end = leave.ended_on || leave.started_on;
+    if (leave.started_on <= key && end >= key) return leave;
+  }
+
+  return null;
+}

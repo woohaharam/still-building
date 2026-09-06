@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Container from '@/components/Container';
 import DischargeCounter from '@/components/service/DischargeCounter';
 import LeaveCalendar from '@/components/service/LeaveCalendar';
-import { toDateKey } from '@/lib/calendar';
+import { seoulDateKey } from '@/lib/calendar';
 import { formatDate } from '@/lib/date';
 import { upcomingLeaves } from '@/lib/leave-dates';
 import { getLeaves } from '@/lib/leaves';
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
 
 export default async function ServicePage() {
   const leaves = await getLeaves();
-  const today = toDateKey(new Date());
+  const today = seoulDateKey();
   const status = serviceStatus(today);
   const upcoming = upcomingLeaves(leaves, today).slice(0, 5);
 

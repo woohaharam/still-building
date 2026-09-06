@@ -95,3 +95,24 @@ export function formatMonthLabel(key: DateKey) {
   const [year, month] = key.split('-');
   return `${year}.${month}`;
 }
+
+/**
+ * 한국 기준 오늘.
+ *
+ * 서버는 UTC 로 돈다. new Date() 를 그대로 toDateKey 에 넣으면 한국 시간
+ * 자정부터 아침 아홉 시까지는 어제 날짜가 나온다. 전역일 아침에 화면이
+ * 아직 '복무 중'이라고 우기는 게 그래서다.
+ *
+ * 시간대 이름을 주고 en-CA 로 찍으면 'YYYY-MM-DD' 가 그대로 나온다.
+ * 직접 아홉 시간을 더하는 것보다 안전하다.
+ */
+const SEOUL_DATE = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Seoul',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+});
+
+export function seoulDateKey(now: Date = new Date()): DateKey {
+  return SEOUL_DATE.format(now);
+}

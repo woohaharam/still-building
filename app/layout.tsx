@@ -14,6 +14,16 @@ import {
   siteUrl,
 } from '@/lib/site';
 
+/**
+ * 한 시간마다 다시 그린다.
+ *
+ * 헤더의 복무 상태(components/ServiceBadge.tsx)가 오늘 날짜를 본다. 이게
+ * 없으면 고정 페이지들은 빌드할 때 HTML 이 굳어서, 전역한 뒤에도 다음 배포
+ * 전까지 '복무 중'이 남는다. 하루 단위로만 바뀌는 값이라 한 시간이면 넉넉하다.
+ * 자기 값이 있는 페이지(revalidate = 0)는 그쪽이 이긴다.
+ */
+export const revalidate = 3600;
+
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {

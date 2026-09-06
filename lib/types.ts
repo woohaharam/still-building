@@ -139,7 +139,18 @@ export const ACTIVITY_OUTCOME_LABELS: Record<ActivityOutcome, string> = {
   rejected: '떨어짐',
 };
 
-export type LeaveKind = 'outing' | 'overnight' | 'leave' | 'final';
+/**
+ * 부대 밖으로 나가는 일정.
+ *
+ * outing 은 원래 '외출' 하나였는데, 평일에 잠깐 나가는 것과 포상으로 받는
+ * 특별외출은 성격이 달라서 갈랐다. 이미 쌓인 행을 옮기지 않으려고 기존
+ * 값(outing)을 평일외출로 두고 special_outing 을 새로 붙였다.
+ *
+ * 전역은 여기 없다. 날짜가 lib/service.ts 에 이미 있어서, 손으로 한 번 더
+ * 적게 하면 둘이 어긋날 자리만 생긴다. 달력이 그 날짜를 직접 칠한다.
+ */
+export type LeaveKind =
+  'outing' | 'special_outing' | 'overnight' | 'leave' | 'final' | 'off';
 
 export interface Leave {
   id: string;
@@ -151,18 +162,23 @@ export interface Leave {
   created_at: string;
 }
 
+/** 화면에 늘어놓는 순서. 짧게 나가는 것부터 길게 나가는 것 순이다. */
 export const LEAVE_KINDS: LeaveKind[] = [
   'outing',
+  'special_outing',
   'overnight',
   'leave',
   'final',
+  'off',
 ];
 
 export const LEAVE_KIND_LABELS: Record<LeaveKind, string> = {
-  outing: '외출',
+  outing: '평일외출',
+  special_outing: '특별외출',
   overnight: '외박',
   leave: '휴가',
   final: '말출',
+  off: 'OFF',
 };
 
 export type EventKind = 'plan' | 'deadline' | 'note';

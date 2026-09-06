@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildLeaveIndex,
   leaveDateKeys,
+  leaveOn,
   upcomingLeaves,
 } from '@/lib/leave-dates';
 import { Leave, LeaveKind } from '@/lib/types';
@@ -102,5 +103,40 @@ describe('upcomingLeaves', () => {
 
   it('당일도 남긴다', () => {
     expect(upcomingLeaves(list, '2026-09-10').map((l) => l.id)).toContain('2');
+  });
+});
+
+describe('leaveOn', () => {
+  it('걸쳐 있는 날이면 그 일정을 준다', () => {
+    const trip = leave('a', 'leave', '2026-09-10', '2026-09-13');
+
+    expect(leaveOn([trip], '2026-09-10')?.id).toBe('a');
+    expect(leaveOn([trip], '2026-09-12')?.id).toBe('a');
+    expect(leaveOn([trip], '2026-09-13')?.id).toBe('a');
+  });
+
+  it('양 끝 밖이면 없다', () => {
+    const trip = leave('a', 'leave', '2026-09-10', '2026-09-13');
+
+    expect(leaveOn([trip], '2026-09-09')).toBeNull();
+    expect(leaveOn([trip], '2026-09-14')).toBeNull();
+  });
+
+  it('하루짜리는 그날만 걸린다', () => {
+    const day = leave('a', 'outing', '2026-09-10', null);
+
+    expect(leaveOn([day], '2026-09-10')?.id).toBe('a');
+    expect(leaveOn([day], '2026-09-11')).toBeNull();
+  });
+
+  it('겹치면 목록에서 앞선 쪽, 곧 나중에 적은 쪽이 이긴다', () => {
+    const recent = leave('나중', 'leave', '2026-09-10', '2026-09-12');
+    const older = leave('먼저', 'outing', '2026-09-11', null);
+
+    expect(leaveOn([recent, older], '2026-09-11')?.id).toBe('나중');
+  });
+
+  it('비어 있으면 없다', () => {
+    expect(leaveOn([], '2026-09-10')).toBeNull();
   });
 });
