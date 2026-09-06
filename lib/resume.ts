@@ -1,5 +1,5 @@
 import { isPositive, sortByRecent } from './activity';
-import { DateKey, formatMonthLabel, toDateKey } from './calendar';
+import { DateKey, formatMonthLabel, seoulDateKey } from './calendar';
 import { SERVICE, serviceStatus } from './service';
 import { Activity } from './types';
 
@@ -17,9 +17,7 @@ export interface MilitaryLine {
  * 전역일이 지나면 표기가 저절로 '만기 전역'으로 바뀐다. 이력서를 낼 때마다
  * 손으로 고쳐야 하는 자리는 결국 안 고친 채로 나간다.
  */
-export function militaryService(
-  today: DateKey = toDateKey(new Date())
-): MilitaryLine {
+export function militaryService(today: DateKey = seoulDateKey()): MilitaryLine {
   const status = serviceStatus(today);
 
   return {

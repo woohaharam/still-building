@@ -1,6 +1,8 @@
 create table if not exists public.service_leaves (
   id uuid primary key default gen_random_uuid(),
-  kind text not null check (kind in ('outing', 'overnight', 'leave', 'final')),
+  kind text not null check (
+    kind in ('outing', 'special_outing', 'overnight', 'leave', 'final', 'off')
+  ),
   started_on date not null,
   ended_on date,
   note text,

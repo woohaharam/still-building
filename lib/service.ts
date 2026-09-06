@@ -1,4 +1,5 @@
-import { DateKey, parseDateKey, toDateKey } from './calendar';
+import { DateKey, parseDateKey, seoulDateKey } from './calendar';
+import { LeaveKind } from './types';
 
 /**
  * 복무 기간. 날짜가 바뀌면 이 두 줄만 고치면 화면 전체가 따라간다.
@@ -39,7 +40,7 @@ function utcDays(key: DateKey): number {
  * 읽혀서 시간대에 따라 하루씩 밀린다 (lib/calendar.ts 와 같은 이유).
  */
 export function serviceStatus(
-  today: DateKey = toDateKey(new Date()),
+  today: DateKey = seoulDateKey(),
   enlistedOn: DateKey = SERVICE.enlistedOn,
   dischargeOn: DateKey = SERVICE.dischargeOn
 ): ServiceStatus {
@@ -73,4 +74,56 @@ export function dDayLabel(status: ServiceStatus): string {
   if (status.isDischargeDay) return 'D-DAY';
   if (status.discharged) return '전역';
   return `D-${status.daysLeft}`;
+}
+
+/**
+ * 나가 있는 동안 뭐라고 부를지.
+ *
+ * 종류 이름(평일외출·특별외출)과 상태 이름(외출 중)은 다르다. 평일이든
+ * 특별이든 지금 밖에 있다는 사실은 같아서, 헤더에는 둘을 같은 말로 적는다.
+ */
+const STANDING_LABELS: Record<LeaveKind, string> = {
+  outing: '외출 중',
+  special_outing: '외출 중',
+  overnight: '외박 중',
+  leave: '휴가 중',
+  final: '말출',
+  off: 'OFF',
+};
+
+export interface ServiceStanding {
+  label: string;
+  /** 전역했을 때만 붙는다. 글자를 읽기 전에 알아보라고 둔 것이다. */
+  emoji: string;
+  /** 강조해서 그릴지. 전역만 참이다. */
+  strong: boolean;
+}
+
+/**
+ * 오늘 상태 한 마디.
+ *
+ * 전역 여부는 날짜만으로 정해지므로 서버에서 그대로 그릴 수 있다. 나가 있는
+ * 중인지는 DB 를 봐야 알아서, 모르면 kind 를 비워두고 '복무 중'으로 둔다.
+ * 화면이 비는 것보다 덜 자세한 쪽이 낫다.
+ */
+export function serviceStanding(
+  status: ServiceStatus,
+  kind: LeaveKind | null = null
+): ServiceStanding {
+  if (status.discharged) return { label: '전역', emoji: '🎖️', strong: true };
+  if (status.servedDays === 0) {
+    return { label: '입대 전', emoji: '', strong: false };
+  }
+
+  // kind 는 DB 에서 온 문자열이다. 대괄호로 바로 꺼내면 프로토타입에 있는
+  // 이름(constructor 같은 것)이 값인 척 딸려 나온다.
+  const known =
+    kind !== null &&
+    Object.prototype.hasOwnProperty.call(STANDING_LABELS, kind);
+
+  return {
+    label: known ? STANDING_LABELS[kind] : '복무 중',
+    emoji: '',
+    strong: false,
+  };
 }

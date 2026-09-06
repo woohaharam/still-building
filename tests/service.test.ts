@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { SERVICE, dDayLabel, serviceStatus } from '@/lib/service';
+import {
+  SERVICE,
+  dDayLabel,
+  serviceStanding,
+  serviceStatus,
+} from '@/lib/service';
+import { LEAVE_KINDS, LeaveKind } from '@/lib/types';
 
 const IN = SERVICE.enlistedOn;
 const OUT = SERVICE.dischargeOn;
@@ -71,5 +77,58 @@ describe('dDayLabel', () => {
 
   it('전역일이 지나면 전역', () => {
     expect(dDayLabel(serviceStatus('2030-01-01'))).toBe('전역');
+  });
+});
+
+describe('serviceStanding', () => {
+  it('전역하면 이모지가 붙고 강조된다', () => {
+    const standing = serviceStanding(serviceStatus(OUT));
+
+    expect(standing.label).toBe('전역');
+    expect(standing.emoji).not.toBe('');
+    expect(standing.strong).toBe(true);
+  });
+
+  it('전역일 당일부터 전역이다', () => {
+    expect(serviceStanding(serviceStatus('2027-04-26')).label).toBe('복무 중');
+    expect(serviceStanding(serviceStatus('2027-04-27')).label).toBe('전역');
+  });
+
+  it('입대 전에는 입대 전이라고 적는다', () => {
+    expect(serviceStanding(serviceStatus('2025-07-27')).label).toBe('입대 전');
+  });
+
+  it('나가 있으면 종류에 맞는 말로 바뀐다', () => {
+    const serving = serviceStatus(IN);
+
+    expect(serviceStanding(serving, 'outing').label).toBe('외출 중');
+    expect(serviceStanding(serving, 'special_outing').label).toBe('외출 중');
+    expect(serviceStanding(serving, 'overnight').label).toBe('외박 중');
+    expect(serviceStanding(serving, 'leave').label).toBe('휴가 중');
+    expect(serviceStanding(serving, 'final').label).toBe('말출');
+    expect(serviceStanding(serving, 'off').label).toBe('OFF');
+  });
+
+  it('나가 있어도 강조하지는 않는다. 강조는 전역만이다', () => {
+    expect(serviceStanding(serviceStatus(IN), 'leave').strong).toBe(false);
+    expect(serviceStanding(serviceStatus(IN), 'leave').emoji).toBe('');
+  });
+
+  it('전역이 나가 있는 것보다 앞선다', () => {
+    expect(serviceStanding(serviceStatus(OUT), 'leave').label).toBe('전역');
+  });
+
+  it('모르는 종류가 와도 프로토타입 값이 새어 나오지 않는다', () => {
+    const odd = 'constructor' as unknown as LeaveKind;
+
+    expect(serviceStanding(serviceStatus(IN), odd).label).toBe('복무 중');
+  });
+
+  it('LEAVE_KINDS 에 있는 종류는 빠짐없이 말이 있다', () => {
+    const serving = serviceStatus(IN);
+
+    for (const kind of LEAVE_KINDS) {
+      expect(serviceStanding(serving, kind).label).not.toBe('복무 중');
+    }
   });
 });

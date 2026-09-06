@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import DaysCounter from './DaysCounter';
 import Logo from './Logo';
+import ServiceBadge from './ServiceBadge';
 import ThemeToggle from './ThemeToggle';
 import { siteDescription, siteName, siteTitle } from '@/lib/site';
 
@@ -23,9 +24,18 @@ export default function Header() {
         */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-4">
-            <Link href="/" aria-label={`${siteTitle} 홈`}>
-              <Logo />
-            </Link>
+            <div className="flex min-w-0 items-center gap-3">
+              <Link href="/" aria-label={`${siteTitle} 홈`}>
+                <Logo />
+              </Link>
+
+              {/*
+                복무 상태는 좁은 화면에서도 남긴다. 태그라인 줄에 두면 모바일
+                에서 통째로 감춰지는데, 전역했는지는 이 사이트를 처음 보는
+                사람이 알아야 하는 쪽이라 감출 자리가 아니다.
+              */}
+              <ServiceBadge />
+            </div>
 
             {/*
               메뉴가 여섯 개라 좁은 화면에서는 토글이 줄 끝에 못 붙고 혼자

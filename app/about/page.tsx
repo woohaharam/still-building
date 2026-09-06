@@ -3,6 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Container from '@/components/Container';
 import Reveal from '@/components/Reveal';
+import { militaryService } from '@/lib/resume';
 import { skillsFromProjects } from '@/lib/skills';
 import {
   education,
@@ -34,6 +35,7 @@ const LEARNING = ['테스트 작성', '접근성', '검색엔진 최적화'];
 
 export default function AboutPage() {
   const skills = skillsFromProjects();
+  const military = militaryService();
 
   return (
     <Container>
@@ -102,6 +104,29 @@ export default function AboutPage() {
               <p className="mt-2 text-sm text-ink-muted">
                 {education.majorEnglish}
               </p>
+            </div>
+          </section>
+        </Reveal>
+
+        <Reveal>
+          <section>
+            {/*
+              한국에서 이력을 볼 때 병역은 학력 다음으로 먼저 확인하는 칸이다.
+              복무 중인지 마쳤는지는 날짜에서 저절로 나온다 (lib/resume.ts).
+            */}
+            <h2 className="section-label mb-6">병역</h2>
+            <div className="border-t border-line pt-5">
+              <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h3 className="text-lg font-semibold">
+                  {military.branch}{' '}
+                  <span className="font-medium text-ink-soft">
+                    {military.status}
+                  </span>
+                </h3>
+                <span className="text-sm tabular-nums text-ink-muted">
+                  {military.period}
+                </span>
+              </div>
             </div>
           </section>
         </Reveal>
