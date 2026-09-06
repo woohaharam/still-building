@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildLeaveIndex,
   leaveDateKeys,
+  leaveNow,
   leaveOn,
   upcomingLeaves,
 } from '@/lib/leave-dates';
@@ -138,5 +139,57 @@ describe('leaveOn', () => {
 
   it('비어 있으면 없다', () => {
     expect(leaveOn([], '2026-09-10')).toBeNull();
+  });
+});
+
+describe('leaveNow', () => {
+  const 외출 = leave('외출', 'outing', '2026-09-10', null);
+  const 휴가 = leave('휴가', 'leave', '2026-09-10', '2026-09-13');
+
+  /** 'HH:MM' 을 자정에서 몇 분인지로. 테스트를 읽기 쉽게 하려고 둔다. */
+  function at(clock: string): number {
+    const [hour, minute] = clock.split(':').map(Number);
+    return hour * 60 + minute;
+  }
+
+  it('복귀 시각 전에는 나가 있다', () => {
+    expect(leaveNow([외출], '2026-09-10', at('20:29'))?.id).toBe('외출');
+  });
+
+  it('복귀 시각이 되면 들어온 것으로 본다', () => {
+    expect(leaveNow([외출], '2026-09-10', at('20:30'))).toBeNull();
+    expect(leaveNow([외출], '2026-09-10', at('23:59'))).toBeNull();
+  });
+
+  it('휴가는 21시가 기준이다', () => {
+    expect(leaveNow([휴가], '2026-09-13', at('20:59'))?.id).toBe('휴가');
+    expect(leaveNow([휴가], '2026-09-13', at('21:00'))).toBeNull();
+  });
+
+  it('복귀하는 날이 아니면 온종일 나가 있다', () => {
+    expect(leaveNow([휴가], '2026-09-10', at('23:59'))?.id).toBe('휴가');
+    expect(leaveNow([휴가], '2026-09-12', at('23:59'))?.id).toBe('휴가');
+  });
+
+  it('복귀 시각이 없는 종류는 시각을 따지지 않는다', () => {
+    const 말출 = leave('말출', 'final', '2026-09-10', null);
+    const off = leave('off', 'off', '2026-09-10', null);
+
+    expect(leaveNow([말출], '2026-09-10', at('23:59'))?.id).toBe('말출');
+    expect(leaveNow([off], '2026-09-10', at('23:59'))?.id).toBe('off');
+  });
+
+  it('들어온 일정 때문에 같은 날 다른 일정이 가려지지 않는다', () => {
+    const 들어온휴가 = leave('휴가', 'leave', '2026-09-08', '2026-09-10');
+    const 말출 = leave('말출', 'final', '2026-09-10', null);
+
+    expect(leaveNow([들어온휴가, 말출], '2026-09-10', at('22:00'))?.id).toBe(
+      '말출'
+    );
+  });
+
+  it('날짜 밖이면 시각과 상관없이 없다', () => {
+    expect(leaveNow([외출], '2026-09-09', at('12:00'))).toBeNull();
+    expect(leaveNow([외출], '2026-09-11', at('12:00'))).toBeNull();
   });
 });
