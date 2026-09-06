@@ -158,6 +158,14 @@ export interface Leave {
   started_on: string;
   /** 하루짜리면 null. */
   ended_on: string | null;
+  /**
+   * 그 일정만의 출영·복귀 시각. 'HH:MM' 또는 Postgres 가 주는 'HH:MM:SS'.
+   *
+   * 비워두면 종류별 기본값(lib/service.ts 의 LEAVE_SCHEDULE)을 쓴다. 특별외출처럼
+   * 받을 때마다 시각이 달라지는 것만 적으면 된다.
+   */
+  left_at: string | null;
+  returned_at: string | null;
   note: string | null;
   created_at: string;
 }

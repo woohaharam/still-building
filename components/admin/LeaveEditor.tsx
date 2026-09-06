@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toDateKey } from '@/lib/calendar';
+import { leaveTimeLabel } from '@/lib/leave-dates';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
 
@@ -21,6 +22,8 @@ export default function LeaveEditor() {
   const [kind, setKind] = useState<LeaveKind>('outing');
   const [startedOn, setStartedOn] = useState('');
   const [endedOn, setEndedOn] = useState('');
+  const [leftAt, setLeftAt] = useState('');
+  const [returnedAt, setReturnedAt] = useState('');
   const [note, setNote] = useState('');
 
   useEffect(() => {
@@ -33,6 +36,8 @@ export default function LeaveEditor() {
     setKind('outing');
     setStartedOn(toDateKey(new Date()));
     setEndedOn('');
+    setLeftAt('');
+    setReturnedAt('');
     setNote('');
   }
 
@@ -41,10 +46,27 @@ export default function LeaveEditor() {
     setKind(leave.kind);
     setStartedOn(leave.started_on);
     setEndedOn(leave.ended_on || '');
+    // Postgres 의 time 은 '13:30:00' 으로 온다. input[type=time] 은 분까지만 받는다.
+    setLeftAt((leave.left_at || '').slice(0, 5));
+    setReturnedAt((leave.returned_at || '').slice(0, 5));
     setNote(leave.note || '');
     setStatus('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
+
+  // 지금 고른 종류와 날짜라면 몇 시가 되는지. 저장하기 전에 확인하라고 둔다.
+  const preview = startedOn
+    ? leaveTimeLabel({
+        id: '',
+        kind,
+        started_on: startedOn,
+        ended_on: endedOn || null,
+        left_at: leftAt || null,
+        returned_at: returnedAt || null,
+        note: null,
+        created_at: '',
+      })
+    : '';
 
   async function handleSave() {
     if (!startedOn) {
@@ -60,6 +82,9 @@ export default function LeaveEditor() {
       kind,
       started_on: startedOn,
       ended_on: endedOn || null,
+      // 비워두면 종류별 규정 시각을 쓴다 (lib/service.ts 의 LEAVE_SCHEDULE).
+      left_at: leftAt || null,
+      returned_at: returnedAt || null,
       note: note.trim() || null,
     });
 
@@ -111,6 +136,36 @@ export default function LeaveEditor() {
               />
             </label>
           </div>
+
+          <div className="flex flex-wrap items-center gap-3 text-sm text-ink-soft">
+            <label className="flex items-center gap-2">
+              출영
+              <input
+                type="time"
+                value={leftAt}
+                onChange={(e) => setLeftAt(e.target.value)}
+                className="rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
+              />
+            </label>
+            <label className="flex items-center gap-2">
+              복귀
+              <input
+                type="time"
+                value={returnedAt}
+                onChange={(e) => setReturnedAt(e.target.value)}
+                className="rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
+              />
+            </label>
+          </div>
+
+          {/*
+            시각은 비워두는 게 보통이다. 규정대로 나가는 일정은 종류만 고르면
+            맞고, 특별외출처럼 받을 때마다 다른 것만 적으면 된다. 그래서 지금
+            적용될 시각을 밑에 미리 보여준다.
+          */}
+          <p className="-mt-1 text-xs text-ink-muted">
+            비워두면 규정 시각을 씁니다 — {preview || '시각을 따지지 않음'}
+          </p>
 
           <input
             value={note}
@@ -166,6 +221,9 @@ export default function LeaveEditor() {
                   {leave.started_on}
                   {leave.ended_on && leave.ended_on !== leave.started_on && (
                     <> — {leave.ended_on}</>
+                  )}
+                  {leaveTimeLabel(leave) && (
+                    <span className="ml-2">{leaveTimeLabel(leave)}</span>
                   )}
                 </p>
                 <div className="mt-2 flex gap-3 text-xs">

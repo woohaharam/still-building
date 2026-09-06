@@ -5,10 +5,21 @@ create table if not exists public.service_leaves (
   ),
   started_on date not null,
   ended_on date,
+  -- 그 일정만의 출영·복귀 시각. 비워두면 코드의 종류별 규정 시각을 쓴다.
+  -- 특별외출처럼 받을 때마다 시각이 달라지는 것만 적으면 된다.
+  left_at time,
+  returned_at time,
   note text,
   created_at timestamptz not null default now(),
   constraint service_leaves_dates_in_order
-    check (ended_on is null or ended_on >= started_on)
+    check (ended_on is null or ended_on >= started_on),
+  -- 같은 날 나갔다 들어오는 일정만 시각 순서를 따진다.
+  constraint service_leaves_times_in_order check (
+    ended_on is not null and ended_on <> started_on
+    or left_at is null
+    or returned_at is null
+    or returned_at > left_at
+  )
 );
 
 create index if not exists service_leaves_started_on_idx

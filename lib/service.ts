@@ -11,27 +11,42 @@ export const SERVICE = {
 };
 
 /**
- * 복귀 시각. 복귀하는 날 이 시각이 지나면 다시 '복무 중'이 된다.
+ * 규정상의 출영·복귀 시각.
  *
- * null 은 복귀를 따지지 않는다는 뜻이다. 그날 하루를 통째로 그 상태로 둔다.
+ * null 은 그쪽을 따지지 않는다는 뜻이다. 출영이 null 이면 그날은 처음부터,
+ * 복귀가 null 이면 그날은 끝까지 나가 있는 것으로 본다.
  *
- * 부대 규정이라 일정마다 다르지 않아서 DB 가 아니라 여기 적는다. 바뀌면 이
- * 표의 숫자만 고치면 화면 전체가 따라간다.
+ * 여기 적힌 건 기본값이다. 특별외출처럼 받을 때마다 시각이 달라지는 건
+ * 일정마다 따로 적을 수 있고(left_at · returned_at), 적어두면 그쪽이 이긴다.
+ * 규정이 바뀌면 이 표의 숫자만 고치면 화면 전체가 따라간다.
  */
-export const RETURN_TIMES: Record<LeaveKind, string | null> = {
-  outing: '20:30',
-  special_outing: '20:30',
-  overnight: '21:00',
-  leave: '21:00',
-  // 말출은 나가면 전역까지 돌아오지 않는다. 그래서 복귀 시각이 없다.
-  final: null,
+export const LEAVE_SCHEDULE: Record<
+  LeaveKind,
+  { leftAt: string | null; returnedAt: string | null }
+> = {
+  outing: { leftAt: '13:30', returnedAt: '21:30' },
+  // 받을 때마다 다르다. 일정마다 적는 걸 전제로 한 기본값이다.
+  special_outing: { leftAt: '08:00', returnedAt: '20:00' },
+  // 외박 시각은 아직 못 들었다. 평일외출과 같게 뒀다.
+  overnight: { leftAt: '13:30', returnedAt: '21:30' },
+  // 휴가 출영은 나가는 날이 평일이냐 주말이냐로 갈린다. WEEKEND_LEAVE_AT 참고.
+  leave: { leftAt: '06:30', returnedAt: '21:30' },
+  // 말출은 나가면 전역까지 돌아오지 않는다.
+  final: { leftAt: '13:30', returnedAt: null },
   // OFF 는 나가는 게 아니라 하루가 통째로 그 상태다.
-  off: null,
+  off: { leftAt: null, returnedAt: null },
 };
 
-/** 'HH:MM' → 자정에서 몇 분. 모양이 어긋나면 null. */
+/** 주말에 나가는 휴가의 출영 시각. 평일보다 삼십 분 늦다. */
+export const WEEKEND_LEAVE_AT = '07:00';
+
+/**
+ * 'HH:MM' 또는 'HH:MM:SS' → 자정에서 몇 분. 모양이 어긋나면 null.
+ *
+ * 초까지 받는 건 Postgres 의 time 이 '13:30:00' 으로 오기 때문이다. 초는 버린다.
+ */
 export function parseClock(value: string): number | null {
-  const match = /^(\d{1,2}):(\d{2})$/.exec(value);
+  const match = /^(\d{1,2}):(\d{2})(?::\d{2})?$/.exec(value);
   if (!match) return null;
 
   const hour = Number(match[1]);
@@ -41,21 +56,23 @@ export function parseClock(value: string): number | null {
   return hour * 60 + minute;
 }
 
+/** 자정에서 몇 분 → 'HH:MM'. parseClock 의 반대. */
+export function formatClock(minutes: number): string {
+  const hour = Math.floor(minutes / 60);
+  const minute = minutes % 60;
+  return `${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}`;
+}
+
 /**
- * 복귀하는 날, 지금 시각이면 이미 들어왔는지.
+ * 그 종류의 기본 시각.
  *
- * 복귀 시각이 없는 종류는 언제나 거짓이다. 돌아오지 않으니 들어왔을 수도 없다.
+ * kind 는 DB 에서 온 문자열이다. 대괄호로 바로 꺼내면 프로토타입에 있는 이름이
+ * 값인 척 딸려 나오므로, 아는 종류인지 먼저 확인한다.
  */
-export function hasReturned(kind: LeaveKind, minutes: number): boolean {
-  // kind 는 DB 에서 온 문자열이다. 대괄호로 바로 꺼내면 프로토타입에 있는
-  // 이름이 값인 척 딸려 나온다.
-  if (!Object.prototype.hasOwnProperty.call(RETURN_TIMES, kind)) return false;
-
-  const clock = RETURN_TIMES[kind];
-  if (clock === null) return false;
-
-  const at = parseClock(clock);
-  return at !== null && minutes >= at;
+export function defaultSchedule(kind: LeaveKind) {
+  return Object.prototype.hasOwnProperty.call(LEAVE_SCHEDULE, kind)
+    ? LEAVE_SCHEDULE[kind]
+    : { leftAt: null, returnedAt: null };
 }
 
 export interface ServiceStatus {

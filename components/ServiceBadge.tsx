@@ -1,8 +1,8 @@
 import Link from 'next/link';
 import { seoulDateKey, seoulMinutes } from '@/lib/calendar';
-import { leaveNow } from '@/lib/leave-dates';
+import { leaveNow, leaveTimeLabel } from '@/lib/leave-dates';
 import { getLeaves } from '@/lib/leaves';
-import { RETURN_TIMES, serviceStanding, serviceStatus } from '@/lib/service';
+import { serviceStanding, serviceStatus } from '@/lib/service';
 
 /**
  * 헤더에 붙는 복무 상태 한 마디.
@@ -25,13 +25,14 @@ export default async function ServiceBadge() {
     : leaveNow(await getLeaves(), today, seoulMinutes());
   const standing = serviceStanding(status, leave?.kind ?? null);
 
-  // 언제 들어가는지는 칩에 적지 않는다. 헤더가 길어진다. 대신 올려두면 뜬다.
-  const returnAt = leave ? RETURN_TIMES[leave.kind] : null;
+  // 언제 나갔다 언제 들어가는지는 칩에 적지 않는다. 헤더가 길어진다.
+  // 대신 올려두면 뜬다.
+  const hours = leave ? leaveTimeLabel(leave) : '';
 
   return (
     <Link
       href="/service"
-      title={returnAt ? `${returnAt} 복귀 · 복무 기록` : '복무 기록'}
+      title={hours ? `${hours} · 복무 기록` : '복무 기록'}
       className={`inline-flex shrink-0 items-center gap-1 rounded-full border px-2.5 py-1 text-xs transition-colors ${
         standing.strong
           ? 'border-leave-discharge/40 font-semibold text-leave-discharge'
