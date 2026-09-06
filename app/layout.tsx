@@ -15,14 +15,17 @@ import {
 } from '@/lib/site';
 
 /**
- * 한 시간마다 다시 그린다.
+ * 5분마다 다시 그린다.
  *
- * 헤더의 복무 상태(components/ServiceBadge.tsx)가 오늘 날짜를 본다. 이게
- * 없으면 고정 페이지들은 빌드할 때 HTML 이 굳어서, 전역한 뒤에도 다음 배포
- * 전까지 '복무 중'이 남는다. 하루 단위로만 바뀌는 값이라 한 시간이면 넉넉하다.
- * 자기 값이 있는 페이지(revalidate = 0)는 그쪽이 이긴다.
+ * 헤더의 복무 상태(components/ServiceBadge.tsx)가 지금 날짜와 시각을 본다.
+ * 이게 없으면 고정 페이지들은 빌드할 때 HTML 이 굳어서, 전역한 뒤에도 다음
+ * 배포 전까지 '복무 중'이 남는다.
+ *
+ * 처음에는 한 시간이었다. 전역 여부는 하루에 한 번 바뀌니 그걸로 넉넉했는데,
+ * 외출 복귀가 20:30 이라 상태가 분 단위로도 바뀌게 되면서 한 시간은 너무
+ * 굵어졌다. 자기 값이 있는 페이지(revalidate = 0)는 그쪽이 이겨서 늘 정확하다.
  */
-export const revalidate = 3600;
+export const revalidate = 300;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

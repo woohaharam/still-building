@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import {
+  RETURN_TIMES,
   SERVICE,
   dDayLabel,
+  hasReturned,
+  parseClock,
   serviceStanding,
   serviceStatus,
 } from '@/lib/service';
@@ -129,6 +132,46 @@ describe('serviceStanding', () => {
 
     for (const kind of LEAVE_KINDS) {
       expect(serviceStanding(serving, kind).label).not.toBe('복무 중');
+    }
+  });
+});
+
+describe('parseClock', () => {
+  it('시각을 자정에서 몇 분인지로 바꾼다', () => {
+    expect(parseClock('00:00')).toBe(0);
+    expect(parseClock('20:30')).toBe(1230);
+    expect(parseClock('23:59')).toBe(1439);
+  });
+
+  it('모양이나 범위가 어긋나면 null', () => {
+    expect(parseClock('24:00')).toBeNull();
+    expect(parseClock('20:60')).toBeNull();
+    expect(parseClock('2030')).toBeNull();
+    expect(parseClock('')).toBeNull();
+  });
+});
+
+describe('hasReturned', () => {
+  it('복귀 시각이 지나면 참', () => {
+    expect(hasReturned('outing', 1229)).toBe(false);
+    expect(hasReturned('outing', 1230)).toBe(true);
+  });
+
+  it('복귀 시각이 없는 종류는 언제나 거짓', () => {
+    expect(hasReturned('final', 1439)).toBe(false);
+    expect(hasReturned('off', 1439)).toBe(false);
+  });
+
+  it('모르는 종류가 와도 프로토타입 값이 새어 나오지 않는다', () => {
+    const odd = 'constructor' as unknown as LeaveKind;
+
+    expect(hasReturned(odd, 1439)).toBe(false);
+  });
+
+  it('RETURN_TIMES 의 값은 전부 읽을 수 있는 시각이거나 null 이다', () => {
+    for (const kind of LEAVE_KINDS) {
+      const clock = RETURN_TIMES[kind];
+      if (clock !== null) expect(parseClock(clock)).not.toBeNull();
     }
   });
 });

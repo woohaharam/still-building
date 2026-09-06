@@ -116,3 +116,22 @@ const SEOUL_DATE = new Intl.DateTimeFormat('en-CA', {
 export function seoulDateKey(now: Date = new Date()): DateKey {
   return SEOUL_DATE.format(now);
 }
+
+/**
+ * 한국 기준 지금이 자정에서 몇 분 지났는지. 0 ~ 1439.
+ *
+ * 날짜만으로는 '복귀했는가'를 못 가른다. 외출 복귀가 저녁이면 그날 하루가
+ * 통째로 외출로 남기 때문이다. hourCycle 을 h23 으로 못박아 자정이 24 로
+ * 나오는 경우를 막는다.
+ */
+const SEOUL_TIME = new Intl.DateTimeFormat('en-GB', {
+  timeZone: 'Asia/Seoul',
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+});
+
+export function seoulMinutes(now: Date = new Date()): number {
+  const [hour, minute] = SEOUL_TIME.format(now).split(':').map(Number);
+  return hour * 60 + minute;
+}

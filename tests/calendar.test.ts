@@ -5,6 +5,7 @@ import {
   isSameMonth,
   parseDateKey,
   seoulDateKey,
+  seoulMinutes,
   toDateKey,
 } from '@/lib/calendar';
 import { CalendarEvent } from '@/lib/types';
@@ -126,5 +127,26 @@ describe('seoulDateKey', () => {
 
     expect(key).toMatch(/^\d{4}-\d{2}-\d{2}$/);
     expect(toDateKey(parseDateKey(key))).toBe(key);
+  });
+});
+
+describe('seoulMinutes', () => {
+  it('한국 시각을 자정에서 몇 분인지로 준다', () => {
+    // UTC 11:30 = 한국 20:30
+    expect(seoulMinutes(new Date('2026-09-10T11:30:00Z'))).toBe(20 * 60 + 30);
+  });
+
+  it('한국 자정은 24시가 아니라 0분이다', () => {
+    expect(seoulMinutes(new Date('2026-09-10T15:00:00Z'))).toBe(0);
+  });
+
+  it('하루 범위 안에 있다', () => {
+    for (let hour = 0; hour < 24; hour++) {
+      const at = new Date(Date.UTC(2026, 8, 10, hour, 0, 0));
+      const minutes = seoulMinutes(at);
+
+      expect(minutes).toBeGreaterThanOrEqual(0);
+      expect(minutes).toBeLessThan(1440);
+    }
   });
 });

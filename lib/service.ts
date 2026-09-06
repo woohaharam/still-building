@@ -10,6 +10,54 @@ export const SERVICE = {
   dischargeOn: '2027-04-27' as DateKey,
 };
 
+/**
+ * 복귀 시각. 복귀하는 날 이 시각이 지나면 다시 '복무 중'이 된다.
+ *
+ * null 은 복귀를 따지지 않는다는 뜻이다. 그날 하루를 통째로 그 상태로 둔다.
+ *
+ * 부대 규정이라 일정마다 다르지 않아서 DB 가 아니라 여기 적는다. 바뀌면 이
+ * 표의 숫자만 고치면 화면 전체가 따라간다.
+ */
+export const RETURN_TIMES: Record<LeaveKind, string | null> = {
+  outing: '20:30',
+  special_outing: '20:30',
+  overnight: '21:00',
+  leave: '21:00',
+  // 말출은 나가면 전역까지 돌아오지 않는다. 그래서 복귀 시각이 없다.
+  final: null,
+  // OFF 는 나가는 게 아니라 하루가 통째로 그 상태다.
+  off: null,
+};
+
+/** 'HH:MM' → 자정에서 몇 분. 모양이 어긋나면 null. */
+export function parseClock(value: string): number | null {
+  const match = /^(\d{1,2}):(\d{2})$/.exec(value);
+  if (!match) return null;
+
+  const hour = Number(match[1]);
+  const minute = Number(match[2]);
+  if (hour > 23 || minute > 59) return null;
+
+  return hour * 60 + minute;
+}
+
+/**
+ * 복귀하는 날, 지금 시각이면 이미 들어왔는지.
+ *
+ * 복귀 시각이 없는 종류는 언제나 거짓이다. 돌아오지 않으니 들어왔을 수도 없다.
+ */
+export function hasReturned(kind: LeaveKind, minutes: number): boolean {
+  // kind 는 DB 에서 온 문자열이다. 대괄호로 바로 꺼내면 프로토타입에 있는
+  // 이름이 값인 척 딸려 나온다.
+  if (!Object.prototype.hasOwnProperty.call(RETURN_TIMES, kind)) return false;
+
+  const clock = RETURN_TIMES[kind];
+  if (clock === null) return false;
+
+  const at = parseClock(clock);
+  return at !== null && minutes >= at;
+}
+
 export interface ServiceStatus {
   /** 입대일부터 전역일까지, 양 끝을 포함한 날 수. */
   totalDays: number;

@@ -1,4 +1,5 @@
 import { DateKey, parseDateKey, toDateKey } from './calendar';
+import { hasReturned } from './service';
 import { Leave } from './types';
 
 /**
@@ -64,6 +65,34 @@ export function leaveOn(leaves: Leave[], key: DateKey): Leave | null {
   for (const leave of leaves) {
     const end = leave.ended_on || leave.started_on;
     if (leave.started_on <= key && end >= key) return leave;
+  }
+
+  return null;
+}
+
+/**
+ * 지금 나가 있는 일정. 복귀 시각까지 본다.
+ *
+ * leaveOn 은 날짜만 본다. 달력 칸을 칠할 때는 그게 맞다. 복귀하는 날도 그날의
+ * 일정이니까 색은 남아야 한다. 반면 헤더의 '외출 중'은 지금 밖에 있느냐를
+ * 묻는 말이라, 저녁에 들어온 뒤로는 꺼져야 한다.
+ *
+ * 복귀한 일정은 건너뛰고 계속 찾는다. 들어온 휴가 때문에 같은 날 잡힌 다른
+ * 일정까지 가려지면 안 된다.
+ */
+export function leaveNow(
+  leaves: Leave[],
+  key: DateKey,
+  minutes: number
+): Leave | null {
+  for (const leave of leaves) {
+    const end = leave.ended_on || leave.started_on;
+    if (leave.started_on > key || end < key) continue;
+
+    // 복귀하는 날에만 시각을 따진다. 그전 날들은 온종일 밖이다.
+    if (key === end && hasReturned(leave.kind, minutes)) continue;
+
+    return leave;
   }
 
   return null;
