@@ -94,6 +94,14 @@ export interface Trip {
   /** 당일치기면 null. */
   ended_on: string | null;
   cover_image_url: string | null;
+  /**
+   * 지도에 핀을 찍을 자리. 비워두면 나라 중심점에 찍힌다 (lib/travel.ts).
+   *
+   * 나라 안에서 어디였는지가 중요한 국내 여행은 적어두는 편이 낫다. 관리자
+   * 화면에서 지도를 눌러 고를 수 있다.
+   */
+  lng: number | null;
+  lat: number | null;
   journal: string;
   published: boolean;
   created_at: string;
