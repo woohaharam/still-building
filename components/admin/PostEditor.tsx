@@ -10,7 +10,7 @@ import { markdownComponents } from '@/lib/markdown';
 import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
 import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
-import { supabaseClient } from '@/lib/supabase';
+import { useAdminCollection } from '@/lib/use-admin-collection';
 import type { ImageSize } from '@/lib/image-size';
 import { slugify, toSlug } from '@/lib/slug';
 import CoverImageField from './CoverImageField';
@@ -24,12 +24,19 @@ function toTimeValue(date: Date) {
 }
 
 export default function PostEditor() {
-  const [posts, setPosts] = useState<Post[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
+  const {
+    items: posts,
+    loading,
+    editingId,
+    setEditingId,
+    saving,
+    status,
+    setStatus,
+    save,
+    remove,
+  } = useAdminCollection<Post>('posts', { column: 'created_at' });
+
   const [showPreview, setShowPreview] = useState(false);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState('');
 
   const [title, setTitle] = useState('');
   const [slug, setSlug] = useState('');
@@ -50,20 +57,6 @@ export default function PostEditor() {
   const [uploadError, setUploadError] = useState('');
   const contentRef = useRef<HTMLTextAreaElement>(null);
   const contentFileInputRef = useRef<HTMLInputElement>(null);
-
-  async function loadPosts() {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from('posts')
-      .select('*')
-      .order('created_at', { ascending: false });
-    if (!error && data) setPosts(data as Post[]);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    loadPosts();
-  }, []);
 
   function resetForm() {
     setEditingId(null);
@@ -224,10 +217,7 @@ export default function PostEditor() {
       return;
     }
 
-    setSaving(true);
-    setStatus('');
-
-    const payload = {
+    const saved = await save({
       title,
       slug: finalSlug,
       excerpt,
@@ -236,32 +226,15 @@ export default function PostEditor() {
       cover_image_url: coverImageUrl || null,
       published,
       published_at: resolvePublishedAt(),
-    };
+    });
 
-    let error;
-    if (editingId) {
-      ({ error } = await supabaseClient
-        .from('posts')
-        .update(payload)
-        .eq('id', editingId));
-    } else {
-      ({ error } = await supabaseClient.from('posts').insert(payload));
-    }
-
-    setSaving(false);
-    if (error) {
-      setStatus(`저장 실패: ${error.message}`);
-    } else {
-      setStatus('저장했어요.');
-      resetForm();
-      loadPosts();
-    }
+    if (saved) resetForm();
   }
 
   async function handleDelete(id: string) {
-    if (!confirm('정말 삭제할까요?')) return;
-    await supabaseClient.from('posts').delete().eq('id', id);
-    loadPosts();
+    const removed = await remove(id, '정말 삭제할까요?');
+    // 고치고 있던 글을 지웠으면 폼도 비운다. 안 그러면 없는 글을 고치는 셈이 된다.
+    if (removed && editingId === id) resetForm();
   }
 
   return (
