@@ -17,14 +17,14 @@ https://mynameiswoo.vercel.app
 
 ## 숫자로 남은 것
 
-| 항목                  | 결과                                                                                                                                                                                                    |
-| --------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Lighthouse 접근성     | 96 → 100점 (대비 미달 요소 3종 → 0)                                                                                                                                                                     |
-| Lighthouse 성능 · SEO | 92 ~ 100점 / 100점 (로컬 프로덕션 빌드 기준)                                                                                                                                                            |
-| 첫 로드 공통 JS       | 87.3 kB                                                                                                                                                                                                 |
-| 테스트                | 순수 함수 188개 — RSS 15 · 날짜 13 · 썸네일 12 · 툴바 12 · slug 12 · 활동 12 · 여행 11 · 나가는 일정 11 · 목차 11 · 본문 11 · 복무 10 · 문체 10 · 유튜브 파싱 10 · 국가 10 · 별점 9 · 태그 8 · 그 외 11 |
-| CI                    | PR마다 포맷 · 린트 · 타입 · 테스트 · 빌드 5단계 자동 실행                                                                                                                                               |
-| 리팩터링              | 588줄 관리자 페이지 → 78 / 70 / 450줄 세 파일로 분리                                                                                                                                                    |
+| 항목                  | 결과                                                                                                                         |
+| --------------------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| Lighthouse 접근성     | 96 → 100점 (대비 미달 요소 3종 → 0)                                                                                          |
+| Lighthouse 성능 · SEO | 92 ~ 100점 / 100점 (로컬 프로덕션 빌드 기준)                                                                                 |
+| 첫 로드 공통 JS       | 87.3 kB                                                                                                                      |
+| 테스트                | 순수 함수 272개 (24개 파일) — 날짜 · RSS · 마크다운 · 지도 투영 · 복무 시각 · slug · 주석 문체                               |
+| CI                    | PR마다 포맷 · 린트 · 타입 · 테스트 · 빌드 5단계 자동 실행                                                                    |
+| 리팩터링              | 관리자 페이지 588줄 → 세 파일로 분리. 편집기 다섯 개가 목록·저장 로직과 목록 UI 를 공유 (`useAdminCollection` · `AdminList`) |
 
 ## 시스템 구조
 
@@ -46,17 +46,21 @@ https://mynameiswoo.vercel.app
 
 ## 핵심 기능과 코드
 
-| 기능                                            | 핵심 코드                                                                                                                                              |
-| ----------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 마크다운 관리자 · 임시저장 미리보기             | [`components/admin/PostEditor.tsx`](components/admin/PostEditor.tsx) · [`app/admin/preview/[slug]/page.tsx`](app/admin/preview/%5Bslug%5D/page.tsx)    |
-| 일정 + 글 쓴 날을 겹쳐 보는 달력                | [`lib/calendar.ts`](lib/calendar.ts) · [`components/Calendar.tsx`](components/Calendar.tsx)                                                            |
-| 권한을 DB가 검사하는 인증                       | [`supabase-schema.sql`](supabase-schema.sql) (`is_owner()`) · [`lib/posts.ts`](lib/posts.ts)                                                           |
-| 본문 목차 (라이브러리와 같은 규칙으로 id 생성)  | [`lib/toc.ts`](lib/toc.ts) · [`components/TableOfContents.tsx`](components/TableOfContents.tsx)                                                        |
-| 검색 노출 (sitemap · RSS · JSON-LD · OG 이미지) | [`app/sitemap.ts`](app/sitemap.ts) · [`lib/feed.ts`](lib/feed.ts) · [`app/posts/[slug]/opengraph-image.tsx`](app/posts/%5Bslug%5D/opengraph-image.tsx) |
-| 유튜브 배경음악 (주소 파싱)                     | [`lib/playlist.ts`](lib/playlist.ts) · [`components/MusicPlayer.tsx`](components/MusicPlayer.tsx)                                                      |
-| 다크 모드 (CSS 변수 한 곳에서)                  | [`app/globals.css`](app/globals.css) · [`components/ThemeToggle.tsx`](components/ThemeToggle.tsx)                                                      |
-| 보안 헤더 · CSP                                 | [`next.config.js`](next.config.js)                                                                                                                     |
-| 업로드 검증 (타입 · 크기)                       | [`lib/storage.ts`](lib/storage.ts)                                                                                                                     |
+| 기능                                               | 핵심 코드                                                                                                                                              |
+| -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| 마크다운 관리자 · 임시저장 미리보기                | [`components/admin/PostEditor.tsx`](components/admin/PostEditor.tsx) · [`app/admin/preview/[slug]/page.tsx`](app/admin/preview/%5Bslug%5D/page.tsx)    |
+| 일정 + 글 쓴 날을 겹쳐 보는 달력                   | [`lib/calendar.ts`](lib/calendar.ts) · [`components/Calendar.tsx`](components/Calendar.tsx)                                                            |
+| 권한을 DB가 검사하는 인증                          | [`supabase-schema.sql`](supabase-schema.sql) (`is_owner()`) · [`lib/posts.ts`](lib/posts.ts)                                                           |
+| 본문 목차 (라이브러리와 같은 규칙으로 id 생성)     | [`lib/toc.ts`](lib/toc.ts) · [`components/TableOfContents.tsx`](components/TableOfContents.tsx)                                                        |
+| 검색 노출 (sitemap · RSS · JSON-LD · OG 이미지)    | [`app/sitemap.ts`](app/sitemap.ts) · [`lib/feed.ts`](lib/feed.ts) · [`app/posts/[slug]/opengraph-image.tsx`](app/posts/%5Bslug%5D/opengraph-image.tsx) |
+| 유튜브 배경음악 (주소 파싱)                        | [`lib/playlist.ts`](lib/playlist.ts) · [`components/MusicPlayer.tsx`](components/MusicPlayer.tsx)                                                      |
+| 다크 모드 (CSS 변수 한 곳에서)                     | [`app/globals.css`](app/globals.css) · [`components/ThemeToggle.tsx`](components/ThemeToggle.tsx)                                                      |
+| 인쇄해서 내는 이력서 (같은 데이터, `@media print`) | [`app/resume/page.tsx`](app/resume/page.tsx) · [`app/globals.css`](app/globals.css) · [`lib/resume.ts`](lib/resume.ts)                                 |
+| 여행 지도 (외부 요청 없이 SVG 로 구움)             | [`scripts/build-map.mjs`](scripts/build-map.mjs) · [`lib/map.ts`](lib/map.ts) · [`components/travel/TravelMap.tsx`](components/travel/TravelMap.tsx)   |
+| 복무 상태 (날짜 + 출영·복귀 시각으로 판정)         | [`lib/service.ts`](lib/service.ts) · [`lib/leave-dates.ts`](lib/leave-dates.ts) · [`components/ServiceBadge.tsx`](components/ServiceBadge.tsx)         |
+| 기술 목록을 프로젝트 스택에서 역으로 뽑기          | [`lib/skills.ts`](lib/skills.ts) · [`app/about/page.tsx`](app/about/page.tsx)                                                                          |
+| 보안 헤더 · CSP                                    | [`next.config.js`](next.config.js)                                                                                                                     |
+| 업로드 검증 (타입 · 크기)                          | [`lib/storage.ts`](lib/storage.ts)                                                                                                                     |
 
 ## 트러블슈팅
 
@@ -118,7 +122,18 @@ https://mynameiswoo.vercel.app
 </details>
 
 <details>
-<summary><b>6. 본문 글자 색이 접근성 기준 미달이었다</b> — 대비 3.1:1 → 4.7:1, 96 → 100점</summary>
+<summary><b>6. 지도를 가로지르는 줄 하나와, 태평양에 찍힌 러시아</b> — 날짜변경선 처리</summary>
+
+- **문제** 세계 지도를 왼쪽 끝에서 오른쪽 끝까지 가로지르는 줄이 하나 그어짐. 나라별 중심점에서는 러시아가 경도 202도(존재하지 않는 값), 피지가 11도(아프리카)로 계산됨
+- **원인** 180도를 넘나드는 나라는 좌표가 180에서 -180으로 튄다. 두 점을 직선으로 이으면 지도를 가로지르는 줄이 되고, 그대로 평균을 내면 중심점이 지구 반대편으로 간다
+- **시도** 튀는 구간에서 선을 끊음 → 줄은 사라졌지만 그 나라만 반쪽이 뜯긴 채 남음
+- **해결** 앞 점과의 차이가 180도를 넘으면 한 바퀴를 더하거나 빼서 이어붙인 뒤 계산하고, 결과만 `-180~180` 으로 되돌림. 윤곽선은 화면에 걸치는 만큼 한 바퀴씩 옮겨 그려 양쪽 가장자리에 나뉘어 나오게 함
+- **성과** 러시아 99.9도 · 피지 178도로 제자리. 중심점 174개가 전부 지구 안이고 지도에 그려지는지 검사하는 테스트 추가 — **중심점 문제는 화면을 보기 전에 이 테스트가 먼저 잡았다**
+
+</details>
+
+<details>
+<summary><b>7. 본문 글자 색이 접근성 기준 미달이었다</b> — 대비 3.1:1 → 4.7:1, 96 → 100점</summary>
 
 - **문제** Lighthouse 접근성 96점. 날짜 · 태그 · 설명에 쓰던 흐린 회색이 대비 부족으로 검출
 - **원인** `--ink-muted` 를 눈으로만 정함. 실제 대비 3.1:1 (WCAG AA 본문 기준 4.5:1)
@@ -134,6 +149,7 @@ https://mynameiswoo.vercel.app
 app/                    페이지 (App Router)
   ├ page.tsx            메인 — 포트폴리오 랜딩
   ├ about/              소개
+  ├ resume/             이력서 — 인쇄하면 그대로 제출용 PDF
   ├ projects/ papers/   프로젝트 · 논문 (목록 + 상세)
   ├ activities/         공모전 · 대외활동 지원 기록
   ├ blog/ posts/[slug]/ 글 목록 · 글 상세
@@ -144,9 +160,11 @@ app/                    페이지 (App Router)
   ├ admin/              관리자 (로그인 · 글 · 일정 · 미리보기)
   ├ sitemap.ts robots.ts feed.xml/   검색엔진용
   └ opengraph-image.tsx              링크 미리보기 카드
-components/             화면 조각 (project/ 아래는 프로젝트 상세 전용)
-lib/                    순수 로직 — 날짜 · 마크다운 · RSS · 유튜브 파싱 · 프로젝트 데이터
-tests/                  lib/ 순수 함수 테스트 188개
+components/             화면 조각 (project/ travel/ service/ admin/ 아래는 각 화면 전용)
+lib/                    순수 로직 — 날짜 · 마크다운 · RSS · 지도 투영 · 복무 시각 · 프로젝트 데이터
+  └ map-data.ts         scripts/build-map.mjs 가 구운 지도 SVG. 손으로 고치지 않는다
+scripts/build-map.mjs   나라 윤곽선 → SVG 경로 (npm run build:map)
+tests/                  lib/ 순수 함수 테스트 272개
 .github/workflows/ci.yml  PR마다 5단계 검사
 ```
 
@@ -160,8 +178,9 @@ npm run dev           # 개발 서버
 npm run format:check  # 포맷 검사
 npm run lint          # 린트
 npm run typecheck     # 타입 검사
-npm test              # 테스트 (188개)
+npm test              # 테스트 (272개)
 npm run build         # 빌드
+npm run build:map     # 지도 SVG 다시 굽기 (lib/map-data.ts)
 ```
 
 ---

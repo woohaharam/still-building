@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { toDateKey } from '@/lib/calendar';
 import { leaveTimeLabel } from '@/lib/leave-dates';
+import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
 
@@ -195,60 +196,39 @@ export default function LeaveEditor() {
         </div>
       </div>
 
-      <aside>
-        <h2 className="mb-4 text-sm text-ink-muted">일정 {leaves.length}개</h2>
-
-        {loading ? (
-          <p className="text-sm text-ink-muted">불러오는 중...</p>
-        ) : leaves.length === 0 ? (
-          <p className="text-sm text-ink-muted">아직 없어요.</p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {leaves.map((leave) => (
-              <li
-                key={leave.id}
-                className="border-b border-line pb-3 last:border-b-0"
-              >
-                <p className="text-sm font-medium">
-                  {LEAVE_KIND_LABELS[leave.kind]}
-                  {leave.note && (
-                    <span className="ml-2 text-xs font-normal text-ink-muted">
-                      {leave.note}
-                    </span>
-                  )}
-                </p>
-                <p className="mt-1 text-xs tabular-nums text-ink-muted">
-                  {leave.started_on}
-                  {leave.ended_on && leave.ended_on !== leave.started_on && (
-                    <> — {leave.ended_on}</>
-                  )}
-                  {leaveTimeLabel(leave) && (
-                    <span className="ml-2">{leaveTimeLabel(leave)}</span>
-                  )}
-                </p>
-                <div className="mt-2 flex gap-3 text-xs">
-                  <button
-                    onClick={() => loadIntoForm(leave)}
-                    className="text-ink-soft underline hover:text-ink"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() =>
-                      remove(leave.id, '이 일정을 삭제할까요?').then(
-                        (done) => done && resetForm()
-                      )
-                    }
-                    className="text-danger underline hover:opacity-80"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <AdminList
+        title={`일정 ${leaves.length}개`}
+        items={leaves}
+        loading={loading}
+        onEdit={loadIntoForm}
+        onRemove={(leave) =>
+          remove(leave.id, '이 일정을 삭제할까요?').then(
+            (done) => done && resetForm()
+          )
+        }
+      >
+        {(leave) => (
+          <>
+            <p className="text-sm font-medium">
+              {LEAVE_KIND_LABELS[leave.kind]}
+              {leave.note && (
+                <span className="ml-2 text-xs font-normal text-ink-muted">
+                  {leave.note}
+                </span>
+              )}
+            </p>
+            <p className="mt-1 text-xs tabular-nums text-ink-muted">
+              {leave.started_on}
+              {leave.ended_on && leave.ended_on !== leave.started_on && (
+                <> — {leave.ended_on}</>
+              )}
+              {leaveTimeLabel(leave) && (
+                <span className="ml-2">{leaveTimeLabel(leave)}</span>
+              )}
+            </p>
+          </>
         )}
-      </aside>
+      </AdminList>
     </div>
   );
 }

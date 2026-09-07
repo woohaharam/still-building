@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import CoverImageField from './CoverImageField';
 import { toDateKey } from '@/lib/calendar';
@@ -206,59 +207,34 @@ export default function BookEditor() {
         </div>
       </div>
 
-      <aside>
-        <h2 className="mb-4 text-sm text-ink-muted">독후감 {books.length}편</h2>
-
-        {loading ? (
-          <p className="text-sm text-ink-muted">불러오는 중...</p>
-        ) : books.length === 0 ? (
-          <p className="text-sm text-ink-muted">아직 없어요.</p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {books.map((book) => (
-              <li
-                key={book.id}
-                className="border-b border-line pb-3 last:border-b-0"
-              >
-                <p className="text-sm font-medium">
-                  {book.title}
-                  {!book.published && (
-                    <span className="ml-2 text-xs text-ink-muted">
-                      임시저장
-                    </span>
-                  )}
-                </p>
-                <p className="mt-1 text-xs text-ink-muted">
-                  {book.author}
-                  {stars(book.rating) && (
-                    <span className="ml-2 text-accent">
-                      {stars(book.rating)}
-                    </span>
-                  )}
-                </p>
-                <div className="mt-2 flex gap-3 text-xs">
-                  <button
-                    onClick={() => loadIntoForm(book)}
-                    className="text-ink-soft underline hover:text-ink"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() =>
-                      remove(book.id, '이 독후감을 삭제할까요?').then(
-                        (done) => done && resetForm()
-                      )
-                    }
-                    className="text-ink-muted underline hover:text-ink-soft"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <AdminList
+        title={`독후감 ${books.length}편`}
+        items={books}
+        loading={loading}
+        onEdit={loadIntoForm}
+        onRemove={(book) =>
+          remove(book.id, '이 독후감을 삭제할까요?').then(
+            (done) => done && resetForm()
+          )
+        }
+      >
+        {(book) => (
+          <>
+            <p className="text-sm font-medium">
+              {book.title}
+              {!book.published && (
+                <span className="ml-2 text-xs text-ink-muted">임시저장</span>
+              )}
+            </p>
+            <p className="mt-1 text-xs text-ink-muted">
+              {book.author}
+              {stars(book.rating) && (
+                <span className="ml-2 text-accent">{stars(book.rating)}</span>
+              )}
+            </p>
+          </>
         )}
-      </aside>
+      </AdminList>
     </div>
   );
 }

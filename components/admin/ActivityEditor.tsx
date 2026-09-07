@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { toDateKey } from '@/lib/calendar';
+import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import {
   Activity,
@@ -181,57 +182,34 @@ export default function ActivityEditor() {
         </div>
       </div>
 
-      <aside>
-        <h2 className="mb-4 text-sm text-ink-muted">
-          활동 {activities.length}개
-        </h2>
-
-        {loading ? (
-          <p className="text-sm text-ink-muted">불러오는 중...</p>
-        ) : activities.length === 0 ? (
-          <p className="text-sm text-ink-muted">아직 없어요.</p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {activities.map((activity) => (
-              <li
-                key={activity.id}
-                className="border-b border-line pb-3 last:border-b-0"
-              >
-                <p className="text-sm font-medium">
-                  {activity.name}
-                  {!activity.published && (
-                    <span className="ml-2 text-xs font-normal text-ink-muted">
-                      숨김
-                    </span>
-                  )}
-                </p>
-                <p className="mt-1 text-xs tabular-nums text-ink-muted">
-                  {ACTIVITY_OUTCOME_LABELS[activity.outcome]} ·{' '}
-                  {activity.started_on}
-                </p>
-                <div className="mt-2 flex gap-3 text-xs">
-                  <button
-                    onClick={() => loadIntoForm(activity)}
-                    className="text-ink-soft underline hover:text-ink"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() =>
-                      remove(activity.id, '이 활동을 삭제할까요?').then(
-                        (done) => done && resetForm()
-                      )
-                    }
-                    className="text-danger underline hover:opacity-80"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <AdminList
+        title={`활동 ${activities.length}개`}
+        items={activities}
+        loading={loading}
+        onEdit={loadIntoForm}
+        onRemove={(activity) =>
+          remove(activity.id, '이 활동을 삭제할까요?').then(
+            (done) => done && resetForm()
+          )
+        }
+      >
+        {(activity) => (
+          <>
+            <p className="text-sm font-medium">
+              {activity.name}
+              {!activity.published && (
+                <span className="ml-2 text-xs font-normal text-ink-muted">
+                  숨김
+                </span>
+              )}
+            </p>
+            <p className="mt-1 text-xs tabular-nums text-ink-muted">
+              {ACTIVITY_OUTCOME_LABELS[activity.outcome]} ·{' '}
+              {activity.started_on}
+            </p>
+          </>
         )}
-      </aside>
+      </AdminList>
     </div>
   );
 }

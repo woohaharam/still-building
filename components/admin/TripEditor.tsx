@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import { toDateKey } from '@/lib/calendar';
 import CoordPicker from './CoordPicker';
@@ -249,55 +250,31 @@ export default function TripEditor() {
         </div>
       </div>
 
-      <aside>
-        <h2 className="mb-4 text-sm text-ink-muted">여행 {trips.length}번</h2>
-
-        {loading ? (
-          <p className="text-sm text-ink-muted">불러오는 중...</p>
-        ) : trips.length === 0 ? (
-          <p className="text-sm text-ink-muted">아직 없어요.</p>
-        ) : (
-          <ul className="flex flex-col gap-3">
-            {trips.map((trip) => (
-              <li
-                key={trip.id}
-                className="border-b border-line pb-3 last:border-b-0"
-              >
-                <p className="text-sm font-medium">
-                  {flagEmoji(trip.country_code)} {trip.place}
-                  {!trip.published && (
-                    <span className="ml-2 text-xs text-ink-muted">
-                      임시저장
-                    </span>
-                  )}
-                </p>
-                <p className="mt-1 text-xs text-ink-muted">
-                  {trip.started_on} ·{' '}
-                  {stayLabel(trip.started_on, trip.ended_on)}
-                </p>
-                <div className="mt-2 flex gap-3 text-xs">
-                  <button
-                    onClick={() => loadIntoForm(trip)}
-                    className="text-ink-soft underline hover:text-ink"
-                  >
-                    수정
-                  </button>
-                  <button
-                    onClick={() =>
-                      remove(trip.id, '이 여행 기록을 삭제할까요?').then(
-                        (done) => done && resetForm()
-                      )
-                    }
-                    className="text-ink-muted underline hover:text-ink-soft"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <AdminList
+        title={`여행 ${trips.length}번`}
+        items={trips}
+        loading={loading}
+        onEdit={loadIntoForm}
+        onRemove={(trip) =>
+          remove(trip.id, '이 여행 기록을 삭제할까요?').then(
+            (done) => done && resetForm()
+          )
+        }
+      >
+        {(trip) => (
+          <>
+            <p className="text-sm font-medium">
+              {flagEmoji(trip.country_code)} {trip.place}
+              {!trip.published && (
+                <span className="ml-2 text-xs text-ink-muted">임시저장</span>
+              )}
+            </p>
+            <p className="mt-1 text-xs text-ink-muted">
+              {trip.started_on} · {stayLabel(trip.started_on, trip.ended_on)}
+            </p>
+          </>
         )}
-      </aside>
+      </AdminList>
     </div>
   );
 }
