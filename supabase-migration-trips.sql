@@ -16,6 +16,9 @@ create table if not exists public.trips (
   -- 당일치기면 비워둔다.
   ended_on date,
   cover_image_url text,
+  -- 지도에 핀을 찍을 자리. 비워두면 나라 중심점을 쓴다.
+  lng double precision,
+  lat double precision,
   journal text not null,
   published boolean not null default false,
   created_at timestamptz not null default now(),

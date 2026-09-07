@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import { toDateKey } from '@/lib/calendar';
+import CoordPicker from './CoordPicker';
+import { Coord } from '@/lib/map';
 import { countryName, flagEmoji, isCountryCode } from '@/lib/country';
 import { toSlug } from '@/lib/slug';
 import { stayLabel } from '@/lib/travel';
@@ -33,6 +35,7 @@ export default function TripEditor() {
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [journal, setJournal] = useState('');
   const [published, setPublished] = useState(false);
+  const [coord, setCoord] = useState<Coord | null>(null);
 
   useEffect(() => {
     // 기본값은 오늘 — 서버와 브라우저의 시간대 차이를 피하려고 마운트 후에 채운다.
@@ -49,6 +52,7 @@ export default function TripEditor() {
     setCoverImageUrl('');
     setJournal('');
     setPublished(false);
+    setCoord(null);
   }
 
   function loadIntoForm(trip: Trip) {
@@ -61,6 +65,11 @@ export default function TripEditor() {
     setCoverImageUrl(trip.cover_image_url || '');
     setJournal(trip.journal);
     setPublished(trip.published);
+    setCoord(
+      trip.lng !== null && trip.lat !== null
+        ? { lng: trip.lng, lat: trip.lat }
+        : null
+    );
     setStatus('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -92,6 +101,9 @@ export default function TripEditor() {
       started_on: startedOn,
       ended_on: endedOn || null,
       cover_image_url: coverImageUrl.trim() || null,
+      // 비워두면 지도에서 나라 중심점에 찍힌다 (lib/travel.ts 의 tripCoord).
+      lng: coord ? Number(coord.lng.toFixed(5)) : null,
+      lat: coord ? Number(coord.lat.toFixed(5)) : null,
       journal,
       published,
     });
@@ -184,6 +196,12 @@ export default function TripEditor() {
               </span>
             )}
           </div>
+
+          <CoordPicker
+            countryCode={countryCode}
+            coord={coord}
+            onChange={setCoord}
+          />
 
           <CoverImageField
             value={coverImageUrl}
