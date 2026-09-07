@@ -194,7 +194,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
                 <span
                   className={`flex h-6 w-6 items-center justify-center rounded-full text-xs tabular-nums ${
                     isToday ? 'bg-ink font-semibold text-paper' : ''
-                  } ${inMonth ? 'text-ink' : 'text-ink-muted/60'}`}
+                  } ${inMonth ? 'text-ink' : 'text-ink-muted'}`}
                 >
                   {day.getDate()}
                 </span>
@@ -219,7 +219,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
                         <span
                           key={item.id}
                           className={`flex items-center gap-1 text-[11px] leading-tight ${
-                            inMonth ? 'text-ink-soft' : 'text-ink-muted/60'
+                            inMonth ? 'text-ink-soft' : 'text-ink-muted'
                           }`}
                         >
                           {item.dot ? (

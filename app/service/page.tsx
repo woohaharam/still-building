@@ -66,9 +66,7 @@ export default async function ServicePage() {
                       <> — {formatDate(leave.ended_on)}</>
                     )}
                     {leaveTimeLabel(leave) && (
-                      <span className="ml-2 opacity-80">
-                        {leaveTimeLabel(leave)}
-                      </span>
+                      <span className="ml-2">{leaveTimeLabel(leave)}</span>
                     )}
                   </span>
                 </li>
