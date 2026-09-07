@@ -12,6 +12,10 @@ import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
  *
  * 칸은 옅게 깔고 점과 글자는 진하게 쓴다. 글자색을 바꾸지 않기 때문에
  * 본문 대비가 흔들리지 않는다.
+ *
+ * 지난달·다음달 날짜는 예전에 칸 전체를 opacity-30 으로 눌렀는데, 그러면 날짜
+ * 숫자가 대비 1.9:1 이 된다. 흐리게 보이는 것과 못 읽는 것은 다르다. 지금은
+ * 글자를 --ink-muted 로 낮추고(5.0:1) 배경 색만 옅게 남긴다.
  */
 const KIND_STYLE: Record<LeaveKind, { cell: string; dot: string }> = {
   outing: { cell: 'bg-leave-outing/15', dot: 'bg-leave-outing' },
@@ -112,12 +116,12 @@ export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
               className={`flex min-h-[3.5rem] flex-col items-center justify-center gap-1 rounded-md border text-sm tabular-nums ${
                 discharge
                   ? 'border-transparent bg-leave-discharge-fill font-bold text-white'
-                  : `${style ? style.cell : ''} ${
+                  : `${style ? (inMonth ? style.cell : `${style.cell} opacity-40`) : ''} ${
                       key === todayKey
                         ? 'border-ink-muted font-semibold'
                         : 'border-transparent'
                     }`
-              } ${inMonth ? '' : 'opacity-30'}`}
+              } ${inMonth ? '' : 'text-ink-muted'}`}
             >
               <span>{date.getDate()}</span>
 
