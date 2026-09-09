@@ -50,7 +50,7 @@ export function eventDateKeys(event: CalendarEvent): DateKey[] {
   return keys;
 }
 
-export function postDateKey(post: Post): DateKey {
+function postDateKey(post: Post): DateKey {
   return toDateKey(new Date(post.published_at || post.created_at));
 }
 

@@ -7,7 +7,6 @@ import {
   tripPins,
   uniqueCountries,
 } from '@/lib/travel';
-import { KOREA_FRAME, WORLD_FRAME } from '@/lib/map-data';
 import { Trip } from '@/lib/types';
 
 function trip(overrides: Partial<Trip> = {}): Trip {
@@ -156,7 +155,7 @@ describe('tripCoord', () => {
 
 describe('tripPins', () => {
   it('같은 자리에 겹친 여행은 하나로 접고 수를 센다', () => {
-    const pins = tripPins(WORLD_FRAME, [
+    const pins = tripPins([
       trip({ id: '1', slug: 'a', lng: 135.5, lat: 34.69 }),
       trip({ id: '2', slug: 'b', lng: 135.5, lat: 34.69 }),
       trip({ id: '3', slug: 'c', lng: 2.35, lat: 48.86 }),
@@ -168,21 +167,26 @@ describe('tripPins', () => {
     expect(pins[1].also).toBe(0);
   });
 
-  it('지도 밖의 여행은 빠진다', () => {
-    const pins = tripPins(KOREA_FRAME, [
-      trip({ id: '1', slug: 'a', country_code: 'KR', lng: 126.98, lat: 37.57 }),
-      trip({ id: '2', slug: 'b', country_code: 'JP', lng: 139.7, lat: 35.69 }),
+  it('1km 안쪽으로 어긋난 좌표는 같은 자리로 본다', () => {
+    const pins = tripPins([
+      trip({ id: '1', slug: 'a', lng: 135.501, lat: 34.691 }),
+      trip({ id: '2', slug: 'b', lng: 135.504, lat: 34.694 }),
     ]);
 
     expect(pins).toHaveLength(1);
-    expect(pins[0].trip.id).toBe('1');
+    expect(pins[0].also).toBe(1);
+  });
+
+  it('좌표가 없으면 나라 중심점으로 찍힌다', () => {
+    const pins = tripPins([trip({ country_code: 'FR', lng: null, lat: null })]);
+
+    expect(pins).toHaveLength(1);
+    expect(pins[0].coord.lng).toBeCloseTo(2.3, 0);
   });
 
   it('찍을 자리가 없으면 빈 배열', () => {
     expect(
-      tripPins(WORLD_FRAME, [
-        trip({ country_code: 'ZZ', lng: null, lat: null }),
-      ])
+      tripPins([trip({ country_code: 'ZZ', lng: null, lat: null })])
     ).toHaveLength(0);
   });
 });

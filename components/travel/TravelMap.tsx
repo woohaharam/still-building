@@ -1,85 +1,113 @@
-import Link from 'next/link';
+'use client';
+
+import { useEffect, useRef } from 'react';
+import type { Map as LeafletMap } from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { countryName, flagEmoji } from '@/lib/country';
-import { MapFrame, percent } from '@/lib/map';
-import { TripPin, tripPins } from '@/lib/travel';
-import { Trip } from '@/lib/types';
+import {
+  TILE_ATTRIBUTION,
+  isDarkTheme,
+  tileUrl,
+  watchTheme,
+} from '@/lib/tiles';
+import { TripPin } from '@/lib/travel';
 
 /**
  * 다녀온 곳에 핀을 찍은 지도.
  *
- * 서버에서 그린다. 윤곽선은 lib/map-data.ts 에 미리 구워둔 SVG 경로라 밖으로
- * 나가는 요청이 없고, 색은 CSS 변수를 따라가서 다크 모드에 저절로 맞는다.
- *
- * 핀은 SVG 안이 아니라 위에 얹은 링크다. SVG 안에 넣으면 지도를 늘릴 때 핀도
- * 같이 늘어나 찌그러진다. 밖에 두고 퍼센트로 자리를 잡으면 지도가 커지든
- * 작아지든 핀은 제 크기를 지키고, 그냥 링크라서 키보드로도 눌린다.
+ * 지도는 자바스크립트가 있어야 그려진다. 그래서 이 아래에는 늘 목록이 함께
+ * 놓인다. 지도가 안 떠도 어디를 다녀왔는지는 그 목록으로 전부 읽히고,
+ * 검색엔진이 보는 것도 그쪽이다. 지도는 거들 뿐이다.
  */
-export default function TravelMap({
-  frame,
-  path,
-  trips,
-  label,
-  className = '',
-}: {
-  frame: MapFrame;
-  path: string;
-  trips: Trip[];
-  /** 스크린리더가 읽을 지도 이름. */
-  label: string;
-  /** 폭을 좁힐 때. 한국 지도는 세로로 길어서 그냥 두면 화면을 다 먹는다. */
-  className?: string;
-}) {
-  const pins = tripPins(frame, trips);
+export default function TravelMap({ pins }: { pins: TripPin[] }) {
+  const boxRef = useRef<HTMLDivElement>(null);
+  const pinsRef = useRef(pins);
+  pinsRef.current = pins;
+
+  useEffect(() => {
+    if (!boxRef.current || pinsRef.current.length === 0) return;
+
+    let map: LeafletMap | null = null;
+    let stopWatching: (() => void) | null = null;
+    let cancelled = false;
+
+    import('leaflet').then((L) => {
+      if (cancelled || !boxRef.current) return;
+
+      map = L.map(boxRef.current, {
+        // 페이지를 스크롤하다 지도에 걸려 확대되는 걸 막는다.
+        // 지도를 만지려면 한 번 눌러서 뜻을 밝히게 한다.
+        scrollWheelZoom: false,
+      });
+
+      const tiles = L.tileLayer(tileUrl(isDarkTheme()), {
+        maxZoom: 18,
+        attribution: TILE_ATTRIBUTION,
+      }).addTo(map);
+
+      stopWatching = watchTheme((dark) => tiles.setUrl(tileUrl(dark)));
+
+      const icon = L.divIcon({
+        className: '',
+        html: '<span class="block h-3.5 w-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white bg-accent shadow"></span>',
+        iconSize: [0, 0],
+      });
+
+      const points: [number, number][] = [];
+
+      for (const pin of pinsRef.current) {
+        const { trip } = pin;
+        points.push([pin.coord.lat, pin.coord.lng]);
+
+        /*
+          말풍선 안은 Leaflet 이 직접 넣는 HTML 이라 Next 의 Link 를 못 쓴다.
+          평범한 a 태그를 쓰면 페이지를 통째로 다시 받지만, 어차피 한 번
+          넘어가고 마는 자리다. 진짜 링크라 키보드와 새 탭도 그대로 된다.
+        */
+        L.marker([pin.coord.lat, pin.coord.lng], {
+          icon,
+          alt: `${trip.place}, ${countryName(trip.country_code)}`,
+        })
+          .addTo(map!)
+          .bindPopup(
+            `<a href="/travel/${encodeURIComponent(trip.slug)}">` +
+              `<strong>${escapeHtml(flagEmoji(trip.country_code))} ${escapeHtml(trip.place)}</strong>` +
+              `</a><br><span>${escapeHtml(countryName(trip.country_code))}` +
+              (pin.also > 0 ? ` · 외 ${pin.also}곳` : '') +
+              `</span>`
+          );
+      }
+
+      // 핀이 하나뿐이면 경계 상자가 점 하나라 확대가 끝까지 튄다.
+      if (points.length === 1) map.setView(points[0], 9);
+      else map.fitBounds(points, { padding: [32, 32] });
+    });
+
+    return () => {
+      cancelled = true;
+      stopWatching?.();
+      // Strict Mode 가 effect 를 두 번 돌린다. 치우지 않으면 두 번째가 던진다.
+      map?.remove();
+    };
+  }, []);
+
   if (pins.length === 0) return null;
 
   return (
-    <figure className={`m-0 ${className}`}>
-      <div className="relative overflow-hidden rounded-lg border border-line bg-surface">
-        <svg
-          viewBox={`0 0 ${frame.width} ${frame.height}`}
-          className="block h-auto w-full"
-          role="img"
-          aria-label={`${label} — 다녀온 곳 ${pins.length}군데`}
-        >
-          <path d={path} className="fill-ink-muted/25" />
-        </svg>
-
-        {pins.map((pin) => (
-          <Pin key={pin.trip.id} pin={pin} frame={frame} />
-        ))}
-      </div>
-    </figure>
+    <div
+      ref={boxRef}
+      className="h-80 w-full overflow-hidden rounded-lg border border-line bg-surface sm:h-96"
+      aria-label={`다녀온 곳 ${pins.length}군데를 표시한 지도`}
+      role="img"
+    />
   );
 }
 
-function Pin({ pin, frame }: { pin: TripPin; frame: MapFrame }) {
-  const { left, top } = percent(frame, pin.point);
-  const { trip } = pin;
-  const where = `${trip.place}, ${countryName(trip.country_code)}`;
-
-  return (
-    <Link
-      href={`/travel/${encodeURIComponent(trip.slug)}`}
-      title={pin.also > 0 ? `${where} 외 ${pin.also}곳` : where}
-      /*
-        핀 끝이 좌표를 가리키게 왼쪽 아래 모서리를 기준점에 맞춘다. 가운데를
-        맞추면 그림의 절반만큼 아래를 가리키게 된다.
-      */
-      className="group absolute -translate-x-1/2 -translate-y-full"
-      style={{ left: `${left}%`, top: `${top}%` }}
-    >
-      <span className="sr-only">{where}</span>
-
-      <span
-        aria-hidden
-        className="flex flex-col items-center transition-transform group-hover:-translate-y-0.5 group-focus-visible:-translate-y-0.5"
-      >
-        <span className="flex h-6 w-6 items-center justify-center rounded-full border border-paper bg-accent text-[11px] leading-none shadow-sm">
-          {flagEmoji(trip.country_code) || '•'}
-        </span>
-        {/* 핀 끝. 동그라미 아래로 뾰족하게 내려 좌표를 가리킨다. */}
-        <span className="-mt-px h-1.5 w-px bg-accent" />
-      </span>
-    </Link>
-  );
+/** 지명이 그대로 HTML 로 들어가는 자리라 꺾쇠와 따옴표를 막는다. */
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

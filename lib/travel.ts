@@ -1,6 +1,6 @@
 import { isDomestic } from './country';
 import { COUNTRY_CENTERS } from './map-data';
-import { Coord, MapFrame, Point, isCoord, project } from './map';
+import { Coord, isCoord } from './map';
 import { Trip } from './types';
 
 /**
@@ -86,28 +86,28 @@ export function tripCoord(trip: Trip): Coord | null {
 }
 
 /**
- * 지도에 얹을 핀들. 지도 밖으로 나가는 여행은 빠진다.
+ * 지도에 얹을 핀들.
  *
  * 같은 자리에 여러 번 갔으면 핀도 여러 개가 겹친다. 겹친 핀은 화면에서
  * 하나처럼 보이고 맨 위의 것만 눌린다. 그래서 자리마다 하나로 접고, 접힌
  * 여행 수를 같이 넘긴다.
  */
-export function tripPins(frame: MapFrame, trips: Trip[]): TripPin[] {
+export function tripPins(trips: Trip[]): TripPin[] {
   const byPlace = new Map<string, TripPin>();
 
   for (const trip of trips) {
     const coord = tripCoord(trip);
     if (!coord) continue;
 
-    const point = project(frame, coord);
-    if (!point) continue;
-
-    // 반올림해서 묶는다. 몇 픽셀 차이는 화면에서 어차피 한 점이다.
-    const key = `${Math.round(point.x)},${Math.round(point.y)}`;
+    /*
+      소수 둘째 자리, 곧 1km 안쪽이면 같은 자리로 본다. 좌표를 손으로 두 번
+      찍으면 미세하게 어긋나는데, 지도에서는 어차피 겹쳐 보인다.
+    */
+    const key = `${coord.lng.toFixed(2)},${coord.lat.toFixed(2)}`;
     const found = byPlace.get(key);
 
     if (found) found.also += 1;
-    else byPlace.set(key, { trip, point, also: 0 });
+    else byPlace.set(key, { trip, coord, also: 0 });
   }
 
   return [...byPlace.values()];
@@ -116,7 +116,7 @@ export function tripPins(frame: MapFrame, trips: Trip[]): TripPin[] {
 export interface TripPin {
   /** 그 자리에서 가장 최근 여행. 핀을 누르면 이리로 간다. */
   trip: Trip;
-  point: Point;
+  coord: Coord;
   /** 같은 자리에 겹친 다른 여행의 수. 0 이면 하나뿐이다. */
   also: number;
 }

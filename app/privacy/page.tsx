@@ -41,6 +41,12 @@ const PROCESSORS = [
     items: 'IP 주소, 재생 기록',
   },
   {
+    name: 'CARTO · OpenStreetMap',
+    country: '해외',
+    purpose: '여행 지도 타일',
+    items: 'IP 주소',
+  },
+  {
     name: 'jsDelivr',
     country: '해외',
     purpose: '글꼴 전송',
@@ -157,6 +163,12 @@ export default function PrivacyPage() {
           <p>
             배경음악은 재생 버튼을 누르기 전까지 유튜브에 아무 요청도 보내지
             않습니다. 광고 추적이 적은 youtube-nocookie 주소를 씁니다.
+          </p>
+          <p>
+            여행 페이지의 지도는 타일 이미지를 지도 제공처에서 받아옵니다. 그때
+            IP 주소가 그쪽에 남습니다. 여행 페이지를 열지 않으면 이 요청은
+            일어나지 않고, 어디를 다녀왔는지는 지도 아래 목록으로도 전부 볼 수
+            있습니다.
           </p>
         </Section>
 

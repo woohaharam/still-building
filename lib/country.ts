@@ -1,5 +1,5 @@
 /** 국내로 볼 나라. 목록을 국내와 해외로 가르는 기준이다. */
-export const HOME_COUNTRY = 'KR';
+const HOME_COUNTRY = 'KR';
 
 /** ISO 3166-1 alpha-2 두 글자인지. 아니면 국기도 이름도 만들 수 없다. */
 export function isCountryCode(code: string): boolean {
