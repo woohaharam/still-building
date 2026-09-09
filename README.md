@@ -57,6 +57,7 @@ https://mynameiswoo.vercel.app
 | 다크 모드 (CSS 변수 한 곳에서)                     | [`app/globals.css`](app/globals.css) · [`components/ThemeToggle.tsx`](components/ThemeToggle.tsx)                                                      |
 | 인쇄해서 내는 이력서 (같은 데이터, `@media print`) | [`app/resume/page.tsx`](app/resume/page.tsx) · [`app/globals.css`](app/globals.css) · [`lib/resume.ts`](lib/resume.ts)                                 |
 | 여행 지도 (외부 요청 없이 SVG 로 구움)             | [`scripts/build-map.mjs`](scripts/build-map.mjs) · [`lib/map.ts`](lib/map.ts) · [`components/travel/TravelMap.tsx`](components/travel/TravelMap.tsx)   |
+| 좌표 고르기 (관리자만 실제 타일 지도)              | [`components/admin/MapPicker.tsx`](components/admin/MapPicker.tsx) · [`components/admin/CoordPicker.tsx`](components/admin/CoordPicker.tsx)            |
 | 복무 상태 (날짜 + 출영·복귀 시각으로 판정)         | [`lib/service.ts`](lib/service.ts) · [`lib/leave-dates.ts`](lib/leave-dates.ts) · [`components/ServiceBadge.tsx`](components/ServiceBadge.tsx)         |
 | 기술 목록을 프로젝트 스택에서 역으로 뽑기          | [`lib/skills.ts`](lib/skills.ts) · [`app/about/page.tsx`](app/about/page.tsx)                                                                          |
 | 보안 헤더 · CSP                                    | [`next.config.js`](next.config.js)                                                                                                                     |
