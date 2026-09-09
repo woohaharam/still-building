@@ -22,7 +22,7 @@ https://mynameiswoo.vercel.app
 | Lighthouse 접근성     | 96 → 100점 (대비 미달 요소 3종 → 0)                                                                                          |
 | Lighthouse 성능 · SEO | 92 ~ 100점 / 100점 (로컬 프로덕션 빌드 기준)                                                                                 |
 | 첫 로드 공통 JS       | 87.3 kB                                                                                                                      |
-| 테스트                | 순수 함수 272개 (24개 파일) — 날짜 · RSS · 마크다운 · 지도 투영 · 복무 시각 · slug · 주석 문체                               |
+| 테스트                | 순수 함수 268개 (24개 파일) — 날짜 · RSS · 마크다운 · 복무 시각 · 좌표 · slug · 주석 문체                                    |
 | CI                    | PR마다 포맷 · 린트 · 타입 · 테스트 · 빌드 5단계 자동 실행                                                                    |
 | 리팩터링              | 관리자 페이지 588줄 → 세 파일로 분리. 편집기 다섯 개가 목록·저장 로직과 목록 UI 를 공유 (`useAdminCollection` · `AdminList`) |
 
@@ -56,8 +56,8 @@ https://mynameiswoo.vercel.app
 | 유튜브 배경음악 (주소 파싱)                        | [`lib/playlist.ts`](lib/playlist.ts) · [`components/MusicPlayer.tsx`](components/MusicPlayer.tsx)                                                      |
 | 다크 모드 (CSS 변수 한 곳에서)                     | [`app/globals.css`](app/globals.css) · [`components/ThemeToggle.tsx`](components/ThemeToggle.tsx)                                                      |
 | 인쇄해서 내는 이력서 (같은 데이터, `@media print`) | [`app/resume/page.tsx`](app/resume/page.tsx) · [`app/globals.css`](app/globals.css) · [`lib/resume.ts`](lib/resume.ts)                                 |
-| 여행 지도 (외부 요청 없이 SVG 로 구움)             | [`scripts/build-map.mjs`](scripts/build-map.mjs) · [`lib/map.ts`](lib/map.ts) · [`components/travel/TravelMap.tsx`](components/travel/TravelMap.tsx)   |
-| 좌표 고르기 (관리자만 실제 타일 지도)              | [`components/admin/MapPicker.tsx`](components/admin/MapPicker.tsx) · [`components/admin/CoordPicker.tsx`](components/admin/CoordPicker.tsx)            |
+| 여행 지도 (테마를 따라가는 타일, 핀 → 여행기)      | [`components/travel/TravelMap.tsx`](components/travel/TravelMap.tsx) · [`lib/tiles.ts`](lib/tiles.ts) · [`lib/travel.ts`](lib/travel.ts)               |
+| 좌표 고르기 (지도를 눌러서)                        | [`components/admin/MapPicker.tsx`](components/admin/MapPicker.tsx) · [`scripts/build-map.mjs`](scripts/build-map.mjs)                                  |
 | 복무 상태 (날짜 + 출영·복귀 시각으로 판정)         | [`lib/service.ts`](lib/service.ts) · [`lib/leave-dates.ts`](lib/leave-dates.ts) · [`components/ServiceBadge.tsx`](components/ServiceBadge.tsx)         |
 | 기술 목록을 프로젝트 스택에서 역으로 뽑기          | [`lib/skills.ts`](lib/skills.ts) · [`app/about/page.tsx`](app/about/page.tsx)                                                                          |
 | 보안 헤더 · CSP                                    | [`next.config.js`](next.config.js)                                                                                                                     |
@@ -123,13 +123,13 @@ https://mynameiswoo.vercel.app
 </details>
 
 <details>
-<summary><b>6. 지도를 가로지르는 줄 하나와, 태평양에 찍힌 러시아</b> — 날짜변경선 처리</summary>
+<summary><b>6. 태평양에 찍힌 러시아, 아프리카에 찍힌 피지</b> — 날짜변경선 처리</summary>
 
 - **문제** 세계 지도를 왼쪽 끝에서 오른쪽 끝까지 가로지르는 줄이 하나 그어짐. 나라별 중심점에서는 러시아가 경도 202도(존재하지 않는 값), 피지가 11도(아프리카)로 계산됨
 - **원인** 180도를 넘나드는 나라는 좌표가 180에서 -180으로 튄다. 두 점을 직선으로 이으면 지도를 가로지르는 줄이 되고, 그대로 평균을 내면 중심점이 지구 반대편으로 간다
 - **시도** 튀는 구간에서 선을 끊음 → 줄은 사라졌지만 그 나라만 반쪽이 뜯긴 채 남음
 - **해결** 앞 점과의 차이가 180도를 넘으면 한 바퀴를 더하거나 빼서 이어붙인 뒤 계산하고, 결과만 `-180~180` 으로 되돌림. 윤곽선은 화면에 걸치는 만큼 한 바퀴씩 옮겨 그려 양쪽 가장자리에 나뉘어 나오게 함
-- **성과** 러시아 99.9도 · 피지 178도로 제자리. 중심점 174개가 전부 지구 안이고 지도에 그려지는지 검사하는 테스트 추가 — **중심점 문제는 화면을 보기 전에 이 테스트가 먼저 잡았다**
+- **성과** 러시아 99.9도 · 피지 178도로 제자리. 중심점 174개가 전부 지구 안인지 검사하는 테스트 추가 — **화면을 보기 전에 이 테스트가 먼저 잡았다.** 나중에 지도를 타일로 갈면서 윤곽선 코드는 지웠지만 중심점은 그대로 쓴다
 
 </details>
 
@@ -174,10 +174,10 @@ app/                    페이지 (App Router)
   ├ sitemap.ts robots.ts feed.xml/   검색엔진용
   └ opengraph-image.tsx              링크 미리보기 카드
 components/             화면 조각 (project/ travel/ service/ admin/ 아래는 각 화면 전용)
-lib/                    순수 로직 — 날짜 · 마크다운 · RSS · 지도 투영 · 복무 시각 · 프로젝트 데이터
-  └ map-data.ts         scripts/build-map.mjs 가 구운 지도 SVG. 손으로 고치지 않는다
-scripts/build-map.mjs   나라 윤곽선 → SVG 경로 (npm run build:map)
-tests/                  lib/ 순수 함수 테스트 272개
+lib/                    순수 로직 — 날짜 · 마크다운 · RSS · 복무 시각 · 프로젝트 데이터
+  └ map-data.ts         scripts/build-map.mjs 가 구운 나라별 중심점. 손으로 고치지 않는다
+scripts/build-map.mjs   나라별 중심점 계산 (npm run build:map)
+tests/                  lib/ 순수 함수 테스트 268개
 .github/workflows/ci.yml  PR마다 5단계 검사
 ```
 
@@ -191,9 +191,9 @@ npm run dev           # 개발 서버
 npm run format:check  # 포맷 검사
 npm run lint          # 린트
 npm run typecheck     # 타입 검사
-npm test              # 테스트 (272개)
+npm test              # 테스트 (268개)
 npm run build         # 빌드
-npm run build:map     # 지도 SVG 다시 굽기 (lib/map-data.ts)
+npm run build:map     # 나라별 중심점 다시 굽기 (lib/map-data.ts)
 ```
 
 ---
@@ -278,6 +278,9 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
 
 - 분석 도구, 광고, 추적 스크립트가 없다. 브라우저에는 다크 모드 설정과 음악 상태만
   남고 서버로는 가지 않는다. 자세한 건 `/privacy`.
+- 밖으로 나가는 요청은 세 가지뿐이다. 폰트(jsDelivr), 여행 페이지의 지도 타일,
+  그리고 누르기 전까지는 아무것도 부르지 않는 댓글과 배경음악. 지도는 여행
+  페이지를 열 때만 부르고, 안 떠도 목록으로 다 읽힌다.
 - 글 · 일정 · 사진의 쓰기 권한은 DB가 검사한다. 브라우저 쪽 코드를 고쳐도 우회되지 않는다.
 - 사진 업로드는 실제 파일 타입과 크기를 확인하고, 확장자를 파일 이름이 아니라 타입에서
   가져온다. 이름만 믿으면 `사진.html` 이 웹페이지로 열린다.

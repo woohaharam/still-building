@@ -4,6 +4,12 @@ import { useEffect, useRef } from 'react';
 import type { Map as LeafletMap, Marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Coord } from '@/lib/map';
+import {
+  TILE_ATTRIBUTION,
+  isDarkTheme,
+  tileUrl,
+  watchTheme,
+} from '@/lib/tiles';
 
 /**
  * 실제 지도를 눌러 좌표를 고른다.
@@ -11,12 +17,10 @@ import { Coord } from '@/lib/map';
  * 처음에는 나라 윤곽선만 그린 SVG 위에서 눌렀는데, 지명도 길도 없으니 어디를
  * 누르는지 알 수가 없었다. 좌표를 고르는 화면에서 그건 쓸모가 없다.
  *
- * 공개 화면(/travel)은 그대로 SVG 다. 거기서는 핀이 주인공이고, 방문자 IP 가
- * 타일 서버로 나가지 않는 편이 낫다. 반면 여기는 로그인해야 들어오는 자리라
- * 나가는 요청이 내 것뿐이고, 지명이 보이는 값이 훨씬 크다.
  *
- * 타일 주소는 CSP 의 img-src 가 이미 https 를 열어둬서 그대로 통과한다.
- * leaflet 은 npm 으로 받아 우리 도메인에서 나가므로 script-src 도 손대지 않았다.
+ * 타일은 공개 화면과 같은 것을 쓴다 (lib/tiles.ts). CSP 의 img-src 가 이미
+ * https 를 열어둬서 그대로 통과하고, leaflet 은 npm 으로 받아 우리 도메인에서
+ * 나가므로 script-src 도 손대지 않았다.
  */
 export default function MapPicker({
   coord,
@@ -43,6 +47,7 @@ export default function MapPicker({
     if (!box) return;
 
     let map: LeafletMap | null = null;
+    let stopWatching: (() => void) | null = null;
     let cancelled = false;
 
     // 브라우저에서만 돌아가는 라이브러리라 화면이 붙은 뒤에 불러온다.
@@ -57,10 +62,12 @@ export default function MapPicker({
         at ? 11 : 6
       );
 
-      L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      const tiles = L.tileLayer(tileUrl(isDarkTheme()), {
         maxZoom: 18,
-        attribution: '&copy; OpenStreetMap',
+        attribution: TILE_ATTRIBUTION,
       }).addTo(map);
+
+      stopWatching = watchTheme((dark) => tiles.setUrl(tileUrl(dark)));
 
       /*
         기본 마커는 아이콘 이미지를 CSS 상대 경로로 찾는데 번들러를 거치면
@@ -90,6 +97,7 @@ export default function MapPicker({
 
     return () => {
       cancelled = true;
+      stopWatching?.();
       /*
         Strict Mode 는 effect 를 두 번 실행한다. 치우지 않고 두면 두 번째
         실행이 '이미 지도가 붙은 자리'라며 던진다. 지우고 나가야 한다.

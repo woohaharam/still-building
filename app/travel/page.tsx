@@ -6,12 +6,11 @@ import { countryName, flagEmoji } from '@/lib/country';
 import { formatDate } from '@/lib/date';
 import { siteUrl } from '@/lib/site';
 import {
-  KOREA_FRAME,
-  KOREA_PATH,
-  WORLD_FRAME,
-  WORLD_PATH,
-} from '@/lib/map-data';
-import { splitByRegion, stayLabel, uniqueCountries } from '@/lib/travel';
+  splitByRegion,
+  stayLabel,
+  tripPins,
+  uniqueCountries,
+} from '@/lib/travel';
 import { getPublishedTrips } from '@/lib/trips';
 import { Trip } from '@/lib/types';
 
@@ -99,26 +98,11 @@ export default async function TravelPage() {
             </section>
 
             {/*
-              세계 지도에는 국내 여행도 같이 찍는다. 어디를 다녔는지 한눈에
-              보는 자리라 국내와 해외를 가를 이유가 없다. 나라 안 어디였는지는
-              아래 한국 지도가 맡는다.
+              국내와 해외를 한 지도에 같이 찍는다. 예전에는 세계 지도로
+              한눈에 보고 한국 지도로 자세히 보게 두 장을 뒀는데, 확대가 되는
+              지도에서는 그 구분이 필요 없다.
             */}
-            <TravelMap
-              frame={WORLD_FRAME}
-              path={WORLD_PATH}
-              trips={trips}
-              label="세계 지도"
-            />
-
-            {domestic.length > 0 && (
-              <TravelMap
-                frame={KOREA_FRAME}
-                path={KOREA_PATH}
-                trips={domestic}
-                label="한국 지도"
-                className="mx-auto w-full max-w-[19rem]"
-              />
-            )}
+            <TravelMap pins={tripPins(trips)} />
 
             {abroad.length > 0 && (
               <section>
