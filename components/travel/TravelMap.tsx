@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { countryName, flagEmoji } from '@/lib/country';
@@ -21,6 +21,7 @@ import { TripPin } from '@/lib/travel';
  */
 export default function TravelMap({ pins }: { pins: TripPin[] }) {
   const boxRef = useRef<HTMLDivElement>(null);
+  const [tilesFailed, setTilesFailed] = useState(false);
   const pinsRef = useRef(pins);
   pinsRef.current = pins;
 
@@ -46,6 +47,24 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
       }).addTo(map);
 
       stopWatching = watchTheme((dark) => tiles.setUrl(tileUrl(dark)));
+
+      /*
+        타일을 못 받아오면 지도는 회색 판으로 남는다. 방문자는 그게 고장인지
+        원래 그런 화면인지 알 수 없다. 장애를 빈 상태처럼 보이게 두지 않는다.
+
+        타일 한 장이 모자란 건 흔한 일이라 여러 장이 연달아 실패할 때만
+        말한다. 지도 가장자리에서 한두 장 빠지는 걸로 경고를 띄우면 그게 더
+        시끄럽다.
+      */
+      let failures = 0;
+      tiles.on('tileerror', () => {
+        failures += 1;
+        if (failures >= 4) setTilesFailed(true);
+      });
+      tiles.on('tileload', () => {
+        failures = 0;
+        setTilesFailed(false);
+      });
 
       const icon = L.divIcon({
         className: '',
@@ -94,12 +113,23 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
   if (pins.length === 0) return null;
 
   return (
-    <div
-      ref={boxRef}
-      className="h-80 w-full overflow-hidden rounded-lg border border-line bg-surface sm:h-96"
-      aria-label={`다녀온 곳 ${pins.length}군데를 표시한 지도`}
-      role="img"
-    />
+    <div className="relative">
+      <div
+        ref={boxRef}
+        className="h-80 w-full overflow-hidden rounded-lg border border-line bg-surface sm:h-96"
+        aria-label={`다녀온 곳 ${pins.length}군데를 표시한 지도`}
+        role="img"
+      />
+
+      {tilesFailed && (
+        <p
+          role="status"
+          className="pointer-events-none absolute inset-x-0 top-1/2 -translate-y-1/2 px-6 text-center text-sm text-ink-soft"
+        >
+          지도를 불러오지 못했어요. 다녀온 곳은 아래 목록에 그대로 있어요.
+        </p>
+      )}
+    </div>
   );
 }
 
