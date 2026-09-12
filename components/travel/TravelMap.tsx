@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import type { Map as LeafletMap } from 'leaflet';
+import type { Map as LeafletMap, Marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { countryName, flagEmoji } from '@/lib/country';
 import { TILE_ATTRIBUTION, tileUrl } from '@/lib/tiles';
@@ -68,6 +68,17 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
         iconSize: [0, 0],
       });
 
+      /*
+        핀은 누를 수 있는 버튼인데 divIcon 은 alt 옵션을 그냥 버린다. 이름이
+        없으면 화면 낭독기에는 '버튼'이라고만 읽혀서, 핀이 몇 개든 구분이
+        안 된다. 만든 뒤에 요소를 직접 잡아 이름을 붙인다.
+
+        지도에 붙이자마자 잡으려 하면 null 이 나온다. 화면 범위가 정해지기
+        전에는 Leaflet 이 핀을 실제로 그리지 않기 때문이다. 그래서 아래
+        fitBounds 까지 끝낸 다음에 한꺼번에 붙인다.
+      */
+      const named: [Marker, string][] = [];
+
       const points: [number, number][] = [];
 
       for (const pin of startPinsRef.current) {
@@ -79,10 +90,7 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
           평범한 a 태그를 쓰면 페이지를 통째로 다시 받지만, 어차피 한 번
           넘어가고 마는 자리다. 진짜 링크라 키보드와 새 탭도 그대로 된다.
         */
-        L.marker([pin.coord.lat, pin.coord.lng], {
-          icon,
-          alt: `${trip.place}, ${countryName(trip.country_code)}`,
-        })
+        const marker = L.marker([pin.coord.lat, pin.coord.lng], { icon })
           .addTo(map!)
           .bindPopup(
             `<a href="/travel/${encodeURIComponent(trip.slug)}">` +
@@ -91,11 +99,20 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
               (pin.also > 0 ? ` · 외 ${pin.also}곳` : '') +
               `</span>`
           );
+
+        named.push([
+          marker,
+          `${trip.place}, ${countryName(trip.country_code)}`,
+        ]);
       }
 
       // 핀이 하나뿐이면 경계 상자가 점 하나라 확대가 끝까지 튄다.
       if (points.length === 1) map.setView(points[0], 9);
       else map.fitBounds(points, { padding: [32, 32] });
+
+      for (const [marker, label] of named) {
+        marker.getElement()?.setAttribute('aria-label', label);
+      }
     });
 
     return () => {
@@ -110,11 +127,15 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
 
   return (
     <div className="relative">
+      {/*
+        role 이 img 였는데, 그 안에는 누를 수 있는 게 들어가면 안 된다.
+        여긴 핀이 담긴 묶음이지 그림이 아니다.
+      */}
       <div
         ref={boxRef}
         className="h-80 w-full overflow-hidden rounded-lg border border-line bg-surface sm:h-96"
         aria-label={`다녀온 곳 ${pins.length}군데를 표시한 지도`}
-        role="img"
+        role="group"
       />
 
       {tilesFailed && (

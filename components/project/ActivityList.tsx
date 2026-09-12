@@ -32,7 +32,7 @@ export default function ActivityList({
       <div className="mt-6 flex flex-col gap-8">
         {years.map(({ year, items }) => (
           <div key={year}>
-            <h3 className="section-label mb-3 tabular-nums">{year}</h3>
+            <h2 className="section-label mb-3 tabular-nums">{year}</h2>
 
             <ul className="flex flex-col">
               {items.map((activity) => (
