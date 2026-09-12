@@ -6,7 +6,7 @@ import Reveal from '@/components/Reveal';
 import Bullets from '@/components/project/Bullets';
 import Pills from '@/components/project/Pills';
 import ProjectLinks from '@/components/project/ProjectLinks';
-import { PROJECTS } from '@/lib/projects';
+import { KEEPSAKES, PROJECTS } from '@/lib/projects';
 import { siteUrl } from '@/lib/site';
 
 export const metadata: Metadata = {
@@ -94,6 +94,45 @@ export default function ProjectsPage() {
             </Reveal>
           ))}
         </div>
+
+        <Reveal>
+          {/*
+            프로젝트 배열과 섞지 않는다. 기간·기여도·트러블슈팅을 적을 성격이
+            아니고, 이력서에도 딸려가면 안 된다. 이름과 주소만 둔다.
+          */}
+          <section className="border-t border-line pt-10">
+            <h2 className="section-label mb-4">그 밖에</h2>
+            <p className="mb-6 text-sm leading-relaxed text-ink-soft">
+              입대하기 전에 만든 페이지 두 개입니다. 프로젝트라고 할 만한 규모는
+              아니지만, 남 보라고 만든 첫 결과물이라 남겨둡니다.
+            </p>
+
+            <ul className="flex flex-col">
+              {KEEPSAKES.map((keepsake) => (
+                <li key={keepsake.href}>
+                  <a
+                    href={keepsake.href}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group flex items-baseline justify-between gap-4 border-t border-line py-4"
+                  >
+                    <span className="min-w-0">
+                      <span className="font-medium transition-colors group-hover:text-accent">
+                        {keepsake.title}
+                      </span>
+                      <span className="ml-3 text-xs text-ink-muted">
+                        {keepsake.audience}
+                      </span>
+                    </span>
+                    <span className="shrink-0 text-ink-muted transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5">
+                      ↗
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </Reveal>
       </div>
     </Container>
   );
