@@ -363,6 +363,33 @@ export const PROJECTS: Project[] = [
   },
 ];
 
+/**
+ * 프로젝트로 세울 만한 건 아니지만 남겨두는 것들.
+ *
+ * PROJECTS 와 섞지 않는다. 기간·역할·기여도·트러블슈팅을 적을 성격이 아니고,
+ * 이력서(/resume)에도 딸려가면 안 된다. 목록도 상세도 없이 /projects 아래에
+ * 이름과 주소만 놓는다.
+ */
+export interface Keepsake {
+  title: string;
+  /** 누구 보라고 만든 것인지. */
+  audience: string;
+  href: string;
+}
+
+export const KEEPSAKES: Keepsake[] = [
+  {
+    title: 'more love, parents',
+    audience: '부모님',
+    href: 'https://moreloveparents.netlify.app',
+  },
+  {
+    title: 'more love, u',
+    audience: '여자친구',
+    href: 'https://moreloveu.netlify.app',
+  },
+];
+
 export function getProject(slug: string) {
   return PROJECTS.find((p) => p.slug === slug);
 }
