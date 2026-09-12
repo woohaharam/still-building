@@ -9,7 +9,7 @@ https://mynameiswoo.vercel.app
 | **기간**      | 2026.08 — (진행 중)                                                                                                           |
 | **개발 인원** | 1명 (우주영)                                                                                                                  |
 | **기여도**    | 100% — 기획 · 설계 · 구현 · 배포 · 운영                                                                                       |
-| **스택**      | Next.js 14 (App Router) · TypeScript · Tailwind CSS · Supabase (Postgres · Auth · Storage) · Vercel · Vitest · GitHub Actions |
+| **스택**      | Next.js 16 (App Router) · TypeScript · Tailwind CSS · Supabase (Postgres · Auth · Storage) · Vercel · Vitest · GitHub Actions |
 
 [프로젝트 상세 · 구조도 · 트러블슈팅](https://mynameiswoo.vercel.app/projects/still-building)
 

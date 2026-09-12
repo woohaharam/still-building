@@ -11,6 +11,7 @@ import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
 import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
 import { useAdminCollection } from '@/lib/use-admin-collection';
+import { useNow } from '@/lib/use-client-value';
 import type { ImageSize } from '@/lib/image-size';
 import { slugify, toSlug } from '@/lib/slug';
 import CoverImageField from './CoverImageField';
@@ -35,6 +36,10 @@ export default function PostEditor() {
     save,
     remove,
   } = useAdminCollection<Post>('posts', { column: 'created_at' });
+
+  // 예약 표시는 시간이 지나면 저절로 없어져야 한다. 그리는 중에 시계를
+  // 읽는 대신 1분마다 바뀌는 값을 받아 쓴다.
+  const now = useNow();
 
   const [showPreview, setShowPreview] = useState(false);
 
@@ -121,7 +126,9 @@ export default function PostEditor() {
   async function runUpload(
     e: React.ChangeEvent<HTMLInputElement>,
     setBusy: (busy: boolean) => void,
-    inputRef: React.RefObject<HTMLInputElement>,
+    // React 19 의 useRef<T>(null) 은 RefObject<T | null> 을 돌려준다.
+    // 받는 쪽도 null 을 인정해야 한다.
+    inputRef: React.RefObject<HTMLInputElement | null>,
     onUploaded: (url: string, file: File) => void
   ) {
     const file = e.target.files?.[0];
@@ -195,7 +202,7 @@ export default function PostEditor() {
     const at = resolvePublishedAt();
     if (!at) return null;
     const date = new Date(at);
-    return date.getTime() > Date.now() ? date : null;
+    return date.getTime() > now ? date : null;
   })();
 
   /** 서식 버튼을 눌렀을 때 본문에 반영한다. */
@@ -457,7 +464,7 @@ export default function PostEditor() {
                     </span>
                   ) : (
                     post.published_at &&
-                    new Date(post.published_at).getTime() > Date.now() && (
+                    new Date(post.published_at).getTime() > now && (
                       <span className="shrink-0 text-xs text-accent">예약</span>
                     )
                   )}

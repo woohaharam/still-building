@@ -55,25 +55,3 @@ export const TILE_ATTRIBUTION = ACTIVE.attribution;
 export function tileUrl(dark: boolean): string {
   return dark ? ACTIVE.dark : ACTIVE.light;
 }
-
-/** 지금 어두운 테마인지. 테마는 <html> 의 class 로만 표시된다. */
-export function isDarkTheme(): boolean {
-  return document.documentElement.classList.contains('dark');
-}
-
-/**
- * 테마가 바뀌면 알려준다. 정리 함수를 돌려준다.
- *
- * 테마 토글이 class 를 갈아끼우는 것 말고는 알려주는 수단이 없어서 직접
- * 지켜본다. 댓글창 테마를 맞출 때와 같은 방식이다.
- */
-export function watchTheme(onChange: (dark: boolean) => void): () => void {
-  const observer = new MutationObserver(() => onChange(isDarkTheme()));
-
-  observer.observe(document.documentElement, {
-    attributes: true,
-    attributeFilter: ['class'],
-  });
-
-  return () => observer.disconnect();
-}
