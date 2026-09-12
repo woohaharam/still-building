@@ -154,11 +154,12 @@ export const ACTIVITY_OUTCOME_LABELS: Record<ActivityOutcome, string> = {
  * 특별외출은 성격이 달라서 갈랐다. 이미 쌓인 행을 옮기지 않으려고 기존
  * 값(outing)을 평일외출로 두고 special_outing 을 새로 붙였다.
  *
+ * 외박은 뺐다. 부대에 그런 구분이 없어서 고를 일이 없는 칸이었다.
+ *
  * 전역은 여기 없다. 날짜가 lib/service.ts 에 이미 있어서, 손으로 한 번 더
  * 적게 하면 둘이 어긋날 자리만 생긴다. 달력이 그 날짜를 직접 칠한다.
  */
-export type LeaveKind =
-  'outing' | 'special_outing' | 'overnight' | 'leave' | 'final' | 'off';
+export type LeaveKind = 'outing' | 'special_outing' | 'leave' | 'final' | 'off';
 
 export interface Leave {
   id: string;
@@ -182,7 +183,6 @@ export interface Leave {
 export const LEAVE_KINDS: LeaveKind[] = [
   'outing',
   'special_outing',
-  'overnight',
   'leave',
   'final',
   'off',
@@ -191,7 +191,6 @@ export const LEAVE_KINDS: LeaveKind[] = [
 export const LEAVE_KIND_LABELS: Record<LeaveKind, string> = {
   outing: '평일외출',
   special_outing: '특별외출',
-  overnight: '외박',
   leave: '휴가',
   final: '말출',
   off: 'OFF',

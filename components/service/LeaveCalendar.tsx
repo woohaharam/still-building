@@ -20,7 +20,6 @@ import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
 const KIND_STYLE: Record<LeaveKind, { cell: string; dot: string }> = {
   outing: { cell: 'bg-leave-outing/15', dot: 'bg-leave-outing' },
   special_outing: { cell: 'bg-leave-special/15', dot: 'bg-leave-special' },
-  overnight: { cell: 'bg-leave-overnight/15', dot: 'bg-leave-overnight' },
   leave: { cell: 'bg-leave-leave/15', dot: 'bg-leave-leave' },
   final: { cell: 'bg-leave-final/15', dot: 'bg-leave-final' },
   off: { cell: 'bg-leave-off/15', dot: 'bg-leave-off' },

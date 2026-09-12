@@ -107,7 +107,6 @@ describe('serviceStanding', () => {
 
     expect(serviceStanding(serving, 'outing').label).toBe('외출 중');
     expect(serviceStanding(serving, 'special_outing').label).toBe('외출 중');
-    expect(serviceStanding(serving, 'overnight').label).toBe('외박 중');
     expect(serviceStanding(serving, 'leave').label).toBe('휴가 중');
     expect(serviceStanding(serving, 'final').label).toBe('말출');
     expect(serviceStanding(serving, 'off').label).toBe('OFF');

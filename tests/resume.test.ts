@@ -84,3 +84,14 @@ describe('externalLinks', () => {
     expect(links.map((l) => l.label)).toEqual(['저장소']);
   });
 });
+
+describe('militaryService 의 군필 표기', () => {
+  it('복무 중에는 비어 있다', () => {
+    expect(militaryService('2026-09-12').note).toBe('');
+  });
+
+  it('전역하면 군필이라고 적는다', () => {
+    expect(militaryService('2027-04-27').note).toBe('군필');
+    expect(militaryService('2028-01-01').note).toBe('군필');
+  });
+});

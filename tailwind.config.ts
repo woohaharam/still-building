@@ -26,7 +26,6 @@ const config: Config = {
         leave: {
           outing: 'rgb(var(--leave-outing) / <alpha-value>)',
           special: 'rgb(var(--leave-special) / <alpha-value>)',
-          overnight: 'rgb(var(--leave-overnight) / <alpha-value>)',
           leave: 'rgb(var(--leave-leave) / <alpha-value>)',
           final: 'rgb(var(--leave-final) / <alpha-value>)',
           off: 'rgb(var(--leave-off) / <alpha-value>)',
