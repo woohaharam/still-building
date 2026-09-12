@@ -97,8 +97,6 @@ export default function MusicPlayer() {
   const indexRef = useRef(0);
   const errorStreakRef = useRef(0);
 
-  indexRef.current = index;
-
   const step = useCallback((delta: number) => {
     if (TRACKS.length === 0) return;
     const next = (indexRef.current + delta + TRACKS.length) % TRACKS.length;
@@ -174,7 +172,13 @@ export default function MusicPlayer() {
     return player;
   }, [step, readTitle]);
 
-  // 저장해둔 상태 되살리기
+  /*
+    저장해둔 상태 되살리기.
+
+    localStorage 는 서버에 없다. 첫 그리기에 넣으면 서버가 그린 화면과
+    달라져서, 붙은 뒤에 한 번 읽어 채운다. 이 한 번을 피할 방법이 없다.
+  */
+  /* eslint-disable react-hooks/set-state-in-effect */
   useEffect(() => {
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
@@ -191,6 +195,7 @@ export default function MusicPlayer() {
     }
     setMounted(true);
   }, []);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   useEffect(() => {
     if (!mounted) return;

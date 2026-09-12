@@ -18,11 +18,10 @@ export function generateStaticParams() {
   return PUBLICATIONS.map((paper) => ({ slug: paper.slug }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Metadata {
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
   const paper = getPublication(params.slug);
   if (!paper) return { title: '논문을 찾을 수 없어요' };
 
@@ -39,7 +38,10 @@ export function generateMetadata({
   };
 }
 
-export default function PaperPage({ params }: { params: { slug: string } }) {
+export default async function PaperPage(props: {
+  params: Promise<{ slug: string }>;
+}) {
+  const params = await props.params;
   const paper = getPublication(params.slug);
   if (!paper) notFound();
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import {
   CalendarEvent,
@@ -15,8 +15,11 @@ import {
   buildMonthMatrix,
   formatDayLabel,
   isSameMonth,
+  parseDateKey,
   toDateKey,
+  today,
 } from '@/lib/calendar';
+import { useClientValue } from '@/lib/use-client-value';
 
 const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
@@ -41,25 +44,43 @@ function PostMark({ className = '' }: { className?: string }) {
   );
 }
 
+interface Month {
+  year: number;
+  month: number;
+}
+
+/** 그 날짜가 든 달. 아직 오늘을 모를 때는 아무 달이나 둬도 화면에 안 나간다. */
+function monthOf(key: DateKey | null): Month {
+  if (!key) return { year: 1970, month: 0 };
+  const date = parseDateKey(key);
+  return { year: date.getFullYear(), month: date.getMonth() };
+}
+
 interface CalendarProps {
   posts: Post[];
   events: CalendarEvent[];
 }
 
 export default function Calendar({ posts, events }: CalendarProps) {
-  // 서버(UTC)와 브라우저의 '오늘'이 다를 수 있어서 날짜 기준은 마운트 후에 잡는다.
-  const [mounted, setMounted] = useState(false);
-  const [todayKey, setTodayKey] = useState<DateKey>('');
-  const [cursor, setCursor] = useState({ year: 1970, month: 0 });
-  const [selected, setSelected] = useState<DateKey>('');
+  /*
+    서버(UTC)와 브라우저의 '오늘'이 다를 수 있어서 날짜 기준은 브라우저에서
+    읽는다. 붙기 전에는 null 이고, 그동안은 아래에서 빈 틀만 그린다.
+  */
+  const todayKey = useClientValue(today);
 
-  useEffect(() => {
-    const now = new Date();
-    setTodayKey(toDateKey(now));
-    setCursor({ year: now.getFullYear(), month: now.getMonth() });
-    setSelected(toDateKey(now));
-    setMounted(true);
-  }, []);
+  /*
+    달을 옮기거나 날짜를 고르기 전까지는 오늘이 기준이다. 그래서 '오늘'을
+    복사해두지 않고, 손댄 값이 있을 때만 그쪽을 쓴다. 오늘로 돌아가는 건
+    두 값을 비우는 일이 된다.
+  */
+  const [movedTo, setMovedTo] = useState<Month | null>(null);
+  const [picked, setPicked] = useState<DateKey | null>(null);
+
+  const cursor = useMemo(
+    () => movedTo ?? monthOf(todayKey),
+    [movedTo, todayKey]
+  );
+  const selected = picked ?? todayKey ?? '';
 
   const index = useMemo(() => buildDayIndex(posts, events), [posts, events]);
   const days = useMemo(
@@ -81,26 +102,23 @@ export default function Calendar({ posts, events }: CalendarProps) {
   }, [days, index, cursor]);
 
   function moveMonth(delta: number) {
-    setCursor(({ year, month }) => {
-      const next = new Date(year, month + delta, 1);
-      return { year: next.getFullYear(), month: next.getMonth() };
-    });
+    const next = new Date(cursor.year, cursor.month + delta, 1);
+    setMovedTo({ year: next.getFullYear(), month: next.getMonth() });
   }
 
   function goToday() {
-    const now = new Date();
-    setCursor({ year: now.getFullYear(), month: now.getMonth() });
-    setSelected(toDateKey(now));
+    setMovedTo(null);
+    setPicked(null);
   }
 
   function selectDay(day: Date) {
-    setSelected(toDateKey(day));
+    setPicked(toDateKey(day));
     if (!isSameMonth(day, cursor.year, cursor.month)) {
-      setCursor({ year: day.getFullYear(), month: day.getMonth() });
+      setMovedTo({ year: day.getFullYear(), month: day.getMonth() });
     }
   }
 
-  if (!mounted) {
+  if (todayKey === null) {
     // 마운트 전에는 같은 크기의 빈 틀만 그려서 화면이 튀지 않게 한다.
     return <div className="min-h-[560px]" aria-hidden />;
   }

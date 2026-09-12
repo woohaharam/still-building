@@ -19,11 +19,10 @@ function tripUrl(slug: string) {
   return `${siteUrl}/travel/${encodeURIComponent(slug)}`;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const trip = await getTripBySlug(decodeURIComponent(params.slug));
   if (!trip) return { title: '여행 기록을 찾을 수 없어요' };
 
@@ -43,11 +42,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function TripPage({
-  params,
-}: {
-  params: { slug: string };
+export default async function TripPage(props: {
+  params: Promise<{ slug: string }>;
 }) {
+  const params = await props.params;
   const trip = await getTripBySlug(decodeURIComponent(params.slug));
   if (!trip) notFound();
 

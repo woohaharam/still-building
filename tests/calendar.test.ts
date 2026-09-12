@@ -7,6 +7,7 @@ import {
   seoulDateKey,
   seoulMinutes,
   toDateKey,
+  today,
 } from '@/lib/calendar';
 import { CalendarEvent } from '@/lib/types';
 
@@ -148,5 +149,17 @@ describe('seoulMinutes', () => {
       expect(minutes).toBeGreaterThanOrEqual(0);
       expect(minutes).toBeLessThan(1440);
     }
+  });
+});
+
+describe('today', () => {
+  it('오늘 날짜를 YYYY-MM-DD 로 준다', () => {
+    expect(today()).toBe(toDateKey(new Date()));
+    expect(today()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+
+  it('함수인 채로 넘길 수 있다 — useState(today) 가 이걸 쓴다', () => {
+    const lazy: () => string = today;
+    expect(lazy()).toBe(today());
   });
 });

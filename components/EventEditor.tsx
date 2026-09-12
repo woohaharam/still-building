@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { supabaseClient } from '@/lib/supabase';
 import { CalendarEvent, EVENT_KIND_LABELS, EventKind } from '@/lib/types';
-import { formatDayLabel, toDateKey } from '@/lib/calendar';
+import { formatDayLabel, today } from '@/lib/calendar';
 
 const KIND_OPTIONS: EventKind[] = ['plan', 'deadline', 'note'];
 
@@ -16,7 +16,8 @@ export default function EventEditor() {
 
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<EventKind>('plan');
-  const [startDate, setStartDate] = useState('');
+  // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
+  const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [description, setDescription] = useState('');
@@ -32,16 +33,16 @@ export default function EventEditor() {
   }
 
   useEffect(() => {
-    // 기본값은 오늘 — 서버/브라우저 시간대 차이를 피하려고 마운트 후에 채운다.
-    setStartDate(toDateKey(new Date()));
-    loadEvents();
+    // loadEvents 의 setState 는 전부 응답이 온 뒤에 일어난다.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void loadEvents();
   }, []);
 
   function resetForm() {
     setEditingId(null);
     setTitle('');
     setKind('plan');
-    setStartDate(toDateKey(new Date()));
+    setStartDate(today());
     setEndDate('');
     setStartTime('');
     setDescription('');

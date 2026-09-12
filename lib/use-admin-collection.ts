@@ -24,8 +24,12 @@ export function useAdminCollection<T extends { id: string }>(
 
   const { column, ascending = false } = orderBy;
 
+  /*
+    불러오는 동안 loading 을 다시 켜지 않는다. 처음에는 이미 켜져 있고,
+    저장이나 삭제 뒤의 새로고침에서는 켜봤자 목록이 한 번 사라졌다 돌아오는
+    깜빡임만 생긴다. 그동안 보이는 건 직전 목록이고, 곧 새 목록으로 바뀐다.
+  */
   const load = useCallback(async () => {
-    setLoading(true);
     const { data, error } = await supabaseClient
       .from(table)
       .select('*')
@@ -40,8 +44,16 @@ export function useAdminCollection<T extends { id: string }>(
     setLoading(false);
   }, [table, column, ascending]);
 
+  /*
+    화면이 붙으면 목록을 받아온다.
+
+    load 안의 setState 는 전부 await 뒤, 즉 응답이 온 다음에 일어난다.
+    규칙은 await 를 건너보지 못해서 effect 안에서 바로 상태를 바꾼다고 읽는다.
+    React 문서가 말하는 "외부에서 값이 오면 그때 setState" 그대로다.
+  */
   useEffect(() => {
-    load();
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
   }, [load]);
 
   /**

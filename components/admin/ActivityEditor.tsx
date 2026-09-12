@@ -1,7 +1,7 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { toDateKey } from '@/lib/calendar';
+import { useState } from 'react';
+import { today } from '@/lib/calendar';
 import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import {
@@ -27,22 +27,18 @@ export default function ActivityEditor() {
   const [name, setName] = useState('');
   const [organizer, setOrganizer] = useState('');
   const [outcome, setOutcome] = useState<ActivityOutcome>('applied');
-  const [startedOn, setStartedOn] = useState('');
+  // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
+  const [startedOn, setStartedOn] = useState(today);
   const [endedOn, setEndedOn] = useState('');
   const [note, setNote] = useState('');
   const [published, setPublished] = useState(true);
-
-  useEffect(() => {
-    // 기본값은 오늘 — 서버와 브라우저의 시간대 차이를 피하려고 마운트 후에 채운다.
-    setStartedOn(toDateKey(new Date()));
-  }, []);
 
   function resetForm() {
     setEditingId(null);
     setName('');
     setOrganizer('');
     setOutcome('applied');
-    setStartedOn(toDateKey(new Date()));
+    setStartedOn(today());
     setEndedOn('');
     setNote('');
     setPublished(true);

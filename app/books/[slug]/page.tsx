@@ -19,11 +19,10 @@ function bookUrl(slug: string) {
   return `${siteUrl}/books/${encodeURIComponent(slug)}`;
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
+  const params = await props.params;
   const book = await getBookBySlug(decodeURIComponent(params.slug));
   if (!book) return { title: '독후감을 찾을 수 없어요' };
 
@@ -42,11 +41,10 @@ export async function generateMetadata({
   };
 }
 
-export default async function BookPage({
-  params,
-}: {
-  params: { slug: string };
+export default async function BookPage(props: {
+  params: Promise<{ slug: string }>;
 }) {
+  const params = await props.params;
   const book = await getBookBySlug(decodeURIComponent(params.slug));
   if (!book) notFound();
 

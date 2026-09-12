@@ -1,41 +1,32 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-
-type Theme = 'light' | 'dark';
+import { useSyncExternalStore } from 'react';
+import { applyTheme, currentTheme, watchTheme, type Theme } from '@/lib/theme';
 
 /**
- * 첫 칠하기 전에 layout의 인라인 스크립트가 이미 .dark를 붙여둔다.
+ * 첫 칠하기 전에 layout 의 인라인 스크립트가 이미 .dark 를 붙여둔다.
  * 여기서는 그 상태를 읽어와서 버튼 모양만 맞춘다.
+ *
+ * 테마를 따로 기억해두지 않는다. 진짜 값은 <html> 의 class 하나뿐이고,
+ * 그걸 그대로 구독한다. 그래서 다른 데서 테마가 바뀌어도 버튼이 따라간다.
  */
 export default function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme | null>(null);
+  const theme = useSyncExternalStore<Theme | null>(
+    subscribe,
+    currentTheme,
+    // 서버에서는 어느 쪽인지 알 수 없다. 붙기 전까지는 자리만 잡아둔다.
+    () => null
+  );
 
-  useEffect(() => {
-    setTheme(
-      document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-    );
-  }, []);
-
-  function toggle() {
-    const next: Theme = theme === 'dark' ? 'light' : 'dark';
-    document.documentElement.classList.toggle('dark', next === 'dark');
-    try {
-      localStorage.setItem('theme', next);
-    } catch {
-      // 저장이 막혀 있어도 이번 방문 동안은 바뀐 채로 쓴다.
-    }
-    setTheme(next);
-  }
-
-  // 서버에서는 어느 쪽인지 알 수 없어서, 자리만 잡아두고 마운트 후에 그린다.
   if (!theme) return <span className="h-5 w-5" aria-hidden />;
+
+  const label = theme === 'dark' ? '밝은 화면으로' : '어두운 화면으로';
 
   return (
     <button
-      onClick={toggle}
-      aria-label={theme === 'dark' ? '밝은 화면으로' : '어두운 화면으로'}
-      title={theme === 'dark' ? '밝은 화면으로' : '어두운 화면으로'}
+      onClick={() => applyTheme(theme === 'dark' ? 'light' : 'dark')}
+      aria-label={label}
+      title={label}
       className="transition-colors hover:text-ink"
     >
       {theme === 'dark' ? (
@@ -56,4 +47,9 @@ export default function ThemeToggle() {
       )}
     </button>
   );
+}
+
+/** useSyncExternalStore 는 정리 함수를 돌려주는 구독 함수를 받는다. */
+function subscribe(onChange: () => void): () => void {
+  return watchTheme(onChange);
 }

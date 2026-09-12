@@ -4,12 +4,8 @@ import { useEffect, useRef, useState } from 'react';
 import type { Map as LeafletMap } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { countryName, flagEmoji } from '@/lib/country';
-import {
-  TILE_ATTRIBUTION,
-  isDarkTheme,
-  tileUrl,
-  watchTheme,
-} from '@/lib/tiles';
+import { TILE_ATTRIBUTION, tileUrl } from '@/lib/tiles';
+import { isDarkTheme, watchTheme } from '@/lib/theme';
 import { TripPin } from '@/lib/travel';
 
 /**
@@ -22,11 +18,11 @@ import { TripPin } from '@/lib/travel';
 export default function TravelMap({ pins }: { pins: TripPin[] }) {
   const boxRef = useRef<HTMLDivElement>(null);
   const [tilesFailed, setTilesFailed] = useState(false);
-  const pinsRef = useRef(pins);
-  pinsRef.current = pins;
+  // 지도는 한 번만 그린다. 그때의 핀 목록을 그대로 들고 간다.
+  const startPinsRef = useRef(pins);
 
   useEffect(() => {
-    if (!boxRef.current || pinsRef.current.length === 0) return;
+    if (!boxRef.current || startPinsRef.current.length === 0) return;
 
     let map: LeafletMap | null = null;
     let stopWatching: (() => void) | null = null;
@@ -74,7 +70,7 @@ export default function TravelMap({ pins }: { pins: TripPin[] }) {
 
       const points: [number, number][] = [];
 
-      for (const pin of pinsRef.current) {
+      for (const pin of startPinsRef.current) {
         const { trip } = pin;
         points.push([pin.coord.lat, pin.coord.lng]);
 

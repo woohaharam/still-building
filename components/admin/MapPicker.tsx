@@ -4,12 +4,8 @@ import { useEffect, useRef } from 'react';
 import type { Map as LeafletMap, Marker } from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Coord } from '@/lib/map';
-import {
-  TILE_ATTRIBUTION,
-  isDarkTheme,
-  tileUrl,
-  watchTheme,
-} from '@/lib/tiles';
+import { TILE_ATTRIBUTION, tileUrl } from '@/lib/tiles';
+import { isDarkTheme, watchTheme } from '@/lib/theme';
 
 /**
  * 실제 지도를 눌러 좌표를 고른다.
@@ -37,8 +33,11 @@ export default function MapPicker({
   const markerRef = useRef<Marker | null>(null);
 
   // 콜백이 바뀔 때마다 지도를 다시 만들지 않으려고 최신 값만 담아둔다.
+  // 그리는 중이 아니라 화면에 붙은 뒤에 채운다. 지도를 누르는 건 그 뒤의 일이다.
   const onChangeRef = useRef(onChange);
-  onChangeRef.current = onChange;
+  useEffect(() => {
+    onChangeRef.current = onChange;
+  });
 
   const startRef = useRef({ coord, fallback });
 
