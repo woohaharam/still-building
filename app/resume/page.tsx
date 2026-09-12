@@ -135,6 +135,9 @@ export default async function ResumePage() {
               <span className="font-medium text-ink-soft">
                 {military.status}
               </span>
+              {military.note && (
+                <span className="ml-2 text-ink-soft">· {military.note}</span>
+              )}
             </h3>
             <span className="text-xs tabular-nums text-ink-muted">
               {military.period}

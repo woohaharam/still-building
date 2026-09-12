@@ -16,5 +16,5 @@ alter table public.service_leaves
 
 alter table public.service_leaves
   add constraint service_leaves_kind_check check (
-    kind in ('outing', 'special_outing', 'overnight', 'leave', 'final', 'off')
+    kind in ('outing', 'special_outing', 'leave', 'final', 'off')
   );

@@ -27,8 +27,6 @@ export const LEAVE_SCHEDULE: Record<
   outing: { leftAt: '13:30', returnedAt: '21:30' },
   // 받을 때마다 다르다. 일정마다 적는 걸 전제로 한 기본값이다.
   special_outing: { leftAt: '08:00', returnedAt: '20:00' },
-  // 외박 시각은 아직 못 들었다. 평일외출과 같게 뒀다.
-  overnight: { leftAt: '13:30', returnedAt: '21:30' },
   // 휴가 출영은 나가는 날이 평일이냐 주말이냐로 갈린다. WEEKEND_LEAVE_AT 참고.
   leave: { leftAt: '06:30', returnedAt: '21:30' },
   // 말출은 나가면 전역까지 돌아오지 않는다.
@@ -150,7 +148,6 @@ export function dDayLabel(status: ServiceStatus): string {
 const STANDING_LABELS: Record<LeaveKind, string> = {
   outing: '외출 중',
   special_outing: '외출 중',
-  overnight: '외박 중',
   leave: '휴가 중',
   final: '말출',
   off: 'OFF',

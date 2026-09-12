@@ -9,6 +9,8 @@ export interface MilitaryLine {
   period: string;
   /** '복무 중' 또는 '만기 전역'. */
   status: string;
+  /** 이력서와 소개에서 병역을 마쳤다고 읽히는 말. 복무 중이면 비어 있다. */
+  note: string;
 }
 
 /**
@@ -24,6 +26,8 @@ export function militaryService(today: DateKey = seoulDateKey()): MilitaryLine {
     branch: SERVICE.branch,
     period: `${formatMonthLabel(SERVICE.enlistedOn)} — ${formatMonthLabel(SERVICE.dischargeOn)}`,
     status: status.discharged ? '만기 전역' : '복무 중',
+    // 전역과 군필은 같은 말이지만, 이력을 훑는 사람이 찾는 낱말은 군필 쪽이다.
+    note: status.discharged ? '군필' : '',
   };
 }
 

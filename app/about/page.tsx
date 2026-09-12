@@ -122,6 +122,11 @@ export default function AboutPage() {
                   <span className="font-medium text-ink-soft">
                     {military.status}
                   </span>
+                  {military.note && (
+                    <span className="ml-2 text-sm font-medium text-accent">
+                      {military.note}
+                    </span>
+                  )}
                 </h3>
                 <span className="text-sm tabular-nums text-ink-muted">
                   {military.period}
