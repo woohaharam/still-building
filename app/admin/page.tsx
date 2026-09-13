@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import EventEditor from '@/components/EventEditor';
+import EventEditor from '@/components/admin/EventEditor';
 import BookEditor from '@/components/admin/BookEditor';
 import ActivityEditor from '@/components/admin/ActivityEditor';
 import LeaveEditor from '@/components/admin/LeaveEditor';
