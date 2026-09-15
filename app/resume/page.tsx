@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
 import Container from '@/components/Container';
 import JsonLd from '@/components/JsonLd';
+import TechStack from '@/components/TechStack';
 import PrintButton from '@/components/PrintButton';
 import Bullets from '@/components/project/Bullets';
 import { periodLabel } from '@/lib/activity';
@@ -14,7 +15,7 @@ import {
   militaryService,
   resumeActivities,
 } from '@/lib/resume';
-import { skillsFromProjects } from '@/lib/skills';
+import { techGroups } from '@/lib/tech';
 import {
   education,
   siteAuthor,
@@ -52,7 +53,6 @@ function Facts({ items }: { items: (string | undefined | null)[] }) {
 
 export default async function ResumePage() {
   const activities = resumeActivities(await getActivities());
-  const skills = skillsFromProjects();
   const military = militaryService();
 
   return (
@@ -70,7 +70,9 @@ export default async function ResumePage() {
             '@type': 'CollegeOrUniversity',
             name: education.school,
           },
-          knowsAbout: skills.map((skill) => skill.name),
+          knowsAbout: techGroups().flatMap((group) =>
+            group.items.map((tech) => tech.name)
+          ),
         }}
       />
 
@@ -147,24 +149,13 @@ export default async function ResumePage() {
 
         <Row label="기술">
           {/*
-            기술 이름을 손으로 나열하지 않고 프로젝트 스택에서 뽑는다. 어디에
-            썼는지가 옆에 같이 나오므로, 써본 적 없는 이름은 애초에 올라올
-            자리가 없다.
+            이름을 손으로 나열하지 않고 프로젝트 스택에서 뽑는다 (lib/tech.ts).
+            써본 적 없는 이름은 애초에 올라올 자리가 없다.
+
+            어디에 썼는지는 여기 적지 않는다. 바로 밑이 프로젝트 칸이고 거기
+            스택이 다시 나오므로, 같은 말이 한 장에 두 번 실린다.
           */}
-          {/* 한 줄에 하나씩 쌓으면 오른쪽 절반이 빈 채로 종이 한 쪽을 더 먹는다. */}
-          <ul className="grid gap-x-8 gap-y-2.5 sm:grid-cols-2">
-            {skills.map((skill) => (
-              <li
-                key={skill.name}
-                className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5 text-sm"
-              >
-                <span className="font-medium">{skill.name}</span>
-                <span className="text-xs text-ink-muted">
-                  {skill.projects.map((project) => project.title).join(' · ')}
-                </span>
-              </li>
-            ))}
-          </ul>
+          <TechStack compact />
         </Row>
 
         <Row label="프로젝트">
