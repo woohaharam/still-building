@@ -196,6 +196,67 @@ export const LEAVE_KIND_LABELS: Record<LeaveKind, string> = {
   off: 'OFF',
 };
 
+/**
+ * 근무 한 타임.
+ *
+ * 군사경찰 크루제는 하루를 다섯 타임으로 끊는다. 다만 근무일은 자정이 아니라
+ * 오전(08시)에 시작해서 다음 날 삼팔이 끝나는 08시까지다. 열삼과 삼팔은 시계로는
+ * 자정을 넘겨 뛰지만 근무표에는 앞선 근무일에 적힌다.
+ *
+ * 그래서 한 근무일에 오전과 삼팔이 같이 오는 날이 생긴다. 그게 노딱이다.
+ */
+export type DutySlot = 'am' | 'pm' | 'evening' | 'late' | 'dawn';
+
+/**
+ * 근무일 안에서의 순서. 조를 이 순서로 센다 (lib/duty.ts).
+ *
+ * 시계 순서와 다르다. 삼팔은 03시라 하루 중 가장 이르지만, 근무일이 08시에
+ * 시작하니 그 근무일의 마지막 타임이다. 이 배열 순서가 곧 조 계산의 바탕이라
+ * 함부로 흔들면 안 된다.
+ */
+export const DUTY_SLOTS: DutySlot[] = ['am', 'pm', 'evening', 'late', 'dawn'];
+
+export const DUTY_SLOT_LABELS: Record<DutySlot, string> = {
+  am: '오전',
+  pm: '오후',
+  evening: '석간',
+  late: '열삼',
+  dawn: '삼팔',
+};
+
+export interface Duty {
+  id: string;
+  /**
+   * 근무표에 적히는 날.
+   *
+   * 열삼·삼팔은 이 날짜의 자정을 넘겨 뛴다. 시계가 가리키는 날짜가 아니라
+   * 근무표에 적히는 날짜를 넣는다.
+   */
+  served_on: string;
+  slot: DutySlot;
+  /**
+   * 명근(명일근무투입)을 먹었는지.
+   *
+   * 먹으면 다음 날은 근무가 없고 그다음 날에 다시 들어간다. 9/17 삼팔에
+   * 명근이면 18일은 비고 19일부터다.
+   */
+  day_off_after: boolean;
+  note: string | null;
+  created_at: string;
+}
+
+/**
+ * slot 은 DB 에서 온 문자열이다. 아는 타임이 아니면 null 을 낸다.
+ *
+ * 대괄호로 바로 꺼내면 안 되는 이유는 tagLabel 과 같다. 프로토타입까지 훑어서
+ * "constructor" 같은 값에 함수가 잡히고, 그게 화면으로 넘어가면 렌더가 깨진다.
+ */
+export function dutySlotLabel(slot: string): string | null {
+  return Object.prototype.hasOwnProperty.call(DUTY_SLOT_LABELS, slot)
+    ? DUTY_SLOT_LABELS[slot as DutySlot]
+    : null;
+}
+
 export type EventKind = 'plan' | 'deadline' | 'note';
 
 export interface CalendarEvent {

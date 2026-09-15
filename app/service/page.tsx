@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import Container from '@/components/Container';
 import DischargeCounter from '@/components/service/DischargeCounter';
 import LeaveCalendar from '@/components/service/LeaveCalendar';
 import { seoulDateKey } from '@/lib/calendar';
+import { getDuties } from '@/lib/duties';
 import { formatDate } from '@/lib/date';
 import { leaveTimeLabel, upcomingLeaves } from '@/lib/leave-dates';
 import { getLeaves } from '@/lib/leaves';
@@ -19,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export default async function ServicePage() {
-  const leaves = await getLeaves();
+  const [leaves, duties] = await Promise.all([getLeaves(), getDuties()]);
   const today = seoulDateKey();
   const status = serviceStatus(today);
   const upcoming = upcomingLeaves(leaves, today).slice(0, 5);
@@ -35,6 +37,32 @@ export default async function ServicePage() {
         </section>
 
         <DischargeCounter status={status} />
+
+        {/*
+          근무 기록은 따로 뒀다. 나가는 날을 세는 달력과 근무를 한 줄씩 쌓는
+          표는 보는 눈이 달라서, 한 페이지에 얹으면 둘 다 묻힌다. 몇 번 섰는지만
+          여기 적어두고 나머지는 건너가서 본다.
+        */}
+        <Link
+          href="/service/duty"
+          className="group flex items-center justify-between gap-4 rounded-lg border border-line px-5 py-4 transition-colors hover:border-ink-muted hover:bg-surface"
+        >
+          <span>
+            <span className="text-sm font-medium">근무 명세서</span>
+            <span className="mt-1 block text-xs text-ink-muted">
+              어느 날 어느 타임에 들어갔는지
+              {duties.length > 0 && (
+                <span className="tabular-nums"> · {duties.length}번</span>
+              )}
+            </span>
+          </span>
+          <span
+            className="text-ink-muted transition-transform group-hover:translate-x-0.5"
+            aria-hidden
+          >
+            →
+          </span>
+        </Link>
 
         <LeaveCalendar leaves={leaves} />
 
