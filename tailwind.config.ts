@@ -32,6 +32,9 @@ const config: Config = {
           discharge: 'rgb(var(--leave-discharge) / <alpha-value>)',
           'discharge-fill': 'rgb(var(--leave-discharge-fill) / <alpha-value>)',
         },
+        duty: {
+          yellow: 'rgb(var(--duty-yellow) / <alpha-value>)',
+        },
       },
       fontFamily: {
         sans: [

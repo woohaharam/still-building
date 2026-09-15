@@ -86,7 +86,13 @@ function SunsetMark({ className = '' }: { className?: string }) {
   );
 }
 
-const MARKS: Record<LogoVariant, (p: { className?: string }) => JSX.Element> = {
+/*
+  React 19 부터 전역 JSX 네임스페이스가 사라졌다. React 아래로 들어갔다.
+*/
+const MARKS: Record<
+  LogoVariant,
+  (p: { className?: string }) => React.JSX.Element
+> = {
   blocks: BlocksMark,
   progress: ProgressMark,
   sunset: SunsetMark,

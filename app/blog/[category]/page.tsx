@@ -25,11 +25,10 @@ export function generateStaticParams() {
   return POST_TAGS.map((tag) => ({ category: TAG_SLUGS[tag] }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { category: string };
-}): Metadata {
+export async function generateMetadata(props: {
+  params: Promise<{ category: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
   const tag = tagFromSlug(params.category);
   if (!tag) return { title: '없는 카테고리' };
 
@@ -40,11 +39,10 @@ export function generateMetadata({
   };
 }
 
-export default async function CategoryPage({
-  params,
-}: {
-  params: { category: string };
+export default async function CategoryPage(props: {
+  params: Promise<{ category: string }>;
 }) {
+  const params = await props.params;
   const tag = tagFromSlug(params.category);
   if (!tag) notFound();
 

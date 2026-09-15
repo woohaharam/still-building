@@ -1,47 +1,39 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { supabaseClient } from '@/lib/supabase';
+import { useState } from 'react';
+import { formatDayLabel, today } from '@/lib/calendar';
+import { useAdminCollection } from '@/lib/use-admin-collection';
 import { CalendarEvent, EVENT_KIND_LABELS, EventKind } from '@/lib/types';
-import { formatDayLabel, toDateKey } from '@/lib/calendar';
+import AdminList from './AdminList';
 
 const KIND_OPTIONS: EventKind[] = ['plan', 'deadline', 'note'];
 
 export default function EventEditor() {
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [editingId, setEditingId] = useState<string | null>(null);
-  const [saving, setSaving] = useState(false);
-  const [status, setStatus] = useState('');
+  const {
+    items: events,
+    loading,
+    editingId,
+    setEditingId,
+    saving,
+    status,
+    setStatus,
+    save,
+    remove,
+  } = useAdminCollection<CalendarEvent>('events', { column: 'start_date' });
 
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<EventKind>('plan');
-  const [startDate, setStartDate] = useState('');
+  // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
+  const [startDate, setStartDate] = useState(today);
   const [endDate, setEndDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [description, setDescription] = useState('');
-
-  async function loadEvents() {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from('events')
-      .select('*')
-      .order('start_date', { ascending: false });
-    if (!error && data) setEvents(data as CalendarEvent[]);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    // 기본값은 오늘 — 서버/브라우저 시간대 차이를 피하려고 마운트 후에 채운다.
-    setStartDate(toDateKey(new Date()));
-    loadEvents();
-  }, []);
 
   function resetForm() {
     setEditingId(null);
     setTitle('');
     setKind('plan');
-    setStartDate(toDateKey(new Date()));
+    setStartDate(today());
     setEndDate('');
     setStartTime('');
     setDescription('');
@@ -69,43 +61,21 @@ export default function EventEditor() {
       return;
     }
 
-    setSaving(true);
-    setStatus('');
-
-    const payload = {
+    const saved = await save({
       title: title.trim(),
       kind,
       start_date: startDate,
       end_date: endDate || null,
       start_time: startTime || null,
       description: description.trim() || null,
-    };
+    });
 
-    let error;
-    if (editingId) {
-      ({ error } = await supabaseClient
-        .from('events')
-        .update(payload)
-        .eq('id', editingId));
-    } else {
-      ({ error } = await supabaseClient.from('events').insert(payload));
-    }
-
-    setSaving(false);
-    if (error) {
-      setStatus(`저장 실패: ${error.message}`);
-    } else {
-      setStatus('저장했어요.');
-      resetForm();
-      loadEvents();
-    }
+    if (saved) resetForm();
   }
 
-  async function handleDelete(id: string) {
-    if (!confirm('이 일정을 삭제할까요?')) return;
-    await supabaseClient.from('events').delete().eq('id', id);
-    if (editingId === id) resetForm();
-    loadEvents();
+  async function handleRemove(event: CalendarEvent) {
+    const removed = await remove(event.id, '이 일정을 삭제할까요?');
+    if (removed && editingId === event.id) resetForm();
   }
 
   return (
@@ -200,49 +170,28 @@ export default function EventEditor() {
         </div>
       </div>
 
-      <div>
-        <h2 className="mb-4 text-sm font-semibold text-ink-soft">
-          전체 일정 ({events.length})
-        </h2>
-        {loading ? (
-          <p className="text-sm text-ink-muted">불러오는 중...</p>
-        ) : events.length === 0 ? (
-          <p className="text-sm text-ink-muted">아직 등록한 일정이 없어요.</p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {events.map((event) => (
-              <li
-                key={event.id}
-                className="rounded-md border border-line p-3 text-sm"
-              >
-                <div className="flex items-center justify-between gap-2">
-                  <button
-                    onClick={() => loadIntoForm(event)}
-                    className="truncate text-left font-medium hover:text-accent"
-                  >
-                    {event.title}
-                  </button>
-                  <span className="shrink-0 text-xs text-ink-muted">
-                    {EVENT_KIND_LABELS[event.kind]}
-                  </span>
-                </div>
-                <div className="mt-1 flex items-center justify-between gap-2">
-                  <span className="truncate text-xs text-ink-muted">
-                    {formatDayLabel(event.start_date)}
-                    {event.start_time ? ` ${event.start_time}` : ''}
-                  </span>
-                  <button
-                    onClick={() => handleDelete(event.id)}
-                    className="shrink-0 text-xs text-danger hover:underline"
-                  >
-                    삭제
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
+      <AdminList
+        title={`전체 일정 ${events.length}개`}
+        items={events}
+        loading={loading}
+        onEdit={loadIntoForm}
+        onRemove={handleRemove}
+      >
+        {(event) => (
+          <>
+            <div className="flex items-center justify-between gap-2">
+              <span className="truncate font-medium">{event.title}</span>
+              <span className="shrink-0 text-xs text-ink-muted">
+                {EVENT_KIND_LABELS[event.kind]}
+              </span>
+            </div>
+            <p className="mt-1 text-xs text-ink-muted">
+              {formatDayLabel(event.start_date)}
+              {event.start_time ? ` ${event.start_time}` : ''}
+            </p>
+          </>
         )}
-      </div>
+      </AdminList>
     </div>
   );
 }

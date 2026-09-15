@@ -2,17 +2,18 @@
 
 import { useEffect, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
-import EventEditor from '@/components/EventEditor';
+import EventEditor from '@/components/admin/EventEditor';
 import BookEditor from '@/components/admin/BookEditor';
 import ActivityEditor from '@/components/admin/ActivityEditor';
 import LeaveEditor from '@/components/admin/LeaveEditor';
+import DutyEditor from '@/components/admin/DutyEditor';
 import TripEditor from '@/components/admin/TripEditor';
 import PostEditor from '@/components/admin/PostEditor';
 import SignIn from '@/components/admin/SignIn';
 import { supabaseClient } from '@/lib/supabase';
 
 type AdminTab =
-  'posts' | 'activities' | 'books' | 'trips' | 'events' | 'leaves';
+  'posts' | 'activities' | 'books' | 'trips' | 'events' | 'leaves' | 'duties';
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -54,6 +55,7 @@ export default function AdminPage() {
               ['trips', '여행'],
               ['events', '일정'],
               ['leaves', '복무'],
+              ['duties', '근무'],
             ] as [AdminTab, string][]
           ).map(([value, label]) => (
             <button
@@ -87,6 +89,7 @@ export default function AdminPage() {
       {tab === 'trips' && <TripEditor />}
       {tab === 'events' && <EventEditor />}
       {tab === 'leaves' && <LeaveEditor />}
+      {tab === 'duties' && <DutyEditor />}
     </div>
   );
 }

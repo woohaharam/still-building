@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, use } from 'react';
 import PostArticle from '@/components/PostArticle';
 import { supabaseClient } from '@/lib/supabase';
 import { Post } from '@/lib/types';
@@ -11,7 +11,10 @@ type State = 'loading' | 'ready' | 'signed-out' | 'missing';
  * 임시저장 글을 실제 글 화면 그대로 볼 수 있는 곳.
  * 브라우저에 로그인 세션이 있어야 DB가 임시저장 글을 내준다.
  */
-export default function PreviewPage({ params }: { params: { slug: string } }) {
+export default function PreviewPage(props: {
+  params: Promise<{ slug: string }>;
+}) {
+  const params = use(props.params);
   const [state, setState] = useState<State>('loading');
   const [post, setPost] = useState<Post | null>(null);
 

@@ -69,7 +69,7 @@ export const PROJECTS: Project[] = [
     summary:
       '글 쓰는 곳과 일정 보는 곳이 따로 노는 게 싫어서 하나로 합쳤다. 지금 보고 있는 사이트다.',
     stack: [
-      'Next.js 14 (App Router)',
+      'Next.js 16 (App Router)',
       'TypeScript',
       'Tailwind CSS',
       'Supabase (Postgres · Auth · Storage)',
@@ -80,7 +80,7 @@ export const PROJECTS: Project[] = [
     impact: [
       'Lighthouse 접근성 96 → 100점. 대비 미달로 잡히던 요소 3종 → 0',
       '첫 로드 공통 JS 87.3 kB, Lighthouse 성능 92 ~ 100점 (로컬 프로덕션 빌드 기준)',
-      '순수 함수 테스트 268개. PR마다 포맷·린트·타입·테스트·빌드 5단계 자동 실행',
+      '순수 함수 테스트 272개. PR마다 포맷·린트·타입·테스트·빌드 5단계 자동 실행',
       '588줄까지 불어난 관리자 페이지를 세 파일로 분리. 편집기 다섯 개가 목록·저장 로직과 목록 UI 를 공유한다',
     ],
     architecture: {

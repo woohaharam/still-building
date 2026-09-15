@@ -21,11 +21,10 @@ export function generateStaticParams() {
   return PROJECTS.map((project) => ({ slug: project.slug }));
 }
 
-export function generateMetadata({
-  params,
-}: {
-  params: { slug: string };
-}): Metadata {
+export async function generateMetadata(props: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const params = await props.params;
   const project = getProject(params.slug);
   if (!project) return { title: '프로젝트를 찾을 수 없어요' };
 
@@ -82,11 +81,10 @@ function Section({
   );
 }
 
-export default function ProjectDetailPage({
-  params,
-}: {
-  params: { slug: string };
+export default async function ProjectDetailPage(props: {
+  params: Promise<{ slug: string }>;
 }) {
+  const params = await props.params;
   const project = getProject(params.slug);
   if (!project) notFound();
 

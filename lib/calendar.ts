@@ -10,6 +10,16 @@ export function toDateKey(date: Date): DateKey {
   return `${y}-${m}-${d}`;
 }
 
+/**
+ * 브라우저가 보는 오늘.
+ *
+ * 함수인 채로 useState(today) 에 넘기면 첫 그리기 때만 불린다. 서버에서
+ * 그려지지 않는 화면에서 폼의 기본 날짜를 채울 때 쓴다.
+ */
+export function today(): DateKey {
+  return toDateKey(new Date());
+}
+
 /** new Date('2026-08-19')는 UTC 자정으로 해석돼 하루씩 밀릴 수 있어서 직접 파싱한다. */
 export function parseDateKey(key: DateKey): Date {
   const [y, m, d] = key.split('-').map(Number);

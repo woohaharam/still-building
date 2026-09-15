@@ -3,3 +3,6 @@ node_modules/
 package-lock.json
 public/
 drafts/
+
+# Next 가 빌드 때마다 다시 쓰는 파일. 여기서 손대면 매번 어긋난다.
+next-env.d.ts

@@ -9,7 +9,9 @@ export function stripMarkdown(markdown: string): string {
       .replace(/^\s{0,3}#{1,6}\s+/gm, '')
       .replace(/^\s{0,3}>\s?/gm, '')
       // 표 구분선(|---|---|)이나 구분선(---)처럼 글자가 아닌 줄은 통째로 버린다.
-      .replace(/^[-:|\s]{3,}$/gm, ' ')
+      // 글자 순서를 바꾼 이유: [-: 로 시작하면 Tailwind가 이걸 임의 속성 클래스로
+      // 읽고 깨진 CSS를 만든다. 바뀐 순서에서도 찾는 글자는 똑같다.
+      .replace(/^[\s|:-]{3,}$/gm, ' ')
       .replace(/^\s{0,3}[-*+]\s+/gm, '')
       .replace(/[*_~|]/g, '')
       .replace(/\s+/g, ' ')

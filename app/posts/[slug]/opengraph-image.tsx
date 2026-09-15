@@ -44,10 +44,10 @@ export default async function PostOgImage({
       }}
     >
       <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
-        {/* eslint-disable-next-line @next/next/no-img-element */}
+        {}
         <img
-          width="72"
-          height="72"
+          width={72}
+          height={72}
           alt=""
           src={`data:image/svg+xml;utf8,${encodeURIComponent(MARK)}`}
         />

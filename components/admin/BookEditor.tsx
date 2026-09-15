@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import CoverImageField from './CoverImageField';
-import { toDateKey } from '@/lib/calendar';
+import { today } from '@/lib/calendar';
 import { isRating, stars } from '@/lib/rating';
 import { toSlug } from '@/lib/slug';
 import { Book, MAX_RATING } from '@/lib/types';
@@ -30,13 +30,9 @@ export default function BookEditor() {
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
-  const [finishedAt, setFinishedAt] = useState('');
+  // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
+  const [finishedAt, setFinishedAt] = useState(today);
   const [published, setPublished] = useState(false);
-
-  useEffect(() => {
-    // 기본값은 오늘 — 서버와 브라우저의 시간대 차이를 피하려고 마운트 후에 채운다.
-    setFinishedAt(toDateKey(new Date()));
-  }, []);
 
   function resetForm() {
     setEditingId(null);
@@ -46,7 +42,7 @@ export default function BookEditor() {
     setCoverImageUrl('');
     setRating(null);
     setReview('');
-    setFinishedAt(toDateKey(new Date()));
+    setFinishedAt(today());
     setPublished(false);
   }
 
