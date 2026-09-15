@@ -10,10 +10,10 @@ import { DUTY_SLOTS, Duty, DutySlot } from './types';
  */
 
 /**
- * 타임별 시각.
+ * 타임별 시각. 부대 근무표 그대로다.
  *
- * 삼팔이 03-08 인 건 확실하고, 나머지는 다섯 타임이 하루를 빈틈없이 메운다는
- * 데서 맞췄다. 규정이 다르면 이 표의 숫자만 고치면 화면 전체가 따라간다.
+ * 다섯 타임이 하루를 빈틈없이 메운다 — 앞 타임이 끝나는 시각이 다음 타임이
+ * 시작하는 시각이다. 규정이 바뀌면 이 표의 숫자만 고치면 화면 전체가 따라간다.
  *
  * nextDay 두 칸은 근무일 기준이다. 근무일은 오전(08시)에 시작해서 다음 날
  * 08시에 끝나므로, 열삼은 끝이 다음 날이고 삼팔은 시작도 끝도 다음 날이다.
@@ -29,15 +29,15 @@ export const DUTY_HOURS: Record<
     endsNextDay: boolean;
   }
 > = {
-  am: { from: '08:00', to: '13:00', startsNextDay: false, endsNextDay: false },
-  pm: { from: '13:00', to: '18:00', startsNextDay: false, endsNextDay: false },
+  am: { from: '08:00', to: '12:15', startsNextDay: false, endsNextDay: false },
+  pm: { from: '12:15', to: '17:30', startsNextDay: false, endsNextDay: false },
   evening: {
-    from: '18:00',
-    to: '23:00',
+    from: '17:30',
+    to: '22:00',
     startsNextDay: false,
     endsNextDay: false,
   },
-  late: { from: '23:00', to: '03:00', startsNextDay: false, endsNextDay: true },
+  late: { from: '22:00', to: '03:00', startsNextDay: false, endsNextDay: true },
   dawn: { from: '03:00', to: '08:00', startsNextDay: true, endsNextDay: true },
 };
 

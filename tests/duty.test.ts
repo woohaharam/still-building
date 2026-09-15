@@ -201,7 +201,11 @@ describe('tallyDuties', () => {
 });
 
 describe('타임 표기', () => {
-  it('삼팔은 03-08 이다', () => {
+  it('부대 근무표 그대로다', () => {
+    expect(dutyTimeLabel('am')).toBe('08:00 — 12:15');
+    expect(dutyTimeLabel('pm')).toBe('12:15 — 17:30');
+    expect(dutyTimeLabel('evening')).toBe('17:30 — 22:00');
+    expect(dutyTimeLabel('late')).toBe('22:00 — 03:00');
     expect(dutyTimeLabel('dawn')).toBe('03:00 — 08:00');
   });
 
