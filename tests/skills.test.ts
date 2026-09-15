@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { skillKey, skillsFromProjects } from '@/lib/skills';
+import { projectTech, skillKey } from '@/lib/skills';
 import { PROJECTS, Project } from '@/lib/projects';
 
 describe('skillKey', () => {
@@ -38,48 +38,39 @@ const project = (slug: string, stack: string[]): Project => ({
   links: [],
 });
 
-describe('skillsFromProjects', () => {
-  it('표기가 달라도 같은 기술이면 한 줄로 모은다', () => {
-    const skills = skillsFromProjects([
+describe('projectTech', () => {
+  it('표기가 달라도 같은 기술이면 한 번만 나온다', () => {
+    const tech = projectTech([
       project('a', ['Next.js 14 (App Router)']),
       project('b', ['Next.js 15']),
     ]);
 
-    expect(skills).toHaveLength(1);
-    expect(skills[0].name).toBe('Next.js');
-    expect(skills[0].projects.map((p) => p.slug)).toEqual(['a', 'b']);
+    expect(tech).toEqual(['Next.js']);
   });
 
-  it('한 프로젝트가 같은 기술을 두 번 적어도 한 번만 센다', () => {
-    const skills = skillsFromProjects([
-      project('a', ['Next.js 14 (App Router)', 'Next.js']),
+  it('한 프로젝트가 같은 기술을 두 표기로 적어도 한 번만 나온다', () => {
+    const tech = projectTech([project('a', ['Next.js 14', 'Next.js'])]);
+    expect(tech).toEqual(['Next.js']);
+  });
+
+  it('처음 나온 순서를 지킨다', () => {
+    const tech = projectTech([
+      project('a', ['TypeScript', 'Vercel']),
+      project('b', ['Vercel', 'Vitest']),
     ]);
 
-    expect(skills[0].projects).toHaveLength(1);
+    expect(tech).toEqual(['TypeScript', 'Vercel', 'Vitest']);
   });
 
-  it('많이 쓴 것부터, 같으면 최근에 쓴 것부터', () => {
-    const skills = skillsFromProjects([
-      project('최근', ['TypeScript', 'Zod']),
-      project('예전', ['TypeScript', 'Astro']),
-    ]);
-
-    expect(skills.map((s) => s.name)).toEqual(['TypeScript', 'Zod', 'Astro']);
+  it('빈 이름은 버린다', () => {
+    expect(projectTech([project('a', ['', '   ', 'Zod'])])).toEqual(['Zod']);
   });
 
-  it('개수도 시기도 같으면 이름순으로 고정한다', () => {
-    const skills = skillsFromProjects([project('하나', ['Zod', 'Astro'])]);
+  it('실제 프로젝트에서 뽑으면 비어 있지 않다', () => {
+    const tech = projectTech(PROJECTS);
 
-    expect(skills.map((s) => s.name)).toEqual(['Astro', 'Zod']);
-  });
-
-  it('실제 프로젝트 데이터에서 빈 이름이 나오지 않는다', () => {
-    const skills = skillsFromProjects(PROJECTS);
-
-    expect(skills.length).toBeGreaterThan(0);
-    for (const skill of skills) {
-      expect(skill.name).not.toBe('');
-      expect(skill.projects.length).toBeGreaterThan(0);
-    }
+    expect(tech.length).toBeGreaterThan(0);
+    // 버전이 붙은 채로 새어 나오는 이름이 없어야 한다.
+    for (const name of tech) expect(name).toBe(skillKey(name));
   });
 });

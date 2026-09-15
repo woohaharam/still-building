@@ -3,8 +3,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Container from '@/components/Container';
 import Reveal from '@/components/Reveal';
+import TechStack from '@/components/TechStack';
 import { militaryService } from '@/lib/resume';
-import { skillsFromProjects } from '@/lib/skills';
 import {
   education,
   siteAuthor,
@@ -29,12 +29,11 @@ const NOW = [
 
 /**
  * 아직 프로젝트에 올릴 만큼 쓰지 못한 것들. 이건 손으로 적는다.
- * 쓴 기술 목록은 반대로 프로젝트에서 뽑는다 (lib/skills.ts).
+ * 다루는 기술 목록은 반대로 프로젝트에서 뽑는다 (lib/tech.ts).
  */
 const LEARNING = ['테스트 작성', '접근성', '검색엔진 최적화'];
 
 export default function AboutPage() {
-  const skills = skillsFromProjects();
   const military = militaryService();
 
   return (
@@ -140,34 +139,11 @@ export default function AboutPage() {
           <section>
             <h2 className="section-label mb-4">기술</h2>
             <p className="mb-6 text-sm leading-relaxed text-ink-soft">
-              이름만 적어두면 어디까지 해봤는지는 알 수 없어서, 실제로 쓴
-              프로젝트를 옆에 같이 적습니다. 목록은 프로젝트 데이터에서 뽑으므로
-              쓴 적 없는 이름이 올라올 자리가 없습니다.
+              다룰 줄 아는 것들이에요. 목록은 프로젝트 데이터에서 뽑으므로 쓴 적
+              없는 이름이 올라올 자리가 없습니다.
             </p>
 
-            <ul className="flex flex-col">
-              {skills.map((skill) => (
-                <li
-                  key={skill.name}
-                  className="flex flex-wrap items-baseline gap-x-4 gap-y-1 border-t border-line py-3.5 last:border-b"
-                >
-                  <span className="font-medium">{skill.name}</span>
-                  <span className="ml-auto text-xs text-ink-muted">
-                    {skill.projects.map((project, i) => (
-                      <span key={project.slug}>
-                        {i > 0 && <span className="mx-1.5 opacity-50">·</span>}
-                        <Link
-                          href={`/projects/${project.slug}`}
-                          className="transition-colors hover:text-accent"
-                        >
-                          {project.title}
-                        </Link>
-                      </span>
-                    ))}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            <TechStack />
 
             <div className="mt-7 sm:flex sm:gap-8">
               <span className="w-24 shrink-0 text-sm text-ink-muted">

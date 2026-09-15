@@ -413,6 +413,23 @@ div.leaflet-container .leaflet-bar a.leaflet-disabled {
   따로 만들지 않고 같은 페이지에 인쇄용 규칙만 얹었다. 화면과 PDF가 서로
   다른 코드를 쓰면 둘 중 하나는 반드시 뒤처진다.
 */
+/*
+  기술 로고의 색.
+
+  로고마다 색이 다르니 클래스로 묶을 수 없고, 인라인 style 하나로는 테마를
+  가를 수 없다. 그래서 컴포넌트가 두 색을 변수로 넘기고 고르는 건 여기서 한다
+  (components/TechMark.tsx).
+
+  변수가 비어 있으면 currentColor 가 남는다. 무채색 로고가 그 경우다.
+*/
+.tech-mark {
+  color: var(--tech-light, currentColor);
+}
+
+.dark .tech-mark {
+  color: var(--tech-dark, currentColor);
+}
+
 @media print {
   /*
     종이에는 종이 색으로. 어두운 테마로 보다가 그대로 인쇄하면 배경이

@@ -11,7 +11,8 @@
     "test": "vitest run",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "build:map": "node scripts/build-map.mjs"
+    "build:map": "node scripts/build-map.mjs",
+    "build:tech": "node scripts/build-tech-icons.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.45.4",
@@ -41,6 +42,7 @@
     "postcss": "^8.4.39",
     "prettier": "^3.9.6",
     "prettier-plugin-tailwindcss": "^0.8.1",
+    "simple-icons": "^16.31.0",
     "tailwindcss": "^3.4.6",
     "topojson-client": "^3.1.0",
     "typescript": "^5.5.3",
