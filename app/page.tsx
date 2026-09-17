@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import Container from '@/components/Container';
 import Landing from '@/components/Landing';
+import { upcomingCountdowns } from '@/lib/dday';
+import { getEvents } from '@/lib/events';
 import { getPublishedPosts } from '@/lib/posts';
 import { siteAuthor, siteAuthorAlias, siteUrl } from '@/lib/site';
 
@@ -21,11 +23,22 @@ async function countPosts(): Promise<{ postCount: number; failed: boolean }> {
 }
 
 export default async function HomePage() {
-  const { postCount, failed } = await countPosts();
+  /*
+    둘 다 메인의 곁가지라 나란히 부른다. 하나가 늦어도 다른 하나를 기다리게
+    할 이유가 없다. getEvents 는 실패해도 던지지 않고 빈 목록을 낸다.
+  */
+  const [{ postCount, failed }, events] = await Promise.all([
+    countPosts(),
+    getEvents(),
+  ]);
 
   return (
     <Container wide>
-      <Landing postCount={postCount} failed={failed} />
+      <Landing
+        postCount={postCount}
+        failed={failed}
+        countdowns={upcomingCountdowns(events)}
+      />
     </Container>
   );
 }

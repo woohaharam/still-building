@@ -24,7 +24,7 @@ export const TAG_LABELS: Record<PostTag, string> = {
 
 /** 카테고리별 페이지(/blog/개발 …)에서 쓰는 설명. */
 export const TAG_DESCRIPTIONS: Record<PostTag, string> = {
-  tech: '만들면서 막힌 것과 푼 방법. 이 블로그의 본체예요.',
+  tech: '만들면서 막힌 것과 푼 방법. 이 블로그의 본체.',
   life: '개발 사이사이의 하루와 생각.',
   retrospective: '끝내고 나서 돌아본 것들.',
   diary: '비밀번호를 아는 사람만 볼 수 있는 기록.',
@@ -257,7 +257,13 @@ export function dutySlotLabel(slot: string): string | null {
     : null;
 }
 
-export type EventKind = 'plan' | 'deadline' | 'note';
+/**
+ * 캘린더에 올리는 일정.
+ *
+ * exam 은 마감과 성격이 달라서 따로 뒀다. 제출은 그날까지 내면 되지만 시험은
+ * 그 시각에 그 자리에 있어야 한다. 남은 날을 세는 무게가 다르다.
+ */
+export type EventKind = 'plan' | 'deadline' | 'exam' | 'note';
 
 export interface CalendarEvent {
   id: string;
@@ -270,11 +276,33 @@ export interface CalendarEvent {
   /** 'HH:MM' — 종일 일정이면 null */
   start_time: string | null;
   kind: EventKind;
+  /**
+   * 메인 화면에 남은 날로 띄울지 (lib/dday.ts).
+   *
+   * 종류로 가르지 않는 이유는, 무엇이 중요한지가 종류에서 나오지 않아서다.
+   * 어떤 마감은 그냥 적어두는 것이고 어떤 약속은 몇 주 전부터 세게 된다.
+   */
+  pinned: boolean;
   created_at: string;
 }
+
+/** 관리자에서 고를 수 있는 순서. 가벼운 것부터 무거운 것 순이다. */
+export const EVENT_KINDS: EventKind[] = ['plan', 'deadline', 'exam', 'note'];
 
 export const EVENT_KIND_LABELS: Record<EventKind, string> = {
   plan: '일정',
   deadline: '마감',
+  exam: '시험',
   note: '메모',
 };
+
+/**
+ * kind 는 DB 에서 온 문자열이다. 아는 종류가 아니면 null 을 낸다.
+ *
+ * 대괄호로 바로 꺼내면 안 되는 이유는 tagLabel 과 같다.
+ */
+export function eventKindLabel(kind: string): string | null {
+  return Object.prototype.hasOwnProperty.call(EVENT_KIND_LABELS, kind)
+    ? EVENT_KIND_LABELS[kind as EventKind]
+    : null;
+}

@@ -1,4 +1,4 @@
-import { DateKey, parseDateKey, seoulDateKey } from './calendar';
+import { DateKey, dayNumber, seoulDateKey } from './calendar';
 import { LeaveKind } from './types';
 
 /**
@@ -88,28 +88,20 @@ export interface ServiceStatus {
   isDischargeDay: boolean;
 }
 
-/** 하루를 밀리초로. 날짜만 다루므로 UTC 로 재서 시간대에 안 흔들리게 한다. */
-const DAY = 86_400_000;
-
-function utcDays(key: DateKey): number {
-  const date = parseDateKey(key);
-  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY;
-}
-
 /**
  * 오늘 기준 복무 현황.
  *
- * 날짜 문자열을 직접 쪼개서 UTC 로 잰다. new Date('2026-09-03') 은 UTC 자정으로
- * 읽혀서 시간대에 따라 하루씩 밀린다 (lib/calendar.ts 와 같은 이유).
+ * 날짜는 dayNumber 로 잰다. new Date('2026-09-03') 을 그냥 빼면 시간대에 따라
+ * 하루씩 밀린다 (lib/calendar.ts 참고).
  */
 export function serviceStatus(
   today: DateKey = seoulDateKey(),
   enlistedOn: DateKey = SERVICE.enlistedOn,
   dischargeOn: DateKey = SERVICE.dischargeOn
 ): ServiceStatus {
-  const start = utcDays(enlistedOn);
-  const end = utcDays(dischargeOn);
-  const now = utcDays(today);
+  const start = dayNumber(enlistedOn);
+  const end = dayNumber(dischargeOn);
+  const now = dayNumber(today);
 
   // 전역일이 입대일보다 빠르면 셀 수 있는 게 없다. 화면이 음수를 그리지 않게 막는다.
   const totalDays = Math.max(1, end - start + 1);

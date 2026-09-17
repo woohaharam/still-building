@@ -43,7 +43,7 @@ export default function ProjectsPage() {
             </h1>
             <p className="mt-5 leading-relaxed text-ink-soft">
               필요해서 만들었고, 만들다 막힌 것들을 적어뒀습니다. 제목을 누르면
-              구조도와 트러블슈팅까지 볼 수 있어요.
+              구조도와 트러블슈팅까지 볼 수 있습니다.
             </p>
           </div>
 

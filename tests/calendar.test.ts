@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildMonthMatrix,
   eventDateKeys,
+  formatShortDay,
   isSameMonth,
   parseDateKey,
   seoulDateKey,
@@ -20,6 +21,7 @@ function makeEvent(start: string, end: string | null = null): CalendarEvent {
     end_date: end,
     start_time: null,
     kind: 'plan',
+    pinned: false,
     created_at: '',
   };
 }
@@ -161,5 +163,19 @@ describe('today', () => {
   it('함수인 채로 넘길 수 있다 — useState(today) 가 이걸 쓴다', () => {
     const lazy: () => string = today;
     expect(lazy()).toBe(today());
+  });
+});
+
+describe('formatShortDay', () => {
+  it('달과 날과 요일을 짧게 적는다', () => {
+    expect(formatShortDay('2026-09-22')).toBe('9.22 (화)');
+  });
+
+  it('한 자리 날은 0 을 채운다', () => {
+    expect(formatShortDay('2026-09-01')).toBe('9.01 (화)');
+  });
+
+  it('달은 0 을 채우지 않는다', () => {
+    expect(formatShortDay('2026-01-05')).toBe('1.05 (월)');
   });
 });

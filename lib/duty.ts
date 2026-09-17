@@ -1,4 +1,4 @@
-import { DateKey, parseDateKey } from './calendar';
+import { DateKey, dayNumber } from './calendar';
 import { DUTY_SLOTS, Duty, DutySlot } from './types';
 
 /**
@@ -54,9 +54,6 @@ const SLOT_ORDER: Record<string, number> = Object.fromEntries(
 /** 한 근무일에 들어가는 타임 수. 조를 이 단위로 센다. */
 const SLOTS_PER_DAY = DUTY_SLOTS.length;
 
-/** 하루를 밀리초로. 날짜만 다루므로 UTC 로 재서 시간대에 안 흔들리게 한다. */
-const DAY = 86_400_000;
-
 /** 근무를 가리키는 데 필요한 최소한. 저장 전의 폼 값도 이 모양이면 된다. */
 export type DutyLike = Pick<Duty, 'served_on' | 'slot'>;
 
@@ -65,22 +62,16 @@ export function isDutySlot(value: string): value is DutySlot {
   return Object.prototype.hasOwnProperty.call(SLOT_ORDER, value);
 }
 
-function utcDays(key: DateKey): number {
-  const date = parseDateKey(key);
-  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY;
-}
-
 /**
  * 근무 하나를 번호 하나로. 조 계산의 바탕이다.
  *
  * 입대 이래의 모든 타임에 빠짐없이 번호를 매겨둔 것과 같다. 두 근무의 번호
  * 차이가 그대로 몇 조인지가 된다.
  *
- * 날짜 문자열을 직접 쪼개서 UTC 로 잰다. new Date('2026-09-17') 은 UTC 자정으로
- * 읽혀서 시간대에 따라 하루씩 밀린다 (lib/service.ts 와 같은 이유).
+ * 날짜는 dayNumber 로 잰다 (lib/calendar.ts).
  */
 export function slotNumber(duty: DutyLike): number {
-  return utcDays(duty.served_on) * SLOTS_PER_DAY + SLOT_ORDER[duty.slot];
+  return dayNumber(duty.served_on) * SLOTS_PER_DAY + SLOT_ORDER[duty.slot];
 }
 
 /**

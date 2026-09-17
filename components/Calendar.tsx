@@ -18,14 +18,18 @@ import {
   parseDateKey,
   toDateKey,
   today,
+  WEEKDAYS,
 } from '@/lib/calendar';
 import { useClientValue } from '@/lib/use-client-value';
 
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
+/*
+  종류마다 점 모양이 다르다. 색 하나로만 가르면 색을 구분하기 어려운 사람에게는
+  전부 같은 점이 된다. 채운 점 · 테두리만 있는 점 · 흐린 점으로 갈랐다.
+*/
 const KIND_DOT: Record<EventKind, string> = {
   plan: 'bg-accent',
   deadline: 'border border-accent bg-paper',
+  exam: 'bg-danger',
   note: 'bg-ink-muted',
 };
 
