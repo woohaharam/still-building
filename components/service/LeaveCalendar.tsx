@@ -1,7 +1,12 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { buildMonthMatrix, isSameMonth, toDateKey } from '@/lib/calendar';
+import {
+  buildMonthMatrix,
+  isSameMonth,
+  toDateKey,
+  WEEKDAYS,
+} from '@/lib/calendar';
 import { buildLeaveIndex } from '@/lib/leave-dates';
 import { SERVICE } from '@/lib/service';
 import { Leave, LEAVE_KINDS, LEAVE_KIND_LABELS, LeaveKind } from '@/lib/types';
@@ -24,8 +29,6 @@ const KIND_STYLE: Record<LeaveKind, { cell: string; dot: string }> = {
   final: { cell: 'bg-leave-final/15', dot: 'bg-leave-final' },
   off: { cell: 'bg-leave-off/15', dot: 'bg-leave-off' },
 };
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
 /** 지금 보고 있는 달. */
 interface Cursor {

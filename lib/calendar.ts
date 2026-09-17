@@ -26,6 +26,22 @@ export function parseDateKey(key: DateKey): Date {
   return new Date(y, (m || 1) - 1, d || 1);
 }
 
+/** 하루를 밀리초로. 날짜만 다룰 때 UTC 로 재려고 둔다. */
+const DAY = 86_400_000;
+
+/**
+ * 날짜를 하루 단위 번호 하나로. 두 날짜의 차이가 그대로 며칠인지가 된다.
+ *
+ * UTC 로 재는 건 시간대에 안 흔들리게 하려는 것이다. 서머타임이 있는 지역에서
+ * 로컬 자정끼리 빼면 하루가 23시간이나 25시간이 되는 날이 나온다.
+ *
+ * 세 곳(복무 일수 · 근무 타임 번호 · 남은 날)이 같은 계산을 각각 들고 있었다.
+ */
+export function dayNumber(key: DateKey): number {
+  const date = parseDateKey(key);
+  return Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) / DAY;
+}
+
 export function isSameMonth(date: Date, year: number, month: number) {
   return date.getFullYear() === year && date.getMonth() === month;
 }
@@ -89,9 +105,23 @@ export function buildDayIndex(posts: Post[], events: CalendarEvent[]) {
   return index;
 }
 
+/**
+ * 요일 이름. 달력 머리글과 날짜 표기가 같은 배열을 네 곳에 각각 들고 있었다.
+ *
+ * getDay() 가 내는 0~6 과 자리가 맞는다 — 일요일이 0 이다.
+ */
+export const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+/** '9.22 (화)'. 목록처럼 같은 해의 날짜가 줄줄이 오는 자리에서 쓴다. */
+export function formatShortDay(key: DateKey) {
+  const date = parseDateKey(key);
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${date.getMonth() + 1}.${day} (${WEEKDAYS[date.getDay()]})`;
+}
+
 export function formatDayLabel(key: DateKey) {
   const date = parseDateKey(key);
-  const weekday = ['일', '월', '화', '수', '목', '금', '토'][date.getDay()];
+  const weekday = WEEKDAYS[date.getDay()];
   return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일 (${weekday})`;
 }
 

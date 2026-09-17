@@ -1,4 +1,4 @@
-import { DateKey, formatMonthLabel, parseDateKey } from '@/lib/calendar';
+import { formatMonthLabel, formatShortDay } from '@/lib/calendar';
 import {
   DutyRow,
   crossesMidnight,
@@ -6,16 +6,6 @@ import {
   groupDutiesByMonth,
 } from '@/lib/duty';
 import { DUTY_SLOT_LABELS } from '@/lib/types';
-
-const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
-
-/** '9.17 (목)'. 달은 표 위의 제목에 이미 있지만, 줄만 봐도 읽히게 같이 둔다. */
-function dayLabel(key: DateKey) {
-  const date = parseDateKey(key);
-  return `${date.getMonth() + 1}.${String(date.getDate()).padStart(2, '0')} (${
-    WEEKDAYS[date.getDay()]
-  })`;
-}
 
 /**
  * 근무 명세서 본체.
@@ -92,7 +82,7 @@ export default function DutySheet({ rows }: { rows: DutyRow[] }) {
                     scope="row"
                     className="py-2.5 pr-3 text-left font-normal tabular-nums"
                   >
-                    {dayLabel(duty.served_on)}
+                    {formatShortDay(duty.served_on)}
                   </th>
 
                   <td className="py-2.5 pr-3">

@@ -1,6 +1,8 @@
 import Image from 'next/image';
 import Link from 'next/link';
+import Countdowns from '@/components/Countdowns';
 import Reveal from '@/components/Reveal';
+import { Countdown } from '@/lib/dday';
 import { PROJECTS } from '@/lib/projects';
 import { PUBLICATIONS } from '@/lib/publications';
 import { siteAuthor, siteAuthorAlias, siteGithub } from '@/lib/site';
@@ -16,9 +18,11 @@ interface Section {
 export default function Landing({
   postCount,
   failed,
+  countdowns,
 }: {
   postCount: number;
   failed: boolean;
+  countdowns: Countdown[];
 }) {
   const sections: Section[] = [
     {
@@ -66,8 +70,12 @@ export default function Landing({
   ];
 
   return (
-    <div className="flex flex-col gap-24 pb-10 sm:gap-32">
-      <section className="flex min-h-[72vh] flex-col justify-center gap-10 sm:flex-row sm:items-center sm:gap-14">
+    <div className="flex flex-col gap-20 pb-10 sm:gap-24">
+      {/*
+        첫 화면을 화면 높이만큼 다 쓰지 않는다. 밑에 뭔가 더 있다는 게 스크롤
+        전에 보여야 내려간다. 남은 날을 새로 얹으면서 세로가 한 칸 길어졌다.
+      */}
+      <section className="flex min-h-[66vh] flex-col justify-center gap-10 sm:flex-row sm:items-center sm:gap-14">
         <div className="order-2 flex-1 sm:order-1">
           <p className="rise section-label" style={{ animationDelay: '60ms' }}>
             {siteAuthor} · {siteAuthorAlias}
@@ -87,7 +95,7 @@ export default function Landing({
             style={{ animationDelay: '240ms' }}
           >
             필요한 걸 직접 만들고, 만들다 막힌 지점을 남깁니다. 지금은 이
-            사이트를 처음부터 만들면서 웹을 배우는 중이에요.
+            사이트를 처음부터 만들면서 웹을 배우고 있습니다.
           </p>
 
           <div
@@ -132,6 +140,16 @@ export default function Landing({
           />
         </div>
       </section>
+
+      {/*
+        남은 날을 사이트 안내보다 위에 둔다. 안내는 언제 와도 같은 자리에
+        있지만 이건 매일 바뀌는 값이라, 내려가서 찾게 만들면 볼 이유가 없다.
+      */}
+      {countdowns.length > 0 && (
+        <Reveal>
+          <Countdowns items={countdowns} />
+        </Reveal>
+      )}
 
       <Reveal>
         <nav aria-label="사이트 안내">

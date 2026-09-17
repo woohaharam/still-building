@@ -2,11 +2,15 @@
 
 import { useState } from 'react';
 import { formatDayLabel, today } from '@/lib/calendar';
+import { daysUntil, ddayLabel } from '@/lib/dday';
 import { useAdminCollection } from '@/lib/use-admin-collection';
-import { CalendarEvent, EVENT_KIND_LABELS, EventKind } from '@/lib/types';
+import {
+  CalendarEvent,
+  EVENT_KINDS,
+  EVENT_KIND_LABELS,
+  EventKind,
+} from '@/lib/types';
 import AdminList from './AdminList';
-
-const KIND_OPTIONS: EventKind[] = ['plan', 'deadline', 'note'];
 
 export default function EventEditor() {
   const {
@@ -28,6 +32,7 @@ export default function EventEditor() {
   const [endDate, setEndDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [description, setDescription] = useState('');
+  const [pinned, setPinned] = useState(false);
 
   function resetForm() {
     setEditingId(null);
@@ -37,6 +42,7 @@ export default function EventEditor() {
     setEndDate('');
     setStartTime('');
     setDescription('');
+    setPinned(false);
   }
 
   function loadIntoForm(event: CalendarEvent) {
@@ -47,6 +53,7 @@ export default function EventEditor() {
     setEndDate(event.end_date || '');
     setStartTime(event.start_time || '');
     setDescription(event.description || '');
+    setPinned(event.pinned);
     setStatus('');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -68,6 +75,7 @@ export default function EventEditor() {
       end_date: endDate || null,
       start_time: startTime || null,
       description: description.trim() || null,
+      pinned,
     });
 
     if (saved) resetForm();
@@ -94,7 +102,7 @@ export default function EventEditor() {
           />
 
           <div className="flex flex-wrap items-center gap-2">
-            {KIND_OPTIONS.map((option) => (
+            {EVENT_KINDS.map((option) => (
               <button
                 key={option}
                 type="button"
@@ -149,6 +157,26 @@ export default function EventEditor() {
             className="resize-none rounded-md border border-line px-3 py-2 text-sm focus:border-ink-muted focus:outline-none"
           />
 
+          {/*
+            종류로 가르지 않고 따로 표시하게 둔 이유는 lib/types.ts 에 적어뒀다.
+            지금 고른 날짜면 며칠 남았는지 옆에 같이 보여준다 — 날짜를 잘못
+            적었을 때 여기서 걸린다.
+          */}
+          <label className="flex flex-wrap items-center gap-2 text-sm text-ink-soft">
+            <input
+              type="checkbox"
+              checked={pinned}
+              onChange={(e) => setPinned(e.target.checked)}
+              className="h-4 w-4 accent-ink"
+            />
+            메인 화면에 남은 날로 띄우기
+            {pinned && startDate && (
+              <span className="tabular-nums text-ink-muted">
+                {ddayLabel(daysUntil(startDate))}
+              </span>
+            )}
+          </label>
+
           <div className="flex items-center gap-3">
             <button
               onClick={handleSave}
@@ -162,7 +190,7 @@ export default function EventEditor() {
                 onClick={resetForm}
                 className="text-sm text-ink-muted underline"
               >
-                새 일정으로 전환
+                새로 쓰기
               </button>
             )}
             {status && <span className="text-sm text-ink-muted">{status}</span>}
@@ -182,6 +210,9 @@ export default function EventEditor() {
             <div className="flex items-center justify-between gap-2">
               <span className="truncate font-medium">{event.title}</span>
               <span className="shrink-0 text-xs text-ink-muted">
+                {event.pinned && (
+                  <span className="mr-1.5 text-accent">메인</span>
+                )}
                 {EVENT_KIND_LABELS[event.kind]}
               </span>
             </div>
