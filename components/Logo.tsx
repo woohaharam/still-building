@@ -1,18 +1,21 @@
 import { siteTitle } from '@/lib/site';
 
 /**
- * 사이트 로고. 마크 3안을 모두 담아두고 DEFAULT_MARK 한 줄로 바꿔 끼울 수 있다.
- * - blocks: 2x2 블록 중 마지막 한 칸이 아직 점선 — "아직 짓는 중"
- * - progress: 진행 바가 60%쯤 차 있는 모양
- * - sunset: 지평선 위로 걸린 해 (따뜻한 포인트 컬러)
+ * 사이트 로고.
+ *
+ * 2x2 블록 중 마지막 한 칸만 점선이다. 사이트 이름(STILL BUILDING)과 같은 말,
+ * 아직 짓는 중이라는 뜻이다.
+ *
+ * 한동안 마크 세 벌(블록 · 진행 바 · 지평선의 해)을 같이 두고 한 줄로 바꿔
+ * 끼울 수 있게 해뒀다. 고른 뒤로 한 번도 바꾸지 않았고 앞으로도 그럴 것이다 —
+ * 로고는 고르고 나면 정해지는 것이라, 갈아끼울 자리를 남겨둘 이유가 없었다.
+ * 안 고른 두 벌과 그걸 고르는 장치를 걷어냈다.
+ *
+ * 같은 모양이 app/icon.svg 에도 있다. 그쪽은 브라우저 탭에 뜨는 파일이라
+ * 빌드를 거치지 않는 정적 SVG 여야 해서, 여기서 끌어다 쓸 수가 없다. 마크를
+ * 바꾸면 두 파일을 같이 고쳐야 한다.
  */
-export type LogoVariant = 'blocks' | 'progress' | 'sunset';
-
-export const DEFAULT_MARK: LogoVariant = 'blocks';
-
-const SUNSET = '#E8863A';
-
-function BlocksMark({ className = '' }: { className?: string }) {
+function Mark({ className }: { className: string }) {
   return (
     <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
       <rect
@@ -47,78 +50,10 @@ function BlocksMark({ className = '' }: { className?: string }) {
   );
 }
 
-function ProgressMark({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <rect
-        x="2"
-        y="6.8"
-        width="20"
-        height="10.4"
-        rx="5.2"
-        stroke="currentColor"
-        strokeWidth="2"
-      />
-      <rect x="5.2" y="10" width="8.4" height="4" rx="2" fill="currentColor" />
-      <circle cx="17.2" cy="12" r="1.5" fill="currentColor" opacity="0.3" />
-    </svg>
-  );
-}
-
-function SunsetMark({ className = '' }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" aria-hidden className={className}>
-      <path d="M4.6 15.4a7.4 7.4 0 0 1 14.8 0Z" fill={SUNSET} />
-      <path
-        d="M2.4 15.4h19.2"
-        stroke="currentColor"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-      />
-      <path
-        d="M6.6 19.6h10.8"
-        stroke="currentColor"
-        strokeWidth="2.1"
-        strokeLinecap="round"
-        opacity="0.32"
-      />
-    </svg>
-  );
-}
-
-/*
-  React 19 부터 전역 JSX 네임스페이스가 사라졌다. React 아래로 들어갔다.
-*/
-const MARKS: Record<
-  LogoVariant,
-  (p: { className?: string }) => React.JSX.Element
-> = {
-  blocks: BlocksMark,
-  progress: ProgressMark,
-  sunset: SunsetMark,
-};
-
-export function LogoMark({
-  variant = DEFAULT_MARK,
-  className = 'h-6 w-6',
-}: {
-  variant?: LogoVariant;
-  className?: string;
-}) {
-  const Mark = MARKS[variant];
-  return <Mark className={className} />;
-}
-
-export default function Logo({
-  variant = DEFAULT_MARK,
-  className = '',
-}: {
-  variant?: LogoVariant;
-  className?: string;
-}) {
+export default function Logo({ className = '' }: { className?: string }) {
   return (
     <span className={`flex items-center gap-2 sm:gap-2.5 ${className}`}>
-      <LogoMark variant={variant} className="h-6 w-6 shrink-0" />
+      <Mark className="h-6 w-6 shrink-0" />
       <span className="whitespace-nowrap text-lg font-bold tracking-tight sm:text-xl">
         {siteTitle}
       </span>
