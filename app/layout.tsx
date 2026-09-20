@@ -3,6 +3,7 @@ import './globals.css';
 import Header from '@/components/Header';
 import MusicPlayer from '@/components/MusicPlayer';
 import JsonLd from '@/components/JsonLd';
+import { seoulDateKey } from '@/lib/calendar';
 import {
   googleSiteVerification,
   naverSiteVerification,
@@ -124,7 +125,7 @@ export default function RootLayout({
           */}
           <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-x-6 gap-y-3 px-6 py-8 text-xs text-ink-muted">
             <span>
-              &copy; {new Date().getFullYear()} {siteName}
+              &copy; {seoulDateKey().slice(0, 4)} {siteName}
             </span>
             <span className="flex flex-wrap items-center gap-x-4 gap-y-2">
               <a href="/resume" className="hover:text-ink-soft">

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import CoverImageField from './CoverImageField';
-import { today } from '@/lib/calendar';
+import { seoulDateKey } from '@/lib/calendar';
 import { isRating, stars } from '@/lib/rating';
 import { toSlug } from '@/lib/slug';
 import { Book, MAX_RATING } from '@/lib/types';
@@ -31,7 +31,7 @@ export default function BookEditor() {
   const [rating, setRating] = useState<number | null>(null);
   const [review, setReview] = useState('');
   // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
-  const [finishedAt, setFinishedAt] = useState(today);
+  const [finishedAt, setFinishedAt] = useState(seoulDateKey);
   const [published, setPublished] = useState(false);
 
   function resetForm() {
@@ -42,7 +42,7 @@ export default function BookEditor() {
     setCoverImageUrl('');
     setRating(null);
     setReview('');
-    setFinishedAt(today());
+    setFinishedAt(seoulDateKey());
     setPublished(false);
   }
 

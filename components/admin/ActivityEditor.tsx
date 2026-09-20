@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { today } from '@/lib/calendar';
+import { seoulDateKey } from '@/lib/calendar';
 import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import {
@@ -28,7 +28,7 @@ export default function ActivityEditor() {
   const [organizer, setOrganizer] = useState('');
   const [outcome, setOutcome] = useState<ActivityOutcome>('applied');
   // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
-  const [startedOn, setStartedOn] = useState(today);
+  const [startedOn, setStartedOn] = useState(seoulDateKey);
   const [endedOn, setEndedOn] = useState('');
   const [note, setNote] = useState('');
   const [published, setPublished] = useState(true);
@@ -38,7 +38,7 @@ export default function ActivityEditor() {
     setName('');
     setOrganizer('');
     setOutcome('applied');
-    setStartedOn(today());
+    setStartedOn(seoulDateKey());
     setEndedOn('');
     setNote('');
     setPublished(true);

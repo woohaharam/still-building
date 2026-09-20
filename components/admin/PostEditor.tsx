@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import rehypeHighlight from 'rehype-highlight';
 import remarkGfm from 'remark-gfm';
-import { toDateKey } from '@/lib/calendar';
+import { seoulDateKey, seoulMinutes } from '@/lib/calendar';
 import { IMAGE_SIZE_KEYS, IMAGE_SIZES } from '@/lib/image-size';
 import { markdownComponents } from '@/lib/markdown';
 import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
@@ -18,9 +18,17 @@ import CoverImageField from './CoverImageField';
 import { ALL_POST_TAGS, Post, PostTag, TAG_LABELS } from '@/lib/types';
 
 /** Date 에서 시각 입력칸에 넣을 'HH:MM' 을 뽑는다. */
+/**
+ * 저장된 발행 시각을 폼의 시각 칸에 넣을 모양으로.
+ *
+ * 브라우저 시간대가 아니라 한국 기준으로 읽는다. 예약을 한국 시간으로 잡는데
+ * 다시 열었을 때 다른 시각이 떠 있으면, 고칠 생각이 없어도 한 번 저장하는
+ * 순간 예약이 옮겨간다.
+ */
 function toTimeValue(date: Date) {
-  const hh = String(date.getHours()).padStart(2, '0');
-  const mm = String(date.getMinutes()).padStart(2, '0');
+  const minutes = seoulMinutes(date);
+  const hh = String(Math.floor(minutes / 60)).padStart(2, '0');
+  const mm = String(minutes % 60).padStart(2, '0');
   return `${hh}:${mm}`;
 }
 
@@ -88,7 +96,7 @@ export default function PostEditor() {
     setPublished(post.published);
     setPublishedAt(post.published_at);
     setPublishedDate(
-      post.published_at ? toDateKey(new Date(post.published_at)) : ''
+      post.published_at ? seoulDateKey(new Date(post.published_at)) : ''
     );
     setPublishedTime(
       post.published_at ? toTimeValue(new Date(post.published_at)) : ''
@@ -175,22 +183,23 @@ export default function PostEditor() {
    * - 날짜를 손대지 않았으면 원래 발행일 그대로 (수정할 때마다 오늘로 밀리지 않게)
    * - 날짜를 바꿨으면 그 날 정오로 — 시간대가 달라져도 날짜가 하루 밀리지 않는다
    * - 처음 발행하는데 날짜를 안 골랐으면 지금
+   *
+   * 고른 날짜와 시각은 한국 시간으로 읽는다. 브라우저 시간대로 만들면 같은
+   * '9월 25일 14시' 가 어디서 저장했느냐에 따라 다른 순간이 된다.
    */
   function resolvePublishedAt(): string | null {
     if (!published) return publishedAt;
 
     if (publishedDate) {
       const current = publishedAt ? new Date(publishedAt) : null;
-      const sameDay = current && toDateKey(current) === publishedDate;
+      const sameDay = current && seoulDateKey(current) === publishedDate;
       const sameTime =
         current && (!publishedTime || toTimeValue(current) === publishedTime);
       if (sameDay && sameTime) return publishedAt;
 
-      const [year, month, day] = publishedDate.split('-').map(Number);
-      const [hour, minute] = publishedTime
-        ? publishedTime.split(':').map(Number)
-        : [12, 0];
-      return new Date(year, month - 1, day, hour, minute, 0).toISOString();
+      // +09:00 을 붙여서 한국 시간으로 못박는다.
+      const at = publishedTime || '12:00';
+      return new Date(`${publishedDate}T${at}:00+09:00`).toISOString();
     }
 
     return publishedAt || new Date().toISOString();
@@ -377,7 +386,7 @@ export default function PostEditor() {
                   setPublished(e.target.checked);
                   // 처음 체크할 때 날짜 칸을 오늘로 채워둔다.
                   if (e.target.checked && !publishedDate) {
-                    setPublishedDate(toDateKey(new Date()));
+                    setPublishedDate(seoulDateKey());
                   }
                 }}
               />

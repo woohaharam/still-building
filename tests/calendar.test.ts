@@ -8,8 +8,8 @@ import {
   parseDateKey,
   seoulDateKey,
   seoulMinutes,
+  seoulToday,
   toDateKey,
-  today,
 } from '@/lib/calendar';
 import { CalendarEvent } from '@/lib/types';
 
@@ -155,18 +155,6 @@ describe('seoulMinutes', () => {
   });
 });
 
-describe('today', () => {
-  it('오늘 날짜를 YYYY-MM-DD 로 준다', () => {
-    expect(today()).toBe(toDateKey(new Date()));
-    expect(today()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
-  });
-
-  it('함수인 채로 넘길 수 있다 — useState(today) 가 이걸 쓴다', () => {
-    const lazy: () => string = today;
-    expect(lazy()).toBe(today());
-  });
-});
-
 describe('formatShortDay', () => {
   it('달과 날과 요일을 짧게 적는다', () => {
     expect(formatShortDay('2026-09-22')).toBe('9.22 (화)');
@@ -202,5 +190,33 @@ describe('formatDate', () => {
   it('날짜만 있는 값은 시간대에 밀리지 않는다', () => {
     expect(formatDate('2027-04-27')).toBe('2027년 4월 27일');
     expect(formatDate('2026-01-01')).toBe('2026년 1월 1일');
+  });
+});
+
+describe('seoulDateKey', () => {
+  it('한국 기준 날짜를 낸다', () => {
+    // UTC 로는 9월 19일 16시지만 서울은 이미 20일이다.
+    expect(seoulDateKey(new Date('2026-09-19T16:00:00Z'))).toBe('2026-09-20');
+    expect(seoulDateKey(new Date('2026-09-19T14:00:00Z'))).toBe('2026-09-19');
+  });
+
+  it('함수인 채로 넘길 수 있다 — useState(seoulDateKey) 가 이걸 쓴다', () => {
+    const lazy: () => string = seoulDateKey;
+    expect(lazy()).toMatch(/^\d{4}-\d{2}-\d{2}$/);
+  });
+});
+
+describe('seoulToday', () => {
+  it('한국 기준 오늘의 연·월·일을 담는다', () => {
+    const date = seoulToday(new Date('2026-09-19T16:00:00Z'));
+
+    expect(date.getFullYear()).toBe(2026);
+    expect(date.getMonth()).toBe(8);
+    expect(date.getDate()).toBe(20);
+  });
+
+  it('날짜 키와 같은 날을 가리킨다', () => {
+    const now = new Date('2027-01-01T00:30:00+09:00');
+    expect(toDateKey(seoulToday(now))).toBe(seoulDateKey(now));
   });
 });
