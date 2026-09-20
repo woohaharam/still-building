@@ -3,11 +3,12 @@ import Link from 'next/link';
 import Container from '@/components/Container';
 import DischargeCounter from '@/components/service/DischargeCounter';
 import LeaveCalendar from '@/components/service/LeaveCalendar';
-import { seoulDateKey } from '@/lib/calendar';
+import { formatDate, seoulDateKey } from '@/lib/calendar';
+import { daysUntil, ddayLabel } from '@/lib/dday';
 import { getDuties } from '@/lib/duties';
-import { formatDate } from '@/lib/date';
 import { leaveTimeLabel, upcomingLeaves } from '@/lib/leave-dates';
 import { getLeaves } from '@/lib/leaves';
+import { militaryService } from '@/lib/resume';
 import { serviceStatus } from '@/lib/service';
 import { siteUrl } from '@/lib/site';
 import { LEAVE_KIND_LABELS } from '@/lib/types';
@@ -24,6 +25,7 @@ export default async function ServicePage() {
   const [leaves, duties] = await Promise.all([getLeaves(), getDuties()]);
   const today = seoulDateKey();
   const status = serviceStatus(today);
+  const military = militaryService(today);
   const upcoming = upcomingLeaves(leaves, today).slice(0, 5);
 
   return (
@@ -33,6 +35,9 @@ export default async function ServicePage() {
           <h1 className="text-2xl font-bold leading-snug">복무 기록</h1>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
             전역까지 남은 날과, 언제 나가는지 세어두는 곳이에요.
+          </p>
+          <p className="mt-2 text-sm text-ink-muted">
+            {military.branch} · {military.role}
           </p>
         </section>
 
@@ -88,14 +93,21 @@ export default async function ServicePage() {
                       </span>
                     )}
                   </span>
-                  <span className="text-xs tabular-nums text-ink-muted">
-                    {formatDate(leave.started_on)}
-                    {leave.ended_on && leave.ended_on !== leave.started_on && (
-                      <> — {formatDate(leave.ended_on)}</>
-                    )}
-                    {leaveTimeLabel(leave) && (
-                      <span className="ml-2">{leaveTimeLabel(leave)}</span>
-                    )}
+                  <span className="flex items-baseline gap-3">
+                    <span className="text-xs tabular-nums text-ink-muted">
+                      {formatDate(leave.started_on)}
+                      {leave.ended_on &&
+                        leave.ended_on !== leave.started_on && (
+                          <> — {formatDate(leave.ended_on)}</>
+                        )}
+                      {leaveTimeLabel(leave) && (
+                        <span className="ml-2">{leaveTimeLabel(leave)}</span>
+                      )}
+                    </span>
+                    {/* 목록이 날짜순이라 며칠 남았는지는 세어봐야 알았다. */}
+                    <span className="shrink-0 text-sm font-semibold tabular-nums text-ink-soft">
+                      {ddayLabel(daysUntil(leave.started_on, today))}
+                    </span>
                   </span>
                 </li>
               ))}

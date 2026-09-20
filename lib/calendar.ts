@@ -112,6 +112,29 @@ export function buildDayIndex(posts: Post[], events: CalendarEvent[]) {
  */
 export const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
 
+/** 'YYYY-MM-DD' 인지. 시각이 붙은 타임스탬프와 가르는 데 쓴다. */
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * '2026년 9월 22일'. 날짜만 필요한 자리에서 쓴다.
+ *
+ * 들어오는 값이 두 가지다. 글의 발행 시각(timestamptz)은 시각까지 붙은
+ * 문자열이고, 여행·독후감·나가는 일정의 날짜(date)는 'YYYY-MM-DD' 뿐이다.
+ *
+ * 뒤엣것을 new Date 에 그대로 넣으면 UTC 자정으로 읽힌다. UTC 보다 뒤에 있는
+ * 시간대의 브라우저에서 그리면 하루가 밀린다 — 뉴욕에서 전역일이 4월 26일로
+ * 나온다. parseDateKey 가 있는 이유가 그것이고, 이 함수만 그걸 안 쓰고 있었다.
+ *
+ * 지금은 이 함수를 부르는 자리가 전부 서버(UTC)라서 드러나지 않는다. 한 곳이
+ * 클라이언트로 옮겨가는 순간 조용히 틀리기 시작한다.
+ */
+export function formatDate(value: string | null): string {
+  if (!value) return '';
+
+  const date = DATE_ONLY.test(value) ? parseDateKey(value) : new Date(value);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
+
 /** '9.22 (화)'. 목록처럼 같은 해의 날짜가 줄줄이 오는 자리에서 쓴다. */
 export function formatShortDay(key: DateKey) {
   const date = parseDateKey(key);

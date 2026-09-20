@@ -131,6 +131,7 @@ export default function AboutPage() {
                   {military.period}
                 </span>
               </div>
+              <p className="mt-2 text-sm text-ink-soft">{military.role}</p>
             </div>
           </section>
         </Reveal>

@@ -1,4 +1,4 @@
-import { formatDate } from '@/lib/date';
+import { formatDate } from '@/lib/calendar';
 import { SERVICE, ServiceStatus, dDayLabel } from '@/lib/service';
 
 /** 전역까지 얼마나 남았는지. 이 페이지에서 제일 먼저 보이는 칸이다. */

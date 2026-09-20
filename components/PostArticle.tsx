@@ -7,11 +7,11 @@ import ReadingProgress from './ReadingProgress';
 import ShareLink from './ShareLink';
 import ViewCounter from './ViewCounter';
 import TableOfContents from './TableOfContents';
+import { formatDate } from '@/lib/calendar';
 import { markdownComponents } from '@/lib/markdown';
 import { extractHeadings } from '@/lib/toc';
 import { readingMinutes } from '@/lib/reading';
 import { formatCount } from '@/lib/count';
-import { formatDate } from '@/lib/date';
 import { Post, TAG_LABELS } from '@/lib/types';
 
 /** 글 한 편의 생김새. 공개 페이지와 관리자 미리보기가 이걸 같이 쓴다. */

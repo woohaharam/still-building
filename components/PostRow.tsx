@@ -1,4 +1,4 @@
-import { formatDate } from '@/lib/date';
+import { formatDate } from '@/lib/calendar';
 import { formatCount } from '@/lib/count';
 import { readingMinutes } from '@/lib/reading';
 import { thumbnailOf } from '@/lib/thumbnail';

@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   buildMonthMatrix,
   eventDateKeys,
+  formatDate,
   formatShortDay,
   isSameMonth,
   parseDateKey,
@@ -177,5 +178,29 @@ describe('formatShortDay', () => {
 
   it('달은 0 을 채우지 않는다', () => {
     expect(formatShortDay('2026-01-05')).toBe('1.05 (월)');
+  });
+});
+
+describe('formatDate', () => {
+  it('한국어 날짜로 적는다', () => {
+    expect(formatDate('2026-08-25T12:00:00')).toBe('2026년 8월 25일');
+  });
+
+  it('한 자리 월·일에 0을 붙이지 않는다', () => {
+    expect(formatDate('2026-01-05T12:00:00')).toBe('2026년 1월 5일');
+  });
+
+  it('값이 없으면 빈 문자열', () => {
+    expect(formatDate(null)).toBe('');
+    expect(formatDate('')).toBe('');
+  });
+
+  /*
+    전에는 이 줄이 없었다. 시각이 붙은 값만 검사해서, 날짜만 있는 값이
+    new Date 에 그대로 들어가 UTC 자정으로 읽히는 걸 못 잡았다.
+  */
+  it('날짜만 있는 값은 시간대에 밀리지 않는다', () => {
+    expect(formatDate('2027-04-27')).toBe('2027년 4월 27일');
+    expect(formatDate('2026-01-01')).toBe('2026년 1월 1일');
   });
 });

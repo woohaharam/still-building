@@ -145,6 +145,8 @@ export default async function ResumePage() {
               {military.period}
             </span>
           </div>
+          {/* 군 이름만으로는 무엇을 한 복무인지 전해지지 않는다. */}
+          <p className="mt-1.5 text-sm text-ink-soft">{military.role}</p>
         </Row>
 
         <Row label="기술">

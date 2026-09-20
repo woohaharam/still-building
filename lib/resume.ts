@@ -4,7 +4,10 @@ import { SERVICE, serviceStatus } from './service';
 import { Activity } from './types';
 
 export interface MilitaryLine {
+  /** '공군 제19전투비행단'. */
   branch: string;
+  /** '군사경찰 기동순찰병 · 기지 순찰차 운전'. */
+  role: string;
   /** '2025.07 — 2027.04' */
   period: string;
   /** '복무 중' 또는 '만기 전역'. */
@@ -23,7 +26,9 @@ export function militaryService(today: DateKey = seoulDateKey()): MilitaryLine {
   const status = serviceStatus(today);
 
   return {
-    branch: SERVICE.branch,
+    branch: `${SERVICE.branch} ${SERVICE.unit}`,
+    // 병과 · 직책 · 실제로 한 일 순이다. 뒤로 갈수록 구체적이다.
+    role: `${SERVICE.specialty} ${SERVICE.role} · ${SERVICE.duty}`,
     period: `${formatMonthLabel(SERVICE.enlistedOn)} — ${formatMonthLabel(SERVICE.dischargeOn)}`,
     status: status.discharged ? '만기 전역' : '복무 중',
     // 전역과 군필은 같은 말이지만, 이력을 훑는 사람이 찾는 낱말은 군필 쪽이다.
