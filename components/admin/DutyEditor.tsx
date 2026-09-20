@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { today } from '@/lib/calendar';
+import { seoulDateKey } from '@/lib/calendar';
 import { dutyTimeLabel, isDutySlot, slotNumber } from '@/lib/duty';
 import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
@@ -28,14 +28,14 @@ export default function DutyEditor() {
 
   const [slot, setSlot] = useState<DutySlot>('am');
   // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
-  const [servedOn, setServedOn] = useState(today);
+  const [servedOn, setServedOn] = useState(seoulDateKey);
   const [dayOffAfter, setDayOffAfter] = useState(false);
   const [note, setNote] = useState('');
 
   function resetForm() {
     setEditingId(null);
     setSlot('am');
-    setServedOn(today());
+    setServedOn(seoulDateKey());
     setDayOffAfter(false);
     setNote('');
   }

@@ -50,7 +50,7 @@ https://mynameiswoo.vercel.app
 | -------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | 마크다운 관리자 · 임시저장 미리보기                | [`components/admin/PostEditor.tsx`](components/admin/PostEditor.tsx) · [`app/admin/preview/[slug]/page.tsx`](app/admin/preview/%5Bslug%5D/page.tsx)    |
 | 일정 + 글 쓴 날을 겹쳐 보는 달력                   | [`lib/calendar.ts`](lib/calendar.ts) · [`components/Calendar.tsx`](components/Calendar.tsx)                                                            |
-| 권한을 DB가 검사하는 인증                          | [`supabase-schema.sql`](supabase-schema.sql) (`is_owner()`) · [`lib/posts.ts`](lib/posts.ts)                                                           |
+| 권한을 DB가 검사하는 인증                          | [`supabase/01-schema.sql`](supabase/01-schema.sql) (`is_owner()`) · [`lib/posts.ts`](lib/posts.ts)                                                     |
 | 본문 목차 (라이브러리와 같은 규칙으로 id 생성)     | [`lib/toc.ts`](lib/toc.ts) · [`components/TableOfContents.tsx`](components/TableOfContents.tsx)                                                        |
 | 검색 노출 (sitemap · RSS · JSON-LD · OG 이미지)    | [`app/sitemap.ts`](app/sitemap.ts) · [`lib/feed.ts`](lib/feed.ts) · [`app/posts/[slug]/opengraph-image.tsx`](app/posts/%5Bslug%5D/opengraph-image.tsx) |
 | 유튜브 배경음악 (주소 파싱)                        | [`lib/playlist.ts`](lib/playlist.ts) · [`components/MusicPlayer.tsx`](components/MusicPlayer.tsx)                                                      |
@@ -204,7 +204,7 @@ npm run build:map     # 나라별 중심점 다시 굽기 (lib/map-data.ts)
 
 1. https://supabase.com 에서 새 프로젝트 생성 (또는 기존 프로젝트 재사용)
 2. Authentication > Users 에서 본인 계정을 하나 만들기 (이메일 + 비밀번호)
-3. `supabase-schema.sql`을 열어 `is_owner()` 안의 이메일을 방금 만든 계정 이메일로 바꾸고,
+3. `supabase/01-schema.sql`을 열어 `is_owner()` 안의 이메일을 방금 만든 계정 이메일로 바꾸고,
    SQL Editor에서 전체 실행
 4. 아래 마이그레이션을 **적힌 순서대로** SQL Editor 에서 실행
 5. Authentication 설정에서 회원가입(sign up) 허용을 꺼두기 — 혼자 쓰는 블로그다
@@ -212,30 +212,32 @@ npm run build:map     # 나라별 중심점 다시 굽기 (lib/map-data.ts)
 
 #### 마이그레이션 순서
 
-`supabase-schema.sql` 은 글과 일정만 만든다. 나머지 기능은 만들 때마다 파일을
-하나씩 더했고, 그게 지금의 스키마다. 순서가 중요한 건 뒤쪽 파일이 앞쪽에서 만든
-표를 고치기 때문이다 — 예를 들어 `events-dday` 는 `schema` 가 만든 `events` 에
-칸을 더한다.
+`supabase/` 안의 파일을 **번호순으로** 실행한다. 순서가 중요한 건 뒤쪽이 앞쪽에서
+만든 표를 고치기 때문이다 — `13-events-dday` 는 `01-schema` 가 만든 `events` 에
+칸을 더한다. 번호를 파일명에 넣어둔 이유가 그것이다.
+
+`01-schema.sql` 은 글과 일정만 만든다. 나머지는 기능을 더할 때마다 하나씩
+쌓은 것이고, 그게 지금의 스키마다.
 
 전부 여러 번 실행해도 괜찮게 써뒀다 (`if not exists` · `drop policy if exists`).
 
-|     | 파일                                            | 무엇이 생기는가                          |
-| --- | ----------------------------------------------- | ---------------------------------------- |
-| 1   | `supabase-schema.sql`                           | 글 · 일정 · 이미지 저장소 · `is_owner()` |
-| 2   | `supabase-migration-counts-diary.sql`           | 조회수 · 공유수 · 일기 비밀번호          |
-| 3   | `supabase-migration-schedule.sql`               | 예약 발행 (미래 날짜 글을 가린다)        |
-| 4   | `supabase-migration-books.sql`                  | 독후감                                   |
-| 5   | `supabase-migration-trips.sql`                  | 여행                                     |
-| 6   | `supabase-migration-trips-coords.sql`           | 여행에 좌표 (지도 핀)                    |
-| 7   | `supabase-migration-activities.sql`             | 공모전 · 대외활동                        |
-| 8   | `supabase-migration-service.sql`                | 나가는 일정                              |
-| 9   | `supabase-migration-service-kinds.sql`          | 일정 종류 넓히기                         |
-| 10  | `supabase-migration-service-times.sql`          | 일정에 출영 · 복귀 시각                  |
-| 11  | `supabase-migration-service-drop-overnight.sql` | 안 쓰는 종류(외박) 빼기                  |
-| 12  | `supabase-migration-service-duties.sql`         | 근무 명세서                              |
-| 13  | `supabase-migration-events-dday.sql`            | 일정에 '메인에 띄우기' · 시험 종류       |
+| 파일                            | 무엇이 생기는가                          |
+| ------------------------------- | ---------------------------------------- |
+| `01-schema.sql`                 | 글 · 일정 · 이미지 저장소 · `is_owner()` |
+| `02-counts-diary.sql`           | 조회수 · 공유수 · 일기 비밀번호          |
+| `03-schedule.sql`               | 예약 발행 (미래 날짜 글을 가린다)        |
+| `04-books.sql`                  | 독후감                                   |
+| `05-trips.sql`                  | 여행                                     |
+| `06-trips-coords.sql`           | 여행에 좌표 (지도 핀)                    |
+| `07-activities.sql`             | 공모전 · 대외활동                        |
+| `08-service.sql`                | 나가는 일정                              |
+| `09-service-kinds.sql`          | 일정 종류 넓히기                         |
+| `10-service-times.sql`          | 일정에 출영 · 복귀 시각                  |
+| `11-service-drop-overnight.sql` | 안 쓰는 종류(외박) 빼기                  |
+| `12-service-duties.sql`         | 근무 명세서                              |
+| `13-events-dday.sql`            | 일정에 '메인에 띄우기' · 시험 종류       |
 
-`supabase-migration-auth.sql` 은 이 줄에 없다. 새로 까는 경우가 아니라, 인증을
+`supabase/migrate-to-auth.sql` 은 이 줄에 없다. 새로 까는 경우가 아니라, 인증을
 붙이기 전부터 굴리던 DB 를 옮겨오는 파일이다 (아래 참고).
 
 ### 2. 환경변수 설정
@@ -270,10 +272,10 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
 > 크롤러가 긁어간다. 파일에는 `YOUR_EMAIL@example.com` 을 그대로 두고,
 > SQL Editor 에 붙여넣을 때만 본인 이메일로 바꿔서 실행한다.
 
-> 이미 이 블로그를 굴리고 있었다면 `supabase-migration-auth.sql` 을 쓴다.
+> 이미 이 블로그를 굴리고 있었다면 `supabase/migrate-to-auth.sql` 을 쓴다.
 > 파일 맨 위 `is_owner()` 의 이메일만 본인 계정으로 바꾼 뒤 SQL Editor 에서 실행하면
 > 예전의 '누구나 쓰기 가능' 정책이 걷히고 로그인 기반으로 바뀐다.
-> 달력을 아직 안 붙였다면 `supabase-schema.sql` 의 `events` 테이블 부분도 함께 실행한다.
+> 달력을 아직 안 붙였다면 `supabase/01-schema.sql` 의 `events` 테이블 부분도 함께 실행한다.
 
 ## 검색에 뜨게 하기
 
@@ -350,4 +352,4 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
   영상 제목을 가져온다. 브라우저가 소리 있는 자동재생을 막기 때문에 처음 한 번은 눌러야
   소리가 난다. '퍼가기 금지' 영상은 자동으로 다음 곡으로 넘어가고, `/admin` 에서는 안 뜬다.
 - **일기** 비밀번호를 아는 사람만 보는 카테고리다. 대조는 DB 안에서 하고, 비밀번호는 저장소
-  어디에도 없다. 설정은 `supabase-migration-counts-diary.sql` 맨 아래.
+  어디에도 없다. 설정은 `supabase/02-counts-diary.sql` 맨 아래.

@@ -1,5 +1,20 @@
 import { CalendarEvent, Post } from './types';
 
+/*
+  시각은 전부 한국 기준이다.
+  ─────────────────────────
+  이 사이트의 '오늘' 은 보는 사람의 오늘이 아니라 내가 사는 곳의 오늘이다.
+  전역까지 남은 날도, 달력에 글이 찍히는 날도, 며칠째 만들고 있는지도
+  한국에서 세는 값이다. 뉴욕에서 열어도 같은 숫자가 나와야 맞다.
+
+  그래서 날짜를 얻는 자리는 seoulDateKey · seoulToday · seoulMinutes 셋뿐이다.
+  new Date() 를 그대로 toDateKey 에 넣으면 서버(UTC)에서는 한국 시간 자정부터
+  아침 아홉 시까지 어제가 나오고, 브라우저에서는 보는 사람의 시간대가 나온다.
+
+  절대 시각을 다루는 자리는 예외다. 예약 발행이 지났는지(lib/posts.ts),
+  RSS 의 최종 수정 시각(lib/feed.ts) 같은 건 시간대와 무관한 한 점이다.
+*/
+
 /** 'YYYY-MM-DD' 형태의 날짜 키. 타임존 이동 없이 '그 날짜'만 다루기 위한 값이다. */
 export type DateKey = string;
 
@@ -8,16 +23,6 @@ export function toDateKey(date: Date): DateKey {
   const m = `${date.getMonth() + 1}`.padStart(2, '0');
   const d = `${date.getDate()}`.padStart(2, '0');
   return `${y}-${m}-${d}`;
-}
-
-/**
- * 브라우저가 보는 오늘.
- *
- * 함수인 채로 useState(today) 에 넘기면 첫 그리기 때만 불린다. 서버에서
- * 그려지지 않는 화면에서 폼의 기본 날짜를 채울 때 쓴다.
- */
-export function today(): DateKey {
-  return toDateKey(new Date());
 }
 
 /** new Date('2026-08-19')는 UTC 자정으로 해석돼 하루씩 밀릴 수 있어서 직접 파싱한다. */
@@ -76,8 +81,14 @@ export function eventDateKeys(event: CalendarEvent): DateKey[] {
   return keys;
 }
 
+/*
+  글이 올라온 날. 발행 시각은 절대 시각이라 어느 날인지는 보는 사람의
+  시간대에 따라 갈린다. 한국 시간 밤 아홉 시에 올린 글은 UTC 로는 그날
+  정오고, 미국 동부에서는 전날 아침이다. 달력은 내가 쓴 날을 보여주는
+  것이니 한국 기준으로 센다.
+*/
 function postDateKey(post: Post): DateKey {
-  return toDateKey(new Date(post.published_at || post.created_at));
+  return seoulDateKey(new Date(post.published_at || post.created_at));
 }
 
 export interface DayEntry {
@@ -111,6 +122,29 @@ export function buildDayIndex(posts: Post[], events: CalendarEvent[]) {
  * getDay() 가 내는 0~6 과 자리가 맞는다 — 일요일이 0 이다.
  */
 export const WEEKDAYS = ['일', '월', '화', '수', '목', '금', '토'];
+
+/** 'YYYY-MM-DD' 인지. 시각이 붙은 타임스탬프와 가르는 데 쓴다. */
+const DATE_ONLY = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * '2026년 9월 22일'. 날짜만 필요한 자리에서 쓴다.
+ *
+ * 들어오는 값이 두 가지다. 글의 발행 시각(timestamptz)은 시각까지 붙은
+ * 문자열이고, 여행·독후감·나가는 일정의 날짜(date)는 'YYYY-MM-DD' 뿐이다.
+ *
+ * 뒤엣것을 new Date 에 그대로 넣으면 UTC 자정으로 읽힌다. UTC 보다 뒤에 있는
+ * 시간대의 브라우저에서 그리면 하루가 밀린다 — 뉴욕에서 전역일이 4월 26일로
+ * 나온다. parseDateKey 가 있는 이유가 그것이고, 이 함수만 그걸 안 쓰고 있었다.
+ *
+ * 지금은 이 함수를 부르는 자리가 전부 서버(UTC)라서 드러나지 않는다. 한 곳이
+ * 클라이언트로 옮겨가는 순간 조용히 틀리기 시작한다.
+ */
+export function formatDate(value: string | null): string {
+  if (!value) return '';
+
+  const date = DATE_ONLY.test(value) ? parseDateKey(value) : new Date(value);
+  return `${date.getFullYear()}년 ${date.getMonth() + 1}월 ${date.getDate()}일`;
+}
 
 /** '9.22 (화)'. 목록처럼 같은 해의 날짜가 줄줄이 오는 자리에서 쓴다. */
 export function formatShortDay(key: DateKey) {
@@ -155,6 +189,17 @@ const SEOUL_DATE = new Intl.DateTimeFormat('en-CA', {
 
 export function seoulDateKey(now: Date = new Date()): DateKey {
   return SEOUL_DATE.format(now);
+}
+
+/**
+ * 한국 기준 오늘을 Date 로.
+ *
+ * 달력이 어느 달을 펼칠지 정할 때처럼 연·월·일을 따로 꺼내야 하는 자리에서
+ * 쓴다. 돌려주는 값의 시·분은 자정으로 맞춰져 있고 뜻이 없다 — 날짜만 보라고
+ * 만든 것이다.
+ */
+export function seoulToday(now: Date = new Date()): Date {
+  return parseDateKey(seoulDateKey(now));
 }
 
 /**

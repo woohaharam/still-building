@@ -4,6 +4,7 @@ import { useMemo, useState } from 'react';
 import {
   buildMonthMatrix,
   isSameMonth,
+  seoulToday,
   toDateKey,
   WEEKDAYS,
 } from '@/lib/calendar';
@@ -41,7 +42,8 @@ function monthOf(date: Date): Cursor {
 }
 
 export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
-  const today = new Date();
+  // 보는 사람이 어디 있든 '오늘' 은 한국의 오늘이다 (lib/calendar.ts).
+  const today = seoulToday();
 
   /*
     연·월을 각각 useState 로 두면 move 가 화면에 그려진 값을 읽는다. 그러면
@@ -74,7 +76,7 @@ export default function LeaveCalendar({ leaves }: { leaves: Leave[] }) {
             ‹
           </button>
           <button
-            onClick={() => setCursor(monthOf(new Date()))}
+            onClick={() => setCursor(monthOf(seoulToday()))}
             className="rounded-md px-3 py-1.5 text-xs text-ink-muted transition-colors hover:bg-surface hover:text-ink"
           >
             오늘

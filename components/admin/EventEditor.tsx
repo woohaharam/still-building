@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { formatDayLabel, today } from '@/lib/calendar';
+import { formatDayLabel, seoulDateKey } from '@/lib/calendar';
 import { daysUntil, ddayLabel } from '@/lib/dday';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import {
@@ -28,7 +28,7 @@ export default function EventEditor() {
   const [title, setTitle] = useState('');
   const [kind, setKind] = useState<EventKind>('plan');
   // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
-  const [startDate, setStartDate] = useState(today);
+  const [startDate, setStartDate] = useState(seoulDateKey);
   const [endDate, setEndDate] = useState('');
   const [startTime, setStartTime] = useState('');
   const [description, setDescription] = useState('');
@@ -38,7 +38,7 @@ export default function EventEditor() {
     setEditingId(null);
     setTitle('');
     setKind('plan');
-    setStartDate(today());
+    setStartDate(seoulDateKey());
     setEndDate('');
     setStartTime('');
     setDescription('');

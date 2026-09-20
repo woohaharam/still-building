@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { formatDate } from '@/lib/calendar';
 import Container from '@/components/Container';
 import TravelMap from '@/components/travel/TravelMap';
 import { countryName, flagEmoji } from '@/lib/country';
-import { formatDate } from '@/lib/date';
 import { siteUrl } from '@/lib/site';
 import {
   splitByRegion,

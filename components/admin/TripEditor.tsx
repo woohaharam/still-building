@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import AdminList from './AdminList';
 import { useAdminCollection } from '@/lib/use-admin-collection';
-import { today } from '@/lib/calendar';
+import { seoulDateKey } from '@/lib/calendar';
 import CoordPicker from './CoordPicker';
 import { Coord } from '@/lib/map';
 import { countryName, flagEmoji, isCountryCode } from '@/lib/country';
@@ -32,7 +32,7 @@ export default function TripEditor() {
   const [slug, setSlug] = useState('');
   const [countryCode, setCountryCode] = useState('KR');
   // 기본값은 오늘. 이 화면은 로그인한 뒤에만 그려지니 서버와 날짜가 어긋날 일이 없다.
-  const [startedOn, setStartedOn] = useState(today);
+  const [startedOn, setStartedOn] = useState(seoulDateKey);
   const [endedOn, setEndedOn] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
   const [journal, setJournal] = useState('');
@@ -44,7 +44,7 @@ export default function TripEditor() {
     setPlace('');
     setSlug('');
     setCountryCode('KR');
-    setStartedOn(today());
+    setStartedOn(seoulDateKey());
     setEndedOn('');
     setCoverImageUrl('');
     setJournal('');

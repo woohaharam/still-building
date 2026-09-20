@@ -17,7 +17,7 @@ import {
   isSameMonth,
   parseDateKey,
   toDateKey,
-  today,
+  seoulDateKey,
   WEEKDAYS,
 } from '@/lib/calendar';
 import { useClientValue } from '@/lib/use-client-value';
@@ -70,7 +70,7 @@ export default function Calendar({ posts, events }: CalendarProps) {
     서버(UTC)와 브라우저의 '오늘'이 다를 수 있어서 날짜 기준은 브라우저에서
     읽는다. 붙기 전에는 null 이고, 그동안은 아래에서 빈 틀만 그린다.
   */
-  const todayKey = useClientValue(today);
+  const todayKey = useClientValue(seoulDateKey);
 
   /*
     달을 옮기거나 날짜를 고르기 전까지는 오늘이 기준이다. 그래서 '오늘'을

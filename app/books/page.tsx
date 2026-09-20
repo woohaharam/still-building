@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import { formatDate } from '@/lib/calendar';
 import Container from '@/components/Container';
 import { getPublishedBooks } from '@/lib/books';
-import { formatDate } from '@/lib/date';
 import { ratingLabel, stars } from '@/lib/rating';
 import { siteUrl } from '@/lib/site';
 

@@ -1,6 +1,6 @@
 import { ImageResponse } from 'next/og';
+import { formatDate } from '@/lib/calendar';
 import { getPostBySlug } from '@/lib/posts';
-import { formatDate } from '@/lib/date';
 import { loadKoreanFont } from '@/lib/og-font';
 import { siteName } from '@/lib/site';
 

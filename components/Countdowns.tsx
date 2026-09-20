@@ -1,7 +1,6 @@
 import Link from 'next/link';
+import { formatDate } from '@/lib/calendar';
 import { Countdown, ddayLabel, isSoon } from '@/lib/dday';
-import { formatDayLabel } from '@/lib/calendar';
-import { eventKindLabel } from '@/lib/types';
 
 /**
  * 메인 화면의 남은 날.
@@ -22,55 +21,46 @@ export default function Countdowns({ items }: { items: Countdown[] }) {
       </h2>
 
       <ul className="flex flex-col">
-        {items.map(({ event, days, ongoing }) => {
-          const kind = eventKindLabel(event.kind);
-          const soon = isSoon({ event, days, ongoing });
+        {items.map((item) => (
+          <li
+            key={item.id}
+            className="flex items-baseline gap-4 border-t border-line py-4 last:border-b"
+          >
+            <span className="min-w-0 flex-1">
+              <span className="block truncate font-medium">{item.title}</span>
+              <span className="mt-1 block text-xs text-ink-muted">
+                {item.label && <span className="mr-2">{item.label}</span>}
 
-          return (
-            <li
-              key={event.id}
-              className="flex items-baseline gap-4 border-t border-line py-4 last:border-b"
-            >
-              <span className="min-w-0 flex-1">
-                <span className="block truncate font-medium">
-                  {event.title}
-                </span>
-                <span className="mt-1 block text-xs text-ink-muted">
-                  {kind && <span className="mr-2">{kind}</span>}
-
-                  {/*
-                    진행 중이면 시작일 대신 끝나는 날을 적는다. 이미 지난
-                    날짜를 그대로 두면 끝난 일처럼 보인다.
-                  */}
-                  {ongoing && event.end_date ? (
+                {/*
+                  진행 중이면 시작일 대신 끝나는 날을 적는다. 이미 지난
+                  날짜를 그대로 두면 끝난 일처럼 보인다.
+                */}
+                {item.ongoing && item.endsOn ? (
+                  <span className="tabular-nums">
+                    {formatDate(item.endsOn)}까지
+                  </span>
+                ) : (
+                  <>
                     <span className="tabular-nums">
-                      {formatDayLabel(event.end_date)}까지
+                      {formatDate(item.startsOn)}
                     </span>
-                  ) : (
-                    <>
-                      <span className="tabular-nums">
-                        {formatDayLabel(event.start_date)}
-                      </span>
-                      {event.start_time && (
-                        <span className="ml-1.5 tabular-nums">
-                          {event.start_time}
-                        </span>
-                      )}
-                    </>
-                  )}
-                </span>
+                    {item.time && (
+                      <span className="ml-1.5 tabular-nums">{item.time}</span>
+                    )}
+                  </>
+                )}
               </span>
+            </span>
 
-              <span
-                className={`shrink-0 text-lg font-bold tabular-nums tracking-tight ${
-                  soon ? 'text-accent' : 'text-ink-soft'
-                }`}
-              >
-                {ongoing ? '진행 중' : ddayLabel(days)}
-              </span>
-            </li>
-          );
-        })}
+            <span
+              className={`shrink-0 text-lg font-bold tabular-nums tracking-tight ${
+                isSoon(item) ? 'text-accent' : 'text-ink-soft'
+              }`}
+            >
+              {item.ongoing ? '진행 중' : ddayLabel(item.days)}
+            </span>
+          </li>
+        ))}
       </ul>
 
       <Link
