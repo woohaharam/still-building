@@ -19,13 +19,6 @@ export const SERVICE = {
   specialty: '군사경찰',
   /** 임명받은 직책. */
   role: '기동순찰병',
-  /**
-   * 실제로 하는 일.
-   *
-   * 직책 이름만으로는 무엇을 했는지 전해지지 않는다. 기동순찰병은 기지를
-   * 도는 순찰 차량을 모는 자리고, 하루의 대부분이 운전이다.
-   */
-  duty: '기지 순찰차 운전',
   enlistedOn: '2025-07-28' as DateKey,
   dischargeOn: '2027-04-27' as DateKey,
 };
@@ -53,6 +46,11 @@ export const LEAVE_SCHEDULE: Record<
   final: { leftAt: '13:30', returnedAt: null },
   // OFF 는 나가는 게 아니라 하루가 통째로 그 상태다.
   off: { leftAt: null, returnedAt: null },
+  // 아래 셋은 규정 시각이 따로 없다. 시험 시간표, 진료 예약, 그때그때의
+  // 사정이 시각을 정하므로 일정마다 적는다. 안 적으면 하루 종일로 본다.
+  exam_outing: { leftAt: null, returnedAt: null },
+  hospital: { leftAt: null, returnedAt: null },
+  other: { leftAt: null, returnedAt: null },
 };
 
 /** 주말에 나가는 휴가의 출영 시각. 평일보다 삼십 분 늦다. */
@@ -163,6 +161,9 @@ const STANDING_LABELS: Record<LeaveKind, string> = {
   leave: '휴가 중',
   final: '말출',
   off: 'OFF',
+  exam_outing: '외출 중',
+  hospital: '진료 중',
+  other: '외출 중',
 };
 
 export interface ServiceStanding {
