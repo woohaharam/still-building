@@ -221,21 +221,22 @@ npm run build:map     # 나라별 중심점 다시 굽기 (lib/map-data.ts)
 
 전부 여러 번 실행해도 괜찮게 써뒀다 (`if not exists` · `drop policy if exists`).
 
-| 파일                            | 무엇이 생기는가                          |
-| ------------------------------- | ---------------------------------------- |
-| `01-schema.sql`                 | 글 · 일정 · 이미지 저장소 · `is_owner()` |
-| `02-counts-diary.sql`           | 조회수 · 공유수 · 일기 비밀번호          |
-| `03-schedule.sql`               | 예약 발행 (미래 날짜 글을 가린다)        |
-| `04-books.sql`                  | 독후감                                   |
-| `05-trips.sql`                  | 여행                                     |
-| `06-trips-coords.sql`           | 여행에 좌표 (지도 핀)                    |
-| `07-activities.sql`             | 공모전 · 대외활동                        |
-| `08-service.sql`                | 나가는 일정                              |
-| `09-service-kinds.sql`          | 일정 종류 넓히기                         |
-| `10-service-times.sql`          | 일정에 출영 · 복귀 시각                  |
-| `11-service-drop-overnight.sql` | 안 쓰는 종류(외박) 빼기                  |
-| `12-service-duties.sql`         | 근무 명세서                              |
-| `13-events-dday.sql`            | 일정에 '메인에 띄우기' · 시험 종류       |
+| 파일                            | 무엇이 생기는가                                  |
+| ------------------------------- | ------------------------------------------------ |
+| `01-schema.sql`                 | 글 · 일정 · 이미지 저장소 · `is_owner()`         |
+| `02-counts-diary.sql`           | 조회수 · 공유수 · 일기 비밀번호                  |
+| `03-schedule.sql`               | 예약 발행 (미래 날짜 글을 가린다)                |
+| `04-books.sql`                  | 독후감                                           |
+| `05-trips.sql`                  | 여행                                             |
+| `06-trips-coords.sql`           | 여행에 좌표 (지도 핀)                            |
+| `07-activities.sql`             | 공모전 · 대외활동                                |
+| `08-service.sql`                | 나가는 일정                                      |
+| `09-service-kinds.sql`          | 일정 종류 넓히기                                 |
+| `10-service-times.sql`          | 일정에 출영 · 복귀 시각                          |
+| `11-service-drop-overnight.sql` | 안 쓰는 종류(외박) 빼기                          |
+| `12-service-duties.sql`         | 근무 명세서                                      |
+| `13-events-dday.sql`            | 일정에 '메인에 띄우기' · 시험 종류               |
+| `14-leave-kinds-more.sql`       | 일정 종류 셋 더하기 (시험외출 · 수도병원 · 기타) |
 
 `supabase/migrate-to-auth.sql` 은 이 줄에 없다. 새로 까는 경우가 아니라, 인증을
 붙이기 전부터 굴리던 DB 를 옮겨오는 파일이다 (아래 참고).

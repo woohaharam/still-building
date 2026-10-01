@@ -154,12 +154,22 @@ export const ACTIVITY_OUTCOME_LABELS: Record<ActivityOutcome, string> = {
  * 특별외출은 성격이 달라서 갈랐다. 이미 쌓인 행을 옮기지 않으려고 기존
  * 값(outing)을 평일외출로 두고 special_outing 을 새로 붙였다.
  *
- * 외박은 뺐다. 부대에 그런 구분이 없어서 고를 일이 없는 칸이었다.
+ * 외박은 뺐다. 부대에 그런 구분이 없어서 고를 일이 없는 칸이었다. 대신
+ * 시험외출 · 수도병원 · 기타를 더했다 — 셋 다 부대 밖으로 나가지만 나가는
+ * 이유가 달라서, 나중에 돌아볼 때 한 덩어리로 묶여 있으면 구분이 안 된다.
  *
  * 전역은 여기 없다. 날짜가 lib/service.ts 에 이미 있어서, 손으로 한 번 더
  * 적게 하면 둘이 어긋날 자리만 생긴다. 달력이 그 날짜를 직접 칠한다.
  */
-export type LeaveKind = 'outing' | 'special_outing' | 'leave' | 'final' | 'off';
+export type LeaveKind =
+  | 'outing'
+  | 'special_outing'
+  | 'leave'
+  | 'final'
+  | 'off'
+  | 'exam_outing'
+  | 'hospital'
+  | 'other';
 
 export interface Leave {
   id: string;
@@ -179,13 +189,24 @@ export interface Leave {
   created_at: string;
 }
 
-/** 화면에 늘어놓는 순서. 짧게 나가는 것부터 길게 나가는 것 순이다. */
+/**
+ * 화면에 늘어놓는 순서.
+ *
+ * 앞의 다섯은 짧게 나가는 것부터 길게 나가는 것 순이고, 뒤의 셋은 그 뒤에
+ * 더한 것이다. 쓰던 순서를 흔들면 관리자에서 누르던 자리가 바뀐다.
+ *
+ * 이 배열은 Record 가 아니라서 하나를 빠뜨려도 타입이 잡아주지 않는다.
+ * tests/leave-kinds.test.ts 가 라벨 표와 맞는지 본다.
+ */
 export const LEAVE_KINDS: LeaveKind[] = [
   'outing',
   'special_outing',
   'leave',
   'final',
   'off',
+  'exam_outing',
+  'hospital',
+  'other',
 ];
 
 export const LEAVE_KIND_LABELS: Record<LeaveKind, string> = {
@@ -194,6 +215,9 @@ export const LEAVE_KIND_LABELS: Record<LeaveKind, string> = {
   leave: '휴가',
   final: '말출',
   off: 'OFF',
+  exam_outing: '시험외출',
+  hospital: '수도병원',
+  other: '기타',
 };
 
 /**

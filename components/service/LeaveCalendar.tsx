@@ -29,6 +29,9 @@ const KIND_STYLE: Record<LeaveKind, { cell: string; dot: string }> = {
   leave: { cell: 'bg-leave-leave/15', dot: 'bg-leave-leave' },
   final: { cell: 'bg-leave-final/15', dot: 'bg-leave-final' },
   off: { cell: 'bg-leave-off/15', dot: 'bg-leave-off' },
+  exam_outing: { cell: 'bg-leave-exam/15', dot: 'bg-leave-exam' },
+  hospital: { cell: 'bg-leave-hospital/15', dot: 'bg-leave-hospital' },
+  other: { cell: 'bg-leave-other/15', dot: 'bg-leave-other' },
 };
 
 /** 지금 보고 있는 달. */
