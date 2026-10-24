@@ -65,6 +65,14 @@ describe('개인정보 처리방침', () => {
     expect(privacy).toContain('광고용 추적 스크립트도 없습니다');
   });
 
+  it('광고를 켜면 시행일도 올라간다', () => {
+    // 방침 내용이 달라지는 날이다. 광고만 켜고 날짜를 그대로 두면 언제부터
+    // 광고를 받았는지가 문서에 안 남는다.
+    const date = /const EFFECTIVE_DATE = (.+);/.exec(privacy)?.[1];
+    expect(date).toBeTruthy();
+    if (adfitUnit.id) expect(date).not.toBe('PRE_AD_DATE');
+  });
+
   it('광고가 켜졌을 때 어디에 뜨는지와 무엇이 넘어가는지 적는다', () => {
     expect(privacy).toContain('애드핏');
     expect(privacy).toContain('카카오');

@@ -14,8 +14,17 @@ export const metadata: Metadata = {
   alternates: { canonical: `${siteUrl}/privacy` },
 };
 
-/** 방침을 고칠 때마다 여기도 같이 올려야 한다. */
-const EFFECTIVE_DATE = '2026년 10월 24일';
+/**
+ * 방침을 고칠 때마다 여기도 같이 올려야 한다.
+ *
+ * 광고를 켜는 날(lib/site.ts 의 adfitUnit.id)도 그중 하나다. 그날 방침에
+ * 광고 문단과 수탁사 표의 카카오 줄이 생긴다. 켜기 전까지는 읽는 사람이
+ * 보는 내용이 그대로라 날짜를 올릴 이유가 없다.
+ *
+ * tests/adfit.test.ts 가 광고를 켜면서 날짜를 안 올리는 걸 잡는다.
+ */
+const PRE_AD_DATE = '2026년 8월 23일';
+const EFFECTIVE_DATE = PRE_AD_DATE;
 
 /**
  * 처리를 맡긴 곳. 전부 해외 사업자라 개인정보가 국외로 나간다.
