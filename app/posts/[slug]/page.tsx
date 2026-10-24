@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
+import AdFit from '@/components/AdFit';
 import Comments from '@/components/Comments';
 import Container from '@/components/Container';
 import JsonLd from '@/components/JsonLd';
@@ -71,6 +72,8 @@ export default async function PostPage(props: {
         }}
       />
       <PostArticle post={post!} shareUrl={url} />
+      {/* 글을 다 읽은 자리에만 둔다. 이력서·프로젝트 쪽에는 붙이지 않는다. */}
+      <AdFit />
       <PostNav older={older} newer={newer} />
       <Comments />
     </Container>

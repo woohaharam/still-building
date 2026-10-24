@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import Container from '@/components/Container';
-import { siteAuthor, siteEmail, siteTitle, siteUrl } from '@/lib/site';
+import {
+  adfitUnit,
+  siteAuthor,
+  siteEmail,
+  siteTitle,
+  siteUrl,
+} from '@/lib/site';
 
 export const metadata: Metadata = {
   title: '개인정보 처리방침',
@@ -9,7 +15,7 @@ export const metadata: Metadata = {
 };
 
 /** 방침을 고칠 때마다 여기도 같이 올려야 한다. */
-const EFFECTIVE_DATE = '2026년 8월 23일';
+const EFFECTIVE_DATE = '2026년 10월 24일';
 
 /**
  * 처리를 맡긴 곳. 전부 해외 사업자라 개인정보가 국외로 나간다.
@@ -52,6 +58,17 @@ const PROCESSORS = [
     purpose: '글꼴 전송',
     items: 'IP 주소',
   },
+  // 광고를 끄면 이 줄도 같이 빠진다. 표와 실제가 어긋나지 않게 묶어둔다.
+  ...(adfitUnit.id
+    ? [
+        {
+          name: '카카오 (Kakao Corp.)',
+          country: '대한민국',
+          purpose: '블로그 글 하단 광고 (애드핏)',
+          items: 'IP 주소, 광고 식별자, 광고 노출·클릭 기록',
+        },
+      ]
+    : []),
 ];
 
 const REMEDIES = [
@@ -110,11 +127,27 @@ export default function PrivacyPage() {
             <strong className="font-semibold text-ink">문의</strong> — 메일로
             연락을 주시면 그 메일 주소와 내용이 제 메일함에 남습니다.
           </p>
-          <p>
-            방문자 분석 도구(Google Analytics 등)를 붙이지 않았습니다. 광고와
-            광고용 추적 스크립트도 없습니다. 누가 몇 번 왔는지 저는 알 수
-            없습니다.
-          </p>
+          {adfitUnit.id ? (
+            <>
+              <p>
+                <strong className="font-semibold text-ink">광고</strong> —
+                블로그 글 아래에 카카오 애드핏 광고가 한 칸 들어갑니다. 광고를
+                띄우고 성과를 집계하는 과정에서 IP 주소와 광고 식별자가 카카오로
+                전달됩니다. 이 정보는 카카오가 처리하며 저는 넘겨받지 않습니다.
+                글 목록과 이력서·프로젝트·소개 페이지에는 광고가 없습니다.
+              </p>
+              <p>
+                방문자 분석 도구(Google Analytics 등)는 붙이지 않았습니다. 누가
+                몇 번 왔는지 저는 여전히 알 수 없습니다.
+              </p>
+            </>
+          ) : (
+            <p>
+              방문자 분석 도구(Google Analytics 등)를 붙이지 않았습니다. 광고와
+              광고용 추적 스크립트도 없습니다. 누가 몇 번 왔는지 저는 알 수
+              없습니다.
+            </p>
+          )}
         </Section>
 
         <Section title="2. 보유 기간과 파기">
@@ -176,8 +209,18 @@ export default function PrivacyPage() {
           <p>
             다크 모드 설정과 음악 재생 여부를 브라우저 안(localStorage)에
             저장합니다. 다음에 왔을 때 같은 상태로 보여주려는 용도이고, 제
-            서버로 전송되지 않습니다. 광고나 분석 목적의 쿠키는 쓰지 않습니다.
+            서버로 전송되지 않습니다.
           </p>
+          {adfitUnit.id ? (
+            <p>
+              블로그 글을 열면 광고 쪽(카카오)에서 쿠키를 심을 수 있습니다. 같은
+              광고를 반복해서 보여주지 않거나 성과를 집계하는 데 쓰이며, 제가
+              읽거나 쓰는 값이 아닙니다. 원하지 않으시면 브라우저에서 서드파티
+              쿠키를 차단하시면 됩니다. 차단해도 글을 읽는 데는 지장이 없습니다.
+            </p>
+          ) : (
+            <p>광고나 분석 목적의 쿠키는 쓰지 않습니다.</p>
+          )}
           <p>
             브라우저 설정에서 사이트 데이터를 지우면 함께 사라집니다. 저장을
             원하지 않으면 브라우저의 사이트 데이터 차단 기능을 쓰시면 됩니다.
