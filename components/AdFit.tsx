@@ -41,14 +41,20 @@ export default function AdFit() {
   if (!adfitUnit.id) return null;
 
   return (
-    <aside className="no-print mt-12 flex justify-center border-t border-line pt-8">
-      {/*
-        애드핏이 채우기 전까지 display:none 이다. 스크립트가 광고를 넣으면서
-        직접 벗긴다. 미리 보이게 해두면 광고가 안 붙었을 때 빈 상자가 남는다.
-      */}
+    /*
+      여백과 구분선을 바깥이 아니라 ins 에 건다.
+
+      애드핏이 채우기 전까지 ins 는 display:none 이고, 숨은 칸에는 margin 도
+      border 도 먹지 않는다. 그래서 광고가 안 붙으면 높이가 0 이다 — 글 밑에
+      아무 자국도 안 남는다.
+
+      바깥 aside 에 걸면 광고와 상관없이 선이 그어진다. 광고가 늘 차는 게
+      아니라서(심사 기간, 재고 없음, 차단기) 글마다 빈 줄이 남는다.
+    */
+    <aside className="no-print flex justify-center">
       <ins
         ref={slot}
-        className="kakao_ad_area"
+        className="kakao_ad_area mt-12 border-t border-line pt-8"
         style={{ display: 'none' }}
         data-ad-unit={adfitUnit.id}
         data-ad-width={adfitUnit.width}
