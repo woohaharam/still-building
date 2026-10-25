@@ -97,6 +97,27 @@ export const naverSiteVerification = '8b398efb83742312228289d6a88ea169ff8eb93d';
 export const googleSiteVerification =
   'FcpYmsOGIQlDaefZrJXdKBaQ0Y9hPh6OZm0MX_tuRUk';
 
+/**
+ * 카카오 애드핏 광고단위.
+ *
+ * id 가 비어 있으면 광고를 아예 안 그린다. 스크립트도 안 받고, 자리도 안
+ * 잡고, 개인정보 처리방침의 광고 문단과 수탁사 표도 같이 빠진다. 심사가
+ * 끝나기 전까지 이 상태로 둔다.
+ *
+ * id 를 채우는 순간 셋이 한꺼번에 켜진다 — 광고, 방침의 광고 문단,
+ * 수탁사 표의 카카오 줄. 켤 때 app/privacy 의 EFFECTIVE_DATE 도 같이
+ * 올려야 한다. 방침 내용이 달라지는 날이기 때문이다.
+ *
+ * width · height 는 애드핏에 등록한 광고단위의 크기와 같아야 한다. 다르면
+ * 광고가 안 나온다. 주소창에 드러나는 공개값이라 비밀이 아니다.
+ */
+export const adfitUnit = {
+  /** 'DAN-' 으로 시작하는 광고단위 ID. 심사를 통과하면 발급된다. */
+  id: '',
+  width: 320,
+  height: 100,
+};
+
 /** 한글 slug 가 그대로 들어가면 안 되는 자리(RSS · sitemap · canonical)에서 쓴다. */
 export function postUrl(slug: string) {
   return `${siteUrl}/posts/${encodeURIComponent(slug)}`;

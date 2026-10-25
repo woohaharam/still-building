@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 
     나가는 일정은 '언제 부대 밖에 있나'까지지만, 이쪽은 언제 어느 타임에 서
     있었는지가 날짜 단위로 남는다. 보여주고 싶을 때 주소를 건네는 것과, 이름을
-    검색하면 나오는 것은 다르다. 사이트맵에도 넣지 않았다 (app/sitemap.ts).
+    검색하면 나오는 것은 다르다. 사이트맵에도 넣지 않았다 (lib/sitemap-entries.ts).
   */
   robots: { index: false, follow: true },
 };

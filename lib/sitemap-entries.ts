@@ -1,43 +1,33 @@
-import type { MetadataRoute } from 'next';
 import { getPublishedBooks } from '@/lib/books';
 import { getPublishedPosts } from '@/lib/posts';
 import { getPublishedTrips } from '@/lib/trips';
 import { PROJECTS } from '@/lib/projects';
 import { PUBLICATIONS } from '@/lib/publications';
 import { postUrl, siteUrl } from '@/lib/site';
+import { SitemapEntry } from '@/lib/sitemap';
 import { POST_TAGS, TAG_SLUGS } from '@/lib/types';
 
-export const revalidate = 0;
+/** 사이트맵에 실을 주소 목록. 조회가 실패하면 던진다. */
+export async function sitemapEntries(): Promise<SitemapEntry[]> {
+  /*
+    못 읽으면 던진다. 삼키면 안 된다.
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  /**
-   * 글을 못 읽어도 사이트맵 자체는 내보낸다.
-   *
-   * 여기서 던지면 응답이 통째로 500 이 되고, 크롤러는 고정 페이지 주소마저
-   * 못 받는다. 사이트맵은 "이 주소들도 봐달라"는 힌트지 목록의 전부가 아니라서,
-   * 글이 잠깐 빠진다고 이미 색인된 글이 지워지지는 않는다. 그래서 조용히
-   * 넘어가는 쪽이 낫다. (화면 쪽은 반대다 — lib/posts.ts 주석 참고)
-   */
-  let posts: Awaited<ReturnType<typeof getPublishedPosts>> = [];
-  try {
-    posts = await getPublishedPosts();
-  } catch (error) {
-    console.error('sitemap 글 목록 조회 실패:', error);
-  }
+    예전에는 세 조회를 각각 try 로 감싸서, 실패하면 고정 페이지만 담아
+    내보냈다. 그게 틀렸다 — 수집기는 200 을 받고 '글이 하나도 없는 사이트'
+    로 기록한다. 멀쩡한 답을 받았으니 곧 다시 올 이유도 없다. 색인이
+    지워지는 게 아니라 새 글이 영영 안 들어간다.
 
-  let books: Awaited<ReturnType<typeof getPublishedBooks>> = [];
-  try {
-    books = await getPublishedBooks();
-  } catch (error) {
-    console.error('sitemap 독후감 목록 조회 실패:', error);
-  }
+    app/feed.xml 은 처음부터 이렇게 하고 있었다. 거기 주석에 이유가 그대로
+    적혀 있다. 사이트맵만 다르게 굴 이유가 없다.
 
-  let trips: Awaited<ReturnType<typeof getPublishedTrips>> = [];
-  try {
-    trips = await getPublishedTrips();
-  } catch (error) {
-    console.error('sitemap 여행 목록 조회 실패:', error);
-  }
+    던지면 route 가 503 + Retry-After 로 바꿔서 "지금은 못 주니 이따 다시
+    오라"고 정확히 말한다.
+  */
+  const [posts, books, trips] = await Promise.all([
+    getPublishedPosts(),
+    getPublishedBooks(),
+    getPublishedTrips(),
+  ]);
 
   // 글이 새로 올라온 날을 사이트가 바뀐 날로 본다.
   // (매번 '지금'을 넣으면 검색엔진이 계속 바뀌는 줄 알고 신뢰를 잃는다)
