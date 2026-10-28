@@ -38,8 +38,9 @@ const scriptSrc = [
   "script-src 'self' 'unsafe-inline'",
   process.env.NODE_ENV === 'development' ? "'unsafe-eval'" : '',
   'https://giscus.app https://www.youtube.com',
-  // 카카오 애드핏. 광고를 끄면(lib/site.ts 의 adfitUnit.id) 요청 자체가 없다.
-  'https://t1.daumcdn.net',
+  // 카카오 애드핏. 설치 코드가 주는 건 kakaocdn 이고, 소재를 받아올 때
+  // 예전 주소(daumcdn)로도 가므로 둘 다 연다.
+  'https://t1.kakaocdn.net https://t1.daumcdn.net',
 ]
   .filter(Boolean)
   .join(' ');
@@ -53,9 +54,9 @@ const csp = [
   // 글에 외부 이미지 주소를 직접 적을 수 있어서 https 는 열어둔다.
   // 이미지는 실행되지 않으니 스크립트만큼 위험하지 않다.
   "img-src 'self' data: blob: https:",
-  "connect-src 'self' https://*.supabase.co https://giscus.app https://display.ad.daum.net https://analytics.ad.daum.net",
+  "connect-src 'self' https://*.supabase.co https://giscus.app https://display.ad.daum.net https://analytics.ad.daum.net https://t1.kakaocdn.net",
   // 애드핏은 광고를 iframe 으로 끼워넣는다.
-  'frame-src https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com https://display.ad.daum.net https://t1.daumcdn.net',
+  'frame-src https://giscus.app https://www.youtube-nocookie.com https://www.youtube.com https://display.ad.daum.net https://t1.kakaocdn.net https://t1.daumcdn.net',
   "object-src 'none'",
   "base-uri 'self'",
   "form-action 'self'",

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
  * tests/adfit.test.ts 가 광고를 켜면서 날짜를 안 올리는 걸 잡는다.
  */
 const PRE_AD_DATE = '2026년 8월 23일';
-const EFFECTIVE_DATE = PRE_AD_DATE;
+const EFFECTIVE_DATE = '2026년 10월 28일';
 
 /**
  * 처리를 맡긴 곳. 전부 해외 사업자라 개인정보가 국외로 나간다.
