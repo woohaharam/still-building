@@ -3,7 +3,11 @@
 import { useEffect, useRef } from 'react';
 import { adfitUnit } from '@/lib/site';
 
-const SCRIPT_SRC = 'https://t1.daumcdn.net/kas/static/ba.min.js';
+/**
+ * 애드핏 설치 코드가 주는 주소. 예전에는 t1.daumcdn.net 이었고 지금도
+ * 받아지지만, 발급받은 코드에 적힌 쪽을 쓴다. 카카오가 옮기면 여기도 따라간다.
+ */
+const SCRIPT_SRC = 'https://t1.kakaocdn.net/kas/static/ba.min.js';
 
 /**
  * 카카오 애드핏 광고.
