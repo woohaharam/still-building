@@ -116,8 +116,29 @@ export default function RootLayout({
             author: { '@type': 'Person', name: siteAuthor },
           }}
         />
+        {/*
+          키보드로 들어오면 헤더 링크 아홉 개를 지나야 본문에 닿는다. 페이지를
+          옮길 때마다 아홉 번이다. 이 링크는 평소에 숨어 있다가 첫 Tab 에서만
+          나타나서, 한 번 눌러 본문으로 건너뛰게 한다 (WCAG 2.4.1).
+
+          sr-only 로 숨긴다. display:none 으로 숨기면 초점이 가지 않아서 Tab
+          으로 꺼낼 수가 없다 — 숨기되 읽히기는 해야 한다.
+        */}
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-full focus:border focus:border-line focus:bg-paper focus:px-4 focus:py-2 focus:text-sm focus:font-medium focus:text-ink"
+        >
+          본문으로 건너뛰기
+        </a>
         <Header />
-        <main className="min-h-[60vh] py-12">{children}</main>
+        {/*
+          tabIndex={-1} 이 있어야 건너뛴 뒤 초점이 여기 앉는다. main 은 원래
+          초점을 받지 않아서, 없으면 주소만 바뀌고 다음 Tab 이 다시 헤더로
+          돌아간다. -1 이라 Tab 순서에는 끼지 않는다.
+        */}
+        <main id="main" tabIndex={-1} className="min-h-[60vh] py-12">
+          {children}
+        </main>
         <footer className="no-print mt-20 border-t border-line">
           {/*
             좁은 화면에서는 링크가 한 줄에 다 안 들어간다. 줄바꿈을 막아두면
