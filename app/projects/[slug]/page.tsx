@@ -114,26 +114,26 @@ export default async function ProjectDetailPage(props: {
             />
           </div>
 
-          <Pills items={project!.stack} className="mt-6" />
-          <ProjectLinks links={project!.links} />
+          <Pills items={project.stack} className="mt-6" />
+          <ProjectLinks links={project.links} />
         </section>
 
-        {project!.impact && project!.impact.length > 0 && (
+        {project.impact && project.impact.length > 0 && (
           <Section title="숫자로 남은 것">
-            <Bullets items={project!.impact} className="mt-0" />
+            <Bullets items={project.impact} className="mt-0" />
           </Section>
         )}
 
-        {project!.architecture && (
+        {project.architecture && (
           <Section title="구조와 데이터 흐름">
-            <ArchitectureDiagram architecture={project!.architecture} />
+            <ArchitectureDiagram architecture={project.architecture} />
           </Section>
         )}
 
-        {project!.features && project!.features.length > 0 && (
+        {project.features && project.features.length > 0 && (
           <Section title="직접 설계하고 구현한 것">
             <div className="flex flex-col gap-8">
-              {project!.features.map((feature) => (
+              {project.features.map((feature) => (
                 <div key={feature.title} className="border-t border-line pt-6">
                   <h3 className="font-semibold">{feature.title}</h3>
                   <p className="mt-3 text-sm leading-relaxed text-ink-soft">
@@ -145,10 +145,10 @@ export default async function ProjectDetailPage(props: {
           </Section>
         )}
 
-        {project!.troubles && project!.troubles.length > 0 && (
+        {project.troubles && project.troubles.length > 0 && (
           <Section title="막혔던 것과 푼 방법">
             <div className="flex flex-col gap-6">
-              {project!.troubles.map((trouble, i) => (
+              {project.troubles.map((trouble, i) => (
                 <TroubleCard key={trouble.title} trouble={trouble} index={i} />
               ))}
             </div>

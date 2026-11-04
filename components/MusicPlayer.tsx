@@ -14,24 +14,70 @@ interface YouTubePlayer {
   destroy(): void;
 }
 
-// YT 전역 객체에는 타입 정의가 없어서 any로 받고, 쓰는 쪽에서 좁힌다.
-let apiPromise: Promise<any> | null = null;
+/**
+ * 유튜브 IFrame API 중 이 파일이 실제로 쓰는 만큼만.
+ *
+ * @types/youtube 를 받지 않은 건 쓰는 표면이 이게 전부라서다. 네 가지 메서드
+ * 와 두 가지 이벤트뿐인데 타입 패키지를 하나 더 끌어오는 건 과하다.
+ *
+ * 재생 상태는 숫자로 온다 — 1 재생, 2 멈춤, 0 끝남. 유튜브가 정한 값이라
+ * 여기서 이름을 붙여둔다.
+ */
+interface YouTubePlayerEvent {
+  target: YouTubePlayer;
+  data: number;
+}
+
+const PLAYING = 1;
+const PAUSED = 2;
+const ENDED = 0;
+
+interface YouTubeApi {
+  Player: new (
+    host: HTMLElement,
+    options: {
+      width: string;
+      height: string;
+      videoId: string;
+      host: string;
+      playerVars: Record<string, number>;
+      events: {
+        onReady(event: YouTubePlayerEvent): void;
+        onStateChange(event: YouTubePlayerEvent): void;
+        onError(): void;
+      };
+    }
+  ) => YouTubePlayer;
+}
+
+/**
+ * 유튜브가 스크립트를 다 읽고 나면 window 에 YT 를 꽂고
+ * onYouTubeIframeAPIReady 를 부른다. 둘 다 전역이라 여기서 알려준다.
+ */
+declare global {
+  interface Window {
+    YT?: YouTubeApi;
+    onYouTubeIframeAPIReady?: () => void;
+  }
+}
+
+let apiPromise: Promise<YouTubeApi> | null = null;
 
 /** 유튜브 스크립트는 재생을 누른 순간에만 받아온다. 안 듣는 사람은 한 바이트도 안 쓴다. */
-function loadYouTubeApi(): Promise<any> {
+function loadYouTubeApi(): Promise<YouTubeApi> {
   if (apiPromise) return apiPromise;
 
   apiPromise = new Promise((resolve, reject) => {
-    const w = window as any;
-    if (w.YT?.Player) {
-      resolve(w.YT);
+    if (window.YT?.Player) {
+      resolve(window.YT);
       return;
     }
 
-    const previous = w.onYouTubeIframeAPIReady;
-    w.onYouTubeIframeAPIReady = () => {
+    const previous = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
       previous?.();
-      resolve(w.YT);
+      // 이 콜백이 불렸다는 건 YT 가 꽂혔다는 뜻이다.
+      resolve(window.YT as YouTubeApi);
     };
 
     const script = document.createElement('script');
@@ -139,19 +185,18 @@ export default function MusicPlayer() {
       host: 'https://www.youtube-nocookie.com',
       playerVars: { autoplay: 1, controls: 0, playsinline: 1, rel: 0 },
       events: {
-        onReady: (event: any) => {
+        onReady: (event) => {
           readTitle(event.target);
           event.target.playVideo();
         },
-        onStateChange: (event: any) => {
-          // 1 재생중, 2 멈춤, 0 끝남
-          if (event.data === 1) {
+        onStateChange: (event) => {
+          if (event.data === PLAYING) {
             errorStreakRef.current = 0;
             readTitle(event.target);
             setPlaying(true);
-          } else if (event.data === 2) {
+          } else if (event.data === PAUSED) {
             setPlaying(false);
-          } else if (event.data === 0) {
+          } else if (event.data === ENDED) {
             step(1);
           }
         },

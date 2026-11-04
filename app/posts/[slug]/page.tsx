@@ -44,13 +44,11 @@ export default async function PostPage(props: {
   const params = await props.params;
   const post = await getPostBySlug(decodeURIComponent(params.slug));
 
-  if (!post) {
-    notFound();
-  }
+  if (!post) notFound();
 
-  const url = postUrl(post!.slug);
-  const published = post!.published_at || post!.created_at;
-  const { older, newer } = await getAdjacentPosts(post!.slug);
+  const url = postUrl(post.slug);
+  const published = post.published_at || post.created_at;
+  const { older, newer } = await getAdjacentPosts(post.slug);
 
   return (
     <Container>
@@ -58,17 +56,17 @@ export default async function PostPage(props: {
         data={{
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
-          headline: post!.title,
+          headline: post.title,
           description: metaDescription(post!),
           url,
           mainEntityOfPage: { '@type': 'WebPage', '@id': url },
           datePublished: published,
           dateModified: published,
           inLanguage: 'ko-KR',
-          image: post!.cover_image_url || `${url}/opengraph-image`,
+          image: post.cover_image_url || `${url}/opengraph-image`,
           author: { '@type': 'Person', name: siteAuthor },
           publisher: { '@type': 'Person', name: siteAuthor, url: siteUrl },
-          keywords: post!.tags?.join(', ') || undefined,
+          keywords: post.tags?.join(', ') || undefined,
         }}
       />
       <PostArticle post={post!} shareUrl={url} />

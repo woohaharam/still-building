@@ -48,7 +48,7 @@ export default async function BookPage(props: {
   const book = await getBookBySlug(decodeURIComponent(params.slug));
   if (!book) notFound();
 
-  const url = bookUrl(book!.slug);
+  const url = bookUrl(book.slug);
 
   return (
     <Container>
@@ -61,14 +61,14 @@ export default async function BookPage(props: {
           author: { '@type': 'Person', name: siteAuthor },
           itemReviewed: {
             '@type': 'Book',
-            name: book!.title,
-            author: { '@type': 'Person', name: book!.author },
+            name: book.title,
+            author: { '@type': 'Person', name: book.author },
           },
-          ...(book!.rating
+          ...(book.rating
             ? {
                 reviewRating: {
                   '@type': 'Rating',
-                  ratingValue: book!.rating,
+                  ratingValue: book.rating,
                   bestRating: 5,
                   worstRating: 1,
                 },
@@ -86,30 +86,30 @@ export default async function BookPage(props: {
         </Link>
 
         <header className="flex items-start gap-5">
-          {book!.cover_image_url && (
+          {book.cover_image_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
-              src={book!.cover_image_url}
-              alt={`${book!.title} 표지`}
+              src={book.cover_image_url}
+              alt={`${book.title} 표지`}
               className="h-36 w-24 shrink-0 rounded-md border border-line object-cover"
             />
           )}
 
           <div className="min-w-0">
-            <h1 className="text-2xl font-bold leading-snug">{book!.title}</h1>
-            <p className="mt-2 text-sm text-ink-soft">{book!.author}</p>
+            <h1 className="text-2xl font-bold leading-snug">{book.title}</h1>
+            <p className="mt-2 text-sm text-ink-soft">{book.author}</p>
 
             <p className="mt-4 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
-              {stars(book!.rating) && (
+              {stars(book.rating) && (
                 <span
                   className="text-base text-accent"
-                  aria-label={ratingLabel(book!.rating)}
+                  aria-label={ratingLabel(book.rating)}
                 >
-                  {stars(book!.rating)}
+                  {stars(book.rating)}
                 </span>
               )}
-              {book!.finished_at && (
-                <span>{formatDate(book!.finished_at)} 읽음</span>
+              {book.finished_at && (
+                <span>{formatDate(book.finished_at)} 읽음</span>
               )}
             </p>
           </div>
@@ -121,7 +121,7 @@ export default async function BookPage(props: {
             rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
             components={markdownComponents}
           >
-            {book!.review}
+            {book.review}
           </ReactMarkdown>
         </div>
       </article>
