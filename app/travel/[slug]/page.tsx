@@ -49,9 +49,9 @@ export default async function TripPage(props: {
   const trip = await getTripBySlug(decodeURIComponent(params.slug));
   if (!trip) notFound();
 
-  const period = trip!.ended_on
-    ? `${formatDate(trip!.started_on)} — ${formatDate(trip!.ended_on)}`
-    : formatDate(trip!.started_on);
+  const period = trip.ended_on
+    ? `${formatDate(trip.started_on)} — ${formatDate(trip.ended_on)}`
+    : formatDate(trip.started_on);
 
   return (
     <Container>
@@ -66,27 +66,25 @@ export default async function TripPage(props: {
         <header>
           <p
             className="text-4xl leading-none"
-            aria-label={countryName(trip!.country_code)}
+            aria-label={countryName(trip.country_code)}
           >
-            {flagEmoji(trip!.country_code)}
+            {flagEmoji(trip.country_code)}
           </p>
-          <h1 className="mt-4 text-2xl font-bold leading-snug">
-            {trip!.place}
-          </h1>
+          <h1 className="mt-4 text-2xl font-bold leading-snug">{trip.place}</h1>
           <p className="mt-2 text-sm text-ink-soft">
-            {countryName(trip!.country_code)}
+            {countryName(trip.country_code)}
           </p>
           <p className="mt-4 flex flex-wrap items-center gap-3 text-xs text-ink-muted">
             <span>{period}</span>
-            <span>{stayLabel(trip!.started_on, trip!.ended_on)}</span>
+            <span>{stayLabel(trip.started_on, trip.ended_on)}</span>
           </p>
         </header>
 
-        {trip!.cover_image_url && (
+        {trip.cover_image_url && (
           // eslint-disable-next-line @next/next/no-img-element
           <img
-            src={trip!.cover_image_url}
-            alt={`${trip!.place} 사진`}
+            src={trip.cover_image_url}
+            alt={`${trip.place} 사진`}
             className="w-full rounded-md border border-line object-cover"
           />
         )}
@@ -97,7 +95,7 @@ export default async function TripPage(props: {
             rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
             components={markdownComponents}
           >
-            {trip!.journal}
+            {trip.journal}
           </ReactMarkdown>
         </div>
       </article>

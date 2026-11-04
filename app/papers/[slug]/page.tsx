@@ -79,21 +79,21 @@ export default async function PaperPage(props: {
             {summary}
           </p>
 
-          <Pills items={paper!.keywords} />
+          <Pills items={paper.keywords} />
 
-          {paper!.documents && paper!.documents.length > 0 && (
-            <ProjectLinks links={paper!.documents} />
+          {paper.documents && paper.documents.length > 0 && (
+            <ProjectLinks links={paper.documents} />
           )}
         </section>
 
-        {paper!.numbers && paper!.numbers.length > 0 && (
+        {paper.numbers && paper.numbers.length > 0 && (
           <Reveal>
             <section>
               <h2 className="mb-8 text-xl font-bold tracking-tight">
                 숫자로 본 결과
               </h2>
               <dl className="grid gap-x-8 gap-y-5 sm:grid-cols-2 lg:grid-cols-3">
-                {paper!.numbers.map((row) => (
+                {paper.numbers.map((row) => (
                   <div key={row.label} className="border-t border-line pt-4">
                     <dt className="text-xs text-ink-muted">{row.label}</dt>
                     <dd className="mt-1 font-semibold tabular-nums">
@@ -106,7 +106,7 @@ export default async function PaperPage(props: {
           </Reveal>
         )}
 
-        {paper!.sections?.map((section) => (
+        {paper.sections?.map((section) => (
           <Reveal key={section.title}>
             <section className="border-t border-line pt-8">
               <h2 className="text-lg font-bold tracking-tight">

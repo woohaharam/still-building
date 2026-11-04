@@ -12,6 +12,27 @@ import { supabaseClient } from './supabase';
  * 폼의 입력값은 여기서 다루지 않는다. 항목마다 칸이 달라서 한데 묶으면
  * 오히려 읽기 어려워진다. 목록과 저장만 맡는다.
  */
+/**
+ * DB 가 거절한 이유를 사람이 읽을 말로.
+ *
+ * 그대로 내보내면 한국어 화면에 'duplicate key value violates unique
+ * constraint "service_duties_one_slot_a_day"' 가 뜬다. 무엇을 잘못했는지가
+ * 적혀 있지도 않다.
+ *
+ * 아는 제약만 바꾸고 나머지는 원문을 남긴다. 모르는 실패까지 한 마디로
+ * 뭉개면 무엇이 잘못됐는지 고칠 단서가 사라진다.
+ */
+const CONSTRAINT_MESSAGES: Record<string, string> = {
+  service_duties_one_slot_a_day: '그 날 그 타임은 이미 적어뒀어요.',
+};
+
+function saveFailure(error: { message: string }): string {
+  for (const [constraint, text] of Object.entries(CONSTRAINT_MESSAGES)) {
+    if (error.message.includes(constraint)) return text;
+  }
+  return `저장 실패: ${error.message}`;
+}
+
 export function useAdminCollection<T extends { id: string }>(
   table: string,
   orderBy: { column: string; ascending?: boolean }
@@ -72,7 +93,7 @@ export function useAdminCollection<T extends { id: string }>(
     setSaving(false);
 
     if (error) {
-      setStatus(`저장 실패: ${error.message}`);
+      setStatus(saveFailure(error));
       return false;
     }
 
