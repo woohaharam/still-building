@@ -55,7 +55,9 @@ export async function POST(request: Request) {
     막지 않으면 초당 88 번까지 들어간다. 여섯 자리 숫자라면 세 시간이면
     전부 훑힌다.
   */
-  const key = clientKey(request);
+  // 'photo:' 를 앞에 붙여 일기와 따로 센다. 한 통로에서 틀렸다고 다른
+  // 통로까지 막히면 곤란하다.
+  const key = `photo:${clientKey(request)}`;
   const limit = checkRateLimit(key);
 
   if (!limit.allowed) {

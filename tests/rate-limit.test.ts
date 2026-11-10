@@ -86,10 +86,45 @@ describe('누구인지 가리기', () => {
 });
 
 describe('통로에 실제로 걸려 있는지', () => {
-  const route = readFileSync(
-    join(process.cwd(), 'app/api/photos/private/route.ts'),
-    'utf8'
+  const routes = {
+    사진첩: 'app/api/photos/private/route.ts',
+    일기장: 'app/api/diary/route.ts',
+  };
+  const route = readFileSync(join(process.cwd(), routes.사진첩), 'utf8');
+  const read = (path: string) =>
+    readFileSync(join(process.cwd(), path), 'utf8');
+
+  it.each(Object.entries(routes))('%s 통로가 횟수를 센다', (_, path) => {
+    const source = read(path);
+    expect(source).toContain('checkRateLimit');
+    expect(source).toContain('recordFailure(key)');
+    expect(source).toContain('clearFailures(key)');
+    expect(source).toContain('status: 429');
+  });
+
+  it.each(Object.entries(routes))(
+    '%s 는 몸통보다 한도를 먼저 본다',
+    (_, path) => {
+      const source = read(path);
+      expect(source.indexOf('checkRateLimit(key)')).toBeLessThan(
+        source.indexOf('await request.json()')
+      );
+    }
   );
+
+  it('두 통로가 서로 다른 칸에 센다', () => {
+    // 한 통로에서 틀렸다고 다른 통로까지 막히면, 사진 비밀번호를 헤맨
+    // 사람이 일기도 못 열게 된다.
+    expect(read(routes.사진첩)).toContain('`photo:${clientKey(request)}`');
+    expect(read(routes.일기장)).toContain('`diary:${clientKey(request)}`');
+  });
+
+  it('일기를 브라우저에서 직접 부르지 않는다', () => {
+    // 브라우저가 DB 를 바로 부르면 셀 자리가 없다.
+    const diary = read('lib/diary.ts');
+    expect(diary).toContain("fetch('/api/diary'");
+    expect(diary).not.toContain('supabaseClient');
+  });
 
   it('틀리면 세고, 맞으면 턴다', () => {
     expect(route).toContain('recordFailure(key)');
