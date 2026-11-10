@@ -125,6 +125,13 @@ export async function sitemapEntries(): Promise<SitemapEntry[]> {
       priority: 0.6,
     })),
     {
+      // 비공개 사진첩(/photos/private)은 넣지 않는다. 잠긴 화면이라 색인될
+      // 이유가 없고, 페이지 쪽에서도 robots 로 막아뒀다.
+      url: `${siteUrl}/photos`,
+      changeFrequency: 'weekly' as const,
+      priority: 0.6,
+    },
+    {
       url: `${siteUrl}/travel`,
       changeFrequency: 'weekly' as const,
       priority: 0.7,

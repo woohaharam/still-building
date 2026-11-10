@@ -9,11 +9,19 @@ import LeaveEditor from '@/components/admin/LeaveEditor';
 import DutyEditor from '@/components/admin/DutyEditor';
 import TripEditor from '@/components/admin/TripEditor';
 import PostEditor from '@/components/admin/PostEditor';
+import PhotoEditor from '@/components/admin/PhotoEditor';
 import SignIn from '@/components/admin/SignIn';
 import { supabaseClient } from '@/lib/supabase';
 
 type AdminTab =
-  'posts' | 'activities' | 'books' | 'trips' | 'events' | 'leaves' | 'duties';
+  | 'posts'
+  | 'activities'
+  | 'books'
+  | 'trips'
+  | 'photos'
+  | 'events'
+  | 'leaves'
+  | 'duties';
 
 export default function AdminPage() {
   const [session, setSession] = useState<Session | null>(null);
@@ -53,6 +61,7 @@ export default function AdminPage() {
               ['activities', '활동'],
               ['books', '독후감'],
               ['trips', '여행'],
+              ['photos', '사진'],
               ['events', '일정'],
               ['leaves', '복무'],
               ['duties', '근무'],
@@ -87,6 +96,7 @@ export default function AdminPage() {
       {tab === 'activities' && <ActivityEditor />}
       {tab === 'books' && <BookEditor />}
       {tab === 'trips' && <TripEditor />}
+      {tab === 'photos' && <PhotoEditor />}
       {tab === 'events' && <EventEditor />}
       {tab === 'leaves' && <LeaveEditor />}
       {tab === 'duties' && <DutyEditor />}

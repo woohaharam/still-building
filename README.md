@@ -237,6 +237,7 @@ npm run build:map     # 나라별 중심점 다시 굽기 (lib/map-data.ts)
 | `12-service-duties.sql`         | 근무 명세서                                      |
 | `13-events-dday.sql`            | 일정에 '메인에 띄우기' · 시험 종류               |
 | `14-leave-kinds-more.sql`       | 일정 종류 셋 더하기 (시험외출 · 수도병원 · 기타) |
+| `15-photos.sql`                 | 사진첩 (공개 · 비공개 버킷 · 비밀번호)           |
 
 `supabase/migrate-to-auth.sql` 은 이 줄에 없다. 새로 까는 경우가 아니라, 인증을
 붙이기 전부터 굴리던 DB 를 옮겨오는 파일이다 (아래 참고).
@@ -330,6 +331,35 @@ Vercel 에 배포할 때는 프로젝트 설정 > Environment Variables 에 같�
 - CSP 는 아직 `Report-Only` 다. 규칙을 어겨도 막지 않고 콘솔에만 남는다. 실제 사이트에서
   댓글과 음악을 켜보고 경고가 없으면 `Content-Security-Policy-Report-Only` 를
   `Content-Security-Policy` 로 바꾸면 진짜로 막힌다.
+
+## 사진첩
+
+공개 사진첩(`/photos`)과 비밀번호를 거는 비공개 사진첩(`/photos/private`)이 있다.
+
+사진은 글과 다르다. 글은 표에서 행을 숨기면 끝이지만 사진은 파일이라, 행을
+숨겨도 파일이 공개 버킷에 남아 있으면 주소를 아는 사람에게 그대로 보인다.
+게다가 `post-images` 는 select 정책이 `bucket_id` 만 보기 때문에(`01-schema.sql`)
+anon 키로 파일 목록까지 뽑힌다. anon 키는 페이지 소스에 그대로 있다.
+
+그래서 두 겹으로 막는다.
+
+|           | 공개                                | 비공개                                      |
+| --------- | ----------------------------------- | ------------------------------------------- |
+| 표의 행   | RLS 가 `album = 'public'` 만 내준다 | `open_photos` 가 비밀번호를 대조해야 나온다 |
+| 사진 파일 | `post-images` (공개)                | `private-photos` (주인만 읽기)              |
+| 주소      | 고정                                | 한 시간짜리 임시 주소                       |
+
+비공개 사진을 띄우는 길은 `app/api/photos/private` 하나뿐이다. 거기서만
+`SUPABASE_SERVICE_ROLE_KEY` 를 쥐고, 비밀번호가 맞을 때만 임시 주소를
+발급한다. 그 키가 없으면 비공개 사진첩만 안 열리고 나머지는 멀쩡하다.
+
+서버 키를 쥐었다고 표를 직접 읽으면 안 된다. 서버 키는 RLS 를 지나치므로
+비밀번호 검사가 통째로 사라진다. 반드시 `open_photos` 를 거쳐야 한다.
+`tests/photos.test.ts` 가 그걸 포함해 새는 길들을 본다.
+
+비밀번호는 일기와 표가 따로다(`photo_access` · `diary_access`). 지금 같은
+값을 쓰더라도 나중에 한쪽만 바꿀 수 있다. 값은 저장소에 없고 Supabase SQL
+Editor 에서만 넣는다.
 
 ## 글꼴 · 아이콘
 

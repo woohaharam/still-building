@@ -330,3 +330,28 @@ export function eventKindLabel(kind: string): string | null {
     ? EVENT_KIND_LABELS[kind as EventKind]
     : null;
 }
+
+/** 사진첩 한 장. 공개와 비공개가 같은 표에 album 으로 갈린다. */
+export interface Photo {
+  id: string;
+  title: string | null;
+  caption: string | null;
+  album: PhotoAlbum;
+  /**
+   * 버킷 안의 경로. 전체 주소가 아니다.
+   *
+   * 공개 사진은 경로로 주소를 만들면 되고, 비공개 사진은 열어볼 때마다
+   * 서버가 임시 주소를 새로 발급한다. 전체 주소를 적어둘 수가 없다.
+   */
+  image_path: string;
+  /** 찍은 날. 올린 날과 다를 수 있어서 따로 받는다. */
+  taken_on: string | null;
+  created_at: string;
+}
+
+export type PhotoAlbum = 'public' | 'private';
+
+/** 화면에 띄울 수 있게 주소가 붙은 사진. */
+export interface PhotoWithUrl extends Photo {
+  url: string;
+}

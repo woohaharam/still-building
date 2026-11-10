@@ -11,6 +11,7 @@ const NAV = [
   { href: '/blog', label: '블로그' },
   { href: '/books', label: '독후감' },
   { href: '/travel', label: '여행' },
+  { href: '/photos', label: '사진첩' },
   { href: '/calendar', label: '캘린더' },
 ];
 
