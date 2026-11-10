@@ -103,6 +103,36 @@ export function useAdminCollection<T extends { id: string }>(
     return true;
   }
 
+  /**
+   * 여러 건을 한 번에 넣는다. 사진을 여러 장 올릴 때 쓴다.
+   *
+   * save 를 돌려가며 부르지 않는 건, 한 장마다 목록을 다시 불러와서 느리고
+   * 중간에 하나가 실패하면 어디까지 들어갔는지 알 수 없기 때문이다. 한 번에
+   * 넣으면 전부 들어가거나 전부 안 들어간다.
+   */
+  async function saveMany(
+    payloads: Record<string, unknown>[]
+  ): Promise<boolean> {
+    if (payloads.length === 0) return false;
+
+    setSaving(true);
+    setStatus('');
+
+    const { error } = await supabaseClient.from(table).insert(payloads);
+
+    setSaving(false);
+
+    if (error) {
+      setStatus(saveFailure(error));
+      return false;
+    }
+
+    setStatus(`${payloads.length}건 저장했어요.`);
+    setEditingId(null);
+    await load();
+    return true;
+  }
+
   async function remove(id: string, confirmMessage: string) {
     if (!confirm(confirmMessage)) return false;
 
@@ -118,6 +148,7 @@ export function useAdminCollection<T extends { id: string }>(
   }
 
   return {
+    saveMany,
     items,
     loading,
     editingId,

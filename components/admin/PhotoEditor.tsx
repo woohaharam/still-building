@@ -24,6 +24,7 @@ export default function PhotoEditor() {
     status,
     setStatus,
     save,
+    saveMany,
     remove,
   } = useAdminCollection<Photo>('photos', { column: 'taken_on' });
 
@@ -61,12 +62,46 @@ export default function PhotoEditor() {
    * 그래서 앨범을 먼저 고르고 올려야 한다. 올린 뒤에 앨범만 바꾸면 파일은
    * 그대로 남아서, 아래에서 그 경우를 막는다.
    */
-  async function handleUpload(file: File) {
+  async function handleUpload(files: File[]) {
+    if (files.length === 0) return;
+
     setUploading(true);
     setStatus('');
+
+    const bucket = album === 'private' ? PRIVATE_BUCKET : PUBLIC_BUCKET;
+
     try {
-      const bucket = album === 'private' ? PRIVATE_BUCKET : PUBLIC_BUCKET;
-      setImagePath(await uploadPhoto(file, bucket));
+      /*
+        한 장이면 폼에 담아 제목과 글을 적게 두고, 여러 장이면 바로 넣는다.
+
+        여러 장을 올리면서 글을 한 칸에 적게 하면 그 글이 전부에 똑같이
+        붙는다. 사진마다 그날이 다른데 그건 쓸모가 없다. 먼저 넣어두고
+        목록에서 한 장씩 골라 적는 쪽이 실제로 하는 순서에 가깝다.
+      */
+      if (files.length === 1) {
+        setImagePath(await uploadPhoto(files[0], bucket));
+        return;
+      }
+
+      const paths: string[] = [];
+      for (const [index, file] of files.entries()) {
+        setStatus(`${files.length}장 중 ${index + 1}장 올리는 중...`);
+        paths.push(await uploadPhoto(file, bucket));
+      }
+
+      const saved = await saveMany(
+        paths.map((path) => ({
+          album,
+          title: null,
+          caption: null,
+          taken_on: takenOn || null,
+          image_path: path,
+        }))
+      );
+
+      if (saved) {
+        setStatus(`${paths.length}장 넣었어요. 목록에서 글을 적을 수 있어요.`);
+      }
     } catch (err) {
       setStatus(
         err instanceof Error
@@ -144,13 +179,18 @@ export default function PhotoEditor() {
             <input
               type="file"
               accept="image/*"
+              multiple
               onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) void handleUpload(file);
+                void handleUpload(Array.from(e.target.files ?? []));
+                // 같은 파일을 다시 골라도 onChange 가 오게 비운다.
                 e.target.value = '';
               }}
               className="text-sm text-ink-soft file:mr-3 file:rounded-md file:border file:border-line file:bg-transparent file:px-3 file:py-1.5 file:text-sm file:text-ink-soft"
             />
+            <p className="text-xs text-ink-muted">
+              여러 장을 한 번에 고를 수 있어요. 두 장 이상이면 글 없이 바로
+              들어가고, 목록에서 한 장씩 골라 적으면 돼요.
+            </p>
             {uploading && (
               <p className="text-sm text-ink-muted">올리는 중...</p>
             )}

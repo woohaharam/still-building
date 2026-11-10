@@ -3,15 +3,35 @@
 import { useCallback, useEffect, useState } from 'react';
 import { formatDate } from '@/lib/calendar';
 import { PhotoWithUrl } from '@/lib/types';
+import PhotoPrint from './PhotoPrint';
 
 /**
- * 격자로 깔고, 누르면 크게 본다.
+ * 인화물을 깔아두고, 누르면 크게 본다.
  *
- * 사진은 next/image 가 아니라 img 로 그린다. 비공개 사진의 주소는 한 시간마다
- * 달라지는 서명 주소라서, 최적화 서버가 캐시할 수 있는 고정 주소가 아니다.
- * 공개 사진까지 같은 방식으로 두는 건 한 화면에 두 가지 경로가 섞이면
- * 어느 쪽이 느린지 가려내기 어려워서다.
+ * 한 장씩 뽑아 늘어놓은 것처럼 보이게 PhotoPrint 로 감싼다. 적어둔 글은
+ * 크게 보기 전에도 인화지 아래에 보인다 — 그 글을 읽으려고 한 장씩 눌러야
+ * 한다면 적어둔 보람이 없다.
  */
+/**
+ * 버튼에 읽히는 이름.
+ *
+ * 인화지에 보이는 글을 그대로 담고 끝에 할 일을 붙인다. 보이는 글이 이름에
+ * 다 들어가야 음성으로 조작하는 사람이 보이는 말을 불러서 누를 수 있다
+ * (WCAG 2.5.3 Label in Name).
+ *
+ * 처음에는 '사진 크게 보기' 로만 뒀다가 axe 에 걸렸다. 캡션만 넣어도
+ * 여전히 걸렸는데, 날짜도 화면에 보이기 때문이다. 일부가 아니라 전부여야
+ * 한다. 그래서 PhotoPrint 가 그리는 것과 같은 조각을 같은 순서로 잇는다.
+ */
+function printLabel(photo: PhotoWithUrl): string {
+  const written = photo.title || photo.caption;
+  const shown = [written, photo.taken_on && formatDate(photo.taken_on)].filter(
+    Boolean
+  );
+
+  return [...(shown.length ? shown : ['사진']), '크게 보기'].join(' ');
+}
+
 export default function PhotoGrid({ photos }: { photos: PhotoWithUrl[] }) {
   const [openIndex, setOpenIndex] = useState<number | null>(null);
 
@@ -65,22 +85,30 @@ export default function PhotoGrid({ photos }: { photos: PhotoWithUrl[] }) {
 
   return (
     <>
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-4 sm:grid-cols-3 sm:gap-5">
         {photos.map((photo, index) => (
           <li key={photo.id}>
             <button
               type="button"
               onClick={() => setOpenIndex(index)}
-              className="group block w-full overflow-hidden rounded-lg border border-line bg-surface"
-              aria-label={`${photo.title || '사진'} 크게 보기`}
+              className="block h-full w-full text-left transition-transform duration-200 hover:-translate-y-0.5"
             >
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.url}
-                alt={photo.title || photo.caption || '사진'}
-                loading="lazy"
-                className="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-              />
+              {/*
+                맨 앞 여섯 장은 바로 받는다. 첫 화면에 들어오는 것들이라
+                lazy 로 두면 스크롤도 하기 전에 빈 칸이 보인다.
+              */}
+              <PhotoPrint photo={photo} priority={index < 6} />
+              {/*
+                버튼에 aria-label 을 달지 않는다. 달면 화면에 보이는 글과
+                읽히는 이름이 어긋나서, 음성으로 조작하는 사람이 보이는
+                말을 불러도 안 눌린다 (WCAG 2.5.3 Label in Name).
+
+                캡션과 날짜를 이름에 옮겨 적어봤지만 띄어쓰기까지 맞추기가
+                까다로웠다. 내용으로 이름이 만들어지게 두면 보이는 글이
+                그대로 이름이 되므로 어긋날 수가 없다. 할 일만 숨은 글로
+                덧붙인다.
+              */}
+              <span className="sr-only">크게 보기</span>
             </button>
           </li>
         ))}
