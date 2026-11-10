@@ -35,6 +35,11 @@ const config: Config = {
           discharge: 'rgb(var(--leave-discharge) / <alpha-value>)',
           'discharge-fill': 'rgb(var(--leave-discharge-fill) / <alpha-value>)',
         },
+        print: {
+          DEFAULT: 'rgb(var(--print) / <alpha-value>)',
+          ink: 'rgb(var(--print-ink) / <alpha-value>)',
+          muted: 'rgb(var(--print-muted) / <alpha-value>)',
+        },
         duty: {
           yellow: 'rgb(var(--duty-yellow) / <alpha-value>)',
         },
