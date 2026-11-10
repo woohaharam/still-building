@@ -1,9 +1,18 @@
 import { createClient } from '@supabase/supabase-js';
 import { PRIVATE_BUCKET } from '@/lib/buckets';
+import {
+  checkRateLimit,
+  clearFailures,
+  clientKey,
+  recordFailure,
+} from '@/lib/rate-limit';
 import { Photo } from '@/lib/types';
 
 /** 임시 주소가 살아 있는 시간. 한 번 보는 동안은 넉넉하고, 새어도 곧 죽는다. */
 const SIGNED_URL_SECONDS = 60 * 60;
+
+/** 받아줄 비밀번호 길이의 위. 사람이 치는 값이라 넉넉하게 잡아도 이 정도다. */
+const MAX_PASSWORD_LENGTH = 200;
 
 export const revalidate = 0;
 
@@ -35,6 +44,30 @@ export async function POST(request: Request) {
     );
   }
 
+  /*
+    막을 상대인지 먼저 본다. 키는 헤더에서 나오므로 몸통을 읽지 않아도
+    된다 — 이미 막힌 쪽의 요청을 굳이 파싱해줄 이유가 없다.
+
+    세는 것은 비밀번호를 실제로 틀렸을 때만 한다. 몸통이 비었거나 모양이
+    틀린 요청까지 세면 실수 한 번에 열 분을 기다리게 된다.
+
+    비밀번호 대조는 open_photos 가 하고 거기엔 횟수 제한이 없다. 재어 보니
+    막지 않으면 초당 88 번까지 들어간다. 여섯 자리 숫자라면 세 시간이면
+    전부 훑힌다.
+  */
+  const key = clientKey(request);
+  const limit = checkRateLimit(key);
+
+  if (!limit.allowed) {
+    return Response.json(
+      { message: '너무 여러 번 틀렸어요. 잠시 뒤에 다시 시도해주세요.' },
+      {
+        status: 429,
+        headers: { 'Retry-After': String(limit.retryAfterSeconds) },
+      }
+    );
+  }
+
   let password: unknown;
   try {
     password = (await request.json())?.password;
@@ -42,7 +75,13 @@ export async function POST(request: Request) {
     password = undefined;
   }
 
-  if (typeof password !== 'string' || !password) {
+  // 길이를 자른다. 사람이 외워서 치는 값이라 이보다 길 이유가 없고,
+  // 막지 않으면 수 MB 짜리 문자열이 그대로 crypt() 까지 간다.
+  if (
+    typeof password !== 'string' ||
+    !password ||
+    password.length > MAX_PASSWORD_LENGTH
+  ) {
     return Response.json(
       { message: '비밀번호를 입력해주세요.' },
       { status: 400 }
@@ -60,6 +99,7 @@ export async function POST(request: Request) {
   if (error) {
     // 28000 은 open_photos 가 비밀번호 불일치에 쓰는 코드다.
     if (error.code === '28000' || /비밀번호/.test(error.message ?? '')) {
+      recordFailure(key);
       return Response.json(
         { message: '비밀번호가 맞지 않아요.' },
         { status: 401 }
@@ -77,6 +117,10 @@ export async function POST(request: Request) {
     console.error('open_photos 실패:', error);
     return Response.json({ message: '지금은 열 수 없어요.' }, { status: 500 });
   }
+
+  // 맞았으니 쌓인 실패를 턴다. 안 그러면 제대로 아는 사람이 여덟 번
+  // 헤매다 맞혔을 때, 다음에 와서 또 막힌다.
+  clearFailures(key);
 
   const photos = (data ?? []) as Photo[];
   if (photos.length === 0) return Response.json({ photos: [] });
