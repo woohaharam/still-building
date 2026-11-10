@@ -1,6 +1,5 @@
+import { PUBLIC_BUCKET } from './buckets';
 import { supabaseClient } from './supabase';
-
-const BUCKET = 'post-images';
 const MAX_BYTES = 5 * 1024 * 1024;
 
 /**
@@ -44,7 +43,7 @@ export async function uploadImage(file: File): Promise<string> {
   const fileName = `${crypto.randomUUID()}.${ext}`;
 
   const { error } = await supabaseClient.storage
-    .from(BUCKET)
+    .from(PUBLIC_BUCKET)
     .upload(fileName, file, {
       cacheControl: '3600',
       upsert: false,
@@ -55,6 +54,46 @@ export async function uploadImage(file: File): Promise<string> {
     throw new Error(error.message);
   }
 
-  const { data } = supabaseClient.storage.from(BUCKET).getPublicUrl(fileName);
+  const { data } = supabaseClient.storage
+    .from(PUBLIC_BUCKET)
+    .getPublicUrl(fileName);
   return data.publicUrl;
+}
+
+/**
+ * 사진첩에 올린다. 돌려주는 건 전체 주소가 아니라 버킷 안의 경로다.
+ *
+ * 비공개 사진은 주소가 한 시간마다 달라져서 적어둘 수가 없다. 공개 사진도
+ * 같은 모양으로 담아야 표가 한 가지 뜻만 갖는다 (lib/types.ts 의 image_path).
+ *
+ * 검사는 uploadImage 와 같은 것을 쓴다. 비공개 버킷이라고 느슨하게 두면,
+ * 임시 주소로 열렸을 때 사진인 줄 알았던 파일이 웹페이지로 실행된다.
+ */
+export async function uploadPhoto(file: File, bucket: string): Promise<string> {
+  const ext = extensionFor(file.type);
+  if (!ext) {
+    throw new Error('이미지 파일만 올릴 수 있어요 (jpg, png, webp, gif, avif)');
+  }
+
+  if (file.size > MAX_BYTES) {
+    throw new Error(
+      `파일이 너무 커요. ${MAX_BYTES / 1024 / 1024}MB 아래로 줄여주세요.`
+    );
+  }
+
+  const path = `${crypto.randomUUID()}.${ext}`;
+
+  const { error } = await supabaseClient.storage
+    .from(bucket)
+    .upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type,
+    });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return path;
 }
