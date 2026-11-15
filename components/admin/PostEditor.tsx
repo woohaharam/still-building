@@ -5,9 +5,16 @@ import { seoulDateKey, seoulMinutes } from '@/lib/calendar';
 import { IMAGE_SIZE_KEYS, IMAGE_SIZES } from '@/lib/image-size';
 import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
 import MarkdownToolbar from './MarkdownToolbar';
-import { uploadImage } from '@/lib/storage';
-import { joinImageRow, resizeImage, writeImage } from '@/lib/markdown-image';
+import { deleteImage, uploadImage } from '@/lib/storage';
+import {
+  findImages,
+  joinImageRow,
+  replaceImageUrl,
+  resizeImage,
+  writeImage,
+} from '@/lib/markdown-image';
 import EditablePreview from './EditablePreview';
+import ImageMasker from './ImageMasker';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import { useNow } from '@/lib/use-client-value';
 import type { ImageSize } from '@/lib/image-size';
@@ -63,6 +70,8 @@ export default function PostEditor() {
   // 예약 발행 시각 'HH:MM'. 비워두면 그 날 정오로 잡는다.
   const [publishedTime, setPublishedTime] = useState('');
   const [imageSize, setImageSize] = useState<ImageSize>('large');
+  /** 지금 가리고 있는 사진이 본문에서 몇 번째인지. 안 가리는 중이면 null. */
+  const [masking, setMasking] = useState<number | null>(null);
 
   const [contentUploading, setContentUploading] = useState(false);
   const [uploadError, setUploadError] = useState('');
@@ -210,6 +219,54 @@ export default function PostEditor() {
     editContent((value, start) => joinImageRow(value, start));
   }
 
+  /**
+   * 가린 사진으로 갈아끼운다.
+   *
+   * 원본에 덮어쓰지 않고 새 파일로 올린다. 같은 주소에 다른 그림을 올리면
+   * 이미 받아간 쪽에는 한동안 가리기 전 사진이 남는다.
+   *
+   * 올린 뒤 원본을 지운다. post-images 는 누구나 읽는 버킷이라 남겨두면
+   * 주소를 아는 사람에게 가리기 전 사진이 그대로 보인다. 다만 본문 다른
+   * 곳이나 커버에서 같은 주소를 쓰고 있으면 지우지 않는다 — 그쪽이 깨진다.
+   */
+  async function handleMasked(blob: Blob) {
+    const target = masking;
+    if (target === null) return;
+
+    const original = findImages(content)[target]?.url;
+    setMasking(null);
+    setUploadError('');
+    setContentUploading(true);
+
+    try {
+      // 이름은 아무래도 좋다. uploadImage 가 UUID 로 새로 지어 올린다.
+      const file = new File([blob], 'masked.jpg', {
+        type: blob.type || 'image/jpeg',
+      });
+      const url = await uploadImage(file);
+      const next = replaceImageUrl(content, target, url);
+      setContent(next);
+
+      if (original && canDelete(next, original)) {
+        // 지우다 실패해도 갈아끼우기는 이미 끝났다. 알리기만 한다.
+        await deleteImage(original).catch(() => {
+          setUploadError('원본은 못 지웠어요. 저장소에서 직접 지워주세요.');
+        });
+      }
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? `가리기 실패: ${err.message}` : '가리기 실패'
+      );
+    } finally {
+      setContentUploading(false);
+    }
+  }
+
+  /** 그 주소를 더는 아무 데서도 안 쓰면 지워도 된다. */
+  function canDelete(nextContent: string, original: string): boolean {
+    return coverImageUrl !== original && !nextContent.includes(original);
+  }
+
   function toggleTag(tag: PostTag) {
     setTags((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -293,6 +350,18 @@ export default function PostEditor() {
 
   return (
     <div className="grid gap-10 md:grid-cols-[1fr_320px]">
+      {/*
+        가리는 동안에는 화면을 덮는다. 뒤에서 본문이 바뀌면 몇 번째 사진을
+        가리는 중인지가 어긋난다.
+      */}
+      {masking !== null && findImages(content)[masking] && (
+        <ImageMasker
+          url={findImages(content)[masking].url}
+          onDone={handleMasked}
+          onCancel={() => setMasking(null)}
+        />
+      )}
+
       <div>
         <h1 className="mb-6 text-xl font-bold">
           {editingId ? '글 수정' : '새 글 작성'}
@@ -407,7 +476,11 @@ export default function PostEditor() {
             </div>
 
             <div className={showPreview ? '' : 'hidden lg:block'}>
-              <EditablePreview content={content} onResize={handleResize} />
+              <EditablePreview
+                content={content}
+                onResize={handleResize}
+                onMask={setMasking}
+              />
             </div>
           </div>
 
