@@ -1,15 +1,13 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import ReactMarkdown from 'react-markdown';
-import rehypeHighlight from 'rehype-highlight';
-import remarkGfm from 'remark-gfm';
 import { seoulDateKey, seoulMinutes } from '@/lib/calendar';
 import { IMAGE_SIZE_KEYS, IMAGE_SIZES } from '@/lib/image-size';
-import { markdownComponents } from '@/lib/markdown';
 import { applyAction, insertBlock, type Action } from '@/lib/markdown-format';
 import MarkdownToolbar from './MarkdownToolbar';
 import { uploadImage } from '@/lib/storage';
+import { joinImageRow, resizeImage, writeImage } from '@/lib/markdown-image';
+import EditablePreview from './EditablePreview';
 import { useAdminCollection } from '@/lib/use-admin-collection';
 import { useNow } from '@/lib/use-client-value';
 import type { ImageSize } from '@/lib/image-size';
@@ -156,20 +154,60 @@ export default function PostEditor() {
     }
   }
 
-  function handleContentImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    return runUpload(
-      e,
-      setContentUploading,
-      contentFileInputRef,
-      (url, file) => {
-        // 크기는 마크다운 제목 자리에 넣는다. lib/markdown.tsx 가 이걸 읽는다.
-        const suffix = imageSize === 'large' ? '' : ` "${imageSize}"`;
-        const markdown = `![${file.name}](${url}${suffix})`;
-        editContent((value, start, end) =>
-          insertBlock(value, start, end, markdown)
-        );
+  /**
+   * 본문 사진은 여러 장을 한 번에 받는다.
+   *
+   * 한 장씩 올리고 모아서 한 번에 넣는다. 올릴 때마다 본문을 고치면 중간에
+   * 하나가 실패했을 때 어디까지 들어갔는지 알 수 없다.
+   *
+   * 고른 순서대로 넣는다. 사진첩에서 고를 때 보이는 순서가 그 순서라,
+   * 다르게 들어가면 다시 옮겨야 한다.
+   */
+  async function handleContentImages(e: React.ChangeEvent<HTMLInputElement>) {
+    const files = Array.from(e.target.files ?? []);
+    if (files.length === 0) return;
+
+    setUploadError('');
+    setContentUploading(true);
+
+    try {
+      const written: string[] = [];
+      for (const [i, file] of files.entries()) {
+        if (files.length > 1) {
+          setUploadError(`${files.length}장 중 ${i + 1}장 올리는 중...`);
+        }
+        written.push(writeImage(file.name, await uploadImage(file), imageSize));
       }
-    );
+
+      setUploadError('');
+      /*
+        빈 줄로 띄워 넣는다. 줄바꿈 하나로 이으면 마크다운이 한 문단으로
+        묶고, 사진만 든 문단은 가로로 그려진다(lib/markdown.tsx). 올리자마자
+        나란히 붙어버리는 셈이다.
+
+        기본은 세로로 쌓고, 나란히 두고 싶을 때 '사진 나란히' 를 누르게 한다.
+      */
+      editContent((value, start, end) =>
+        insertBlock(value, start, end, written.join('\n\n'))
+      );
+    } catch (err) {
+      setUploadError(
+        err instanceof Error ? `업로드 실패: ${err.message}` : '업로드 실패'
+      );
+    } finally {
+      setContentUploading(false);
+      if (contentFileInputRef.current) contentFileInputRef.current.value = '';
+    }
+  }
+
+  /** 미리보기에서 사진 크기를 눌렀을 때. 본문의 그 사진만 바꾼다. */
+  function handleResize(index: number, size: ImageSize) {
+    setContent((value) => resizeImage(value, index, size));
+  }
+
+  /** 커서가 놓인 줄의 사진들을 한 줄로 모은다. 같은 줄이면 나란히 그려진다. */
+  function handleJoinRow() {
+    editContent((value, start) => joinImageRow(value, start));
   }
 
   function toggleTag(tag: PostTag) {
@@ -323,31 +361,40 @@ export default function PostEditor() {
                 ref={contentFileInputRef}
                 type="file"
                 accept="image/*"
-                onChange={handleContentImageUpload}
+                multiple
+                onChange={handleContentImages}
                 className="hidden"
               />
               <button
                 type="button"
+                onClick={handleJoinRow}
+                title="커서가 놓인 줄과 위아래로 이어진 사진 줄을 한 줄로 모읍니다"
+                className="rounded-md border border-line px-3 py-1.5 text-xs text-ink-soft hover:border-ink-muted"
+              >
+                사진 나란히
+              </button>
+              {/*
+                넓은 화면에서는 왼쪽에 쓰고 오른쪽에 바로 보이므로 이 단추가
+                필요 없다. 좁은 화면에서만 번갈아 본다.
+              */}
+              <button
+                type="button"
                 onClick={() => setShowPreview((v) => !v)}
-                className="text-xs text-ink-muted underline hover:text-ink-soft"
+                className="text-xs text-ink-muted underline hover:text-ink-soft lg:hidden"
               >
                 {showPreview ? '편집으로 돌아가기' : '미리보기'}
               </button>
             </div>
           </div>
 
-          {showPreview ? (
-            <div className="prose-post min-h-[300px] rounded-md border border-line px-4 py-3">
-              <ReactMarkdown
-                remarkPlugins={[remarkGfm]}
-                rehypePlugins={[[rehypeHighlight, { ignoreMissing: true }]]}
-                components={markdownComponents}
-              >
-                {content || '_내용이 없어요._'}
-              </ReactMarkdown>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-2">
+          {/*
+            넓은 화면에서는 왼쪽에 쓰고 오른쪽에 바로 보인다. 좁은 화면에서는
+            둘을 나란히 둘 자리가 없어서 단추로 번갈아 본다.
+          */}
+          <div className="grid gap-3 lg:grid-cols-2">
+            <div
+              className={`flex flex-col gap-2 ${showPreview ? 'hidden lg:flex' : ''}`}
+            >
               <MarkdownToolbar onAction={handleToolbarAction} />
               <textarea
                 ref={contentRef}
@@ -355,10 +402,14 @@ export default function PostEditor() {
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="여기에 마크다운으로 작성하세요..."
                 rows={16}
-                className="resize-y rounded-md border border-line px-3 py-2 font-mono text-sm focus:border-ink-muted focus:outline-none"
+                className="h-full resize-y rounded-md border border-line px-3 py-2 font-mono text-sm focus:border-ink-muted focus:outline-none"
               />
             </div>
-          )}
+
+            <div className={showPreview ? '' : 'hidden lg:block'}>
+              <EditablePreview content={content} onResize={handleResize} />
+            </div>
+          </div>
 
           <div className="flex flex-wrap items-center gap-2">
             {ALL_POST_TAGS.map((tag) => (
