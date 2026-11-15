@@ -97,3 +97,28 @@ export async function uploadPhoto(file: File, bucket: string): Promise<string> {
 
   return path;
 }
+
+/**
+ * 올린 사진을 지운다.
+ *
+ * 가린 사진을 새로 올리고 나면 가리기 전 원본이 버킷에 남는다. post-images
+ * 는 누구나 읽을 수 있는 버킷이라(supabase/01-schema.sql), 남겨두면 주소를
+ * 아는 사람에게는 가리기 전 사진이 그대로 보인다. 가린 보람이 없다.
+ *
+ * 주소에서 파일 이름만 뽑는다. 우리가 올린 주소가 아니면 아무것도 하지
+ * 않는다 — 글에 적어둔 바깥 사진 주소까지 지우려 들면 안 된다.
+ */
+export async function deleteImage(url: string): Promise<void> {
+  const marker = `/object/public/${PUBLIC_BUCKET}/`;
+  const at = url.indexOf(marker);
+  if (at === -1) return;
+
+  const path = url.slice(at + marker.length).split('?')[0];
+  if (!path) return;
+
+  const { error } = await supabaseClient.storage
+    .from(PUBLIC_BUCKET)
+    .remove([decodeURIComponent(path)]);
+
+  if (error) throw new Error(error.message);
+}
